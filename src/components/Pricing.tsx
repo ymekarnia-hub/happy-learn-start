@@ -46,10 +46,10 @@ const Pricing = () => {
       highlighted: true,
     },
     {
-      name: t("pricing.intensive.name"),
-      price: t("pricing.intensive.price"),
-      period: t("pricing.intensive.period"),
-      description: t("pricing.intensive.description"),
+      name: "Formule Mensuelle",
+      price: `${(isFamily ? 3125 : 2500).toLocaleString('fr-DZ')} DA`,
+      period: "/Mois",
+      description: "",
       features: [
         t("pricing.intensive.features.everything"),
         t("pricing.intensive.features.liveCourses"),
