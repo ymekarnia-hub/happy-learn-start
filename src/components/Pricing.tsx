@@ -40,7 +40,7 @@ const Pricing = () => {
       period: "/Mois",
       description: t("pricing.regular.description"),
       immediatePayment: `${(regularPrice * 10).toLocaleString('fr-DZ')} DA`,
-      paymentPeriod: `sur 10 mois (jusqu'au 31 juillet ${nextYear})`,
+      paymentPeriod: `pour une période de 10 mois allant jusqu'au 31 juillet ${nextYear}`,
       features: [
         t("pricing.regular.features.allSubjects"),
         t("pricing.regular.features.exercises"),
