@@ -111,7 +111,7 @@ const Pricing = () => {
               {plan.highlighted && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
                   <span className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-1 rounded-full text-sm font-bold">
-                    {t("pricing.popular")}
+                    Le plus populaire
                   </span>
                 </div>
               )}
