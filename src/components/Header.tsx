@@ -45,6 +45,15 @@ const Header = () => {
     }
   };
 
+  const changeLanguage = (lang: "fr" | "ar") => {
+    setCurrentLang(lang);
+    const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+    if (select) {
+      select.value = lang;
+      select.dispatchEvent(new Event('change'));
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4">
@@ -98,7 +107,7 @@ const Header = () => {
             {/* Language Selector */}
             <div className="flex items-center gap-2 ml-2">
               <button
-                onClick={() => setCurrentLang("fr")}
+                onClick={() => changeLanguage("fr")}
                 className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
                   currentLang === "fr" ? "bg-blue-50" : "hover:bg-gray-100"
                 }`}
@@ -107,7 +116,7 @@ const Header = () => {
                 <span className="text-sm font-medium">FR</span>
               </button>
               <button
-                onClick={() => setCurrentLang("ar")}
+                onClick={() => changeLanguage("ar")}
                 className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
                   currentLang === "ar" ? "bg-blue-50" : "hover:bg-gray-100"
                 }`}
@@ -116,6 +125,8 @@ const Header = () => {
                 <span className="text-sm font-medium">AR</span>
               </button>
             </div>
+            {/* Hidden Google Translate Element */}
+            <div id="google_translate_element" style={{ display: 'none' }}></div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -166,7 +177,7 @@ const Header = () => {
 
             <div className="flex gap-2 pt-2">
               <button
-                onClick={() => setCurrentLang("fr")}
+                onClick={() => changeLanguage("fr")}
                 className={`flex-1 py-2 rounded-lg border ${
                   currentLang === "fr" ? "bg-blue-50 border-blue-600" : "border-gray-200"
                 }`}
@@ -174,7 +185,7 @@ const Header = () => {
                 🇫🇷 Français
               </button>
               <button
-                onClick={() => setCurrentLang("ar")}
+                onClick={() => changeLanguage("ar")}
                 className={`flex-1 py-2 rounded-lg border ${
                   currentLang === "ar" ? "bg-blue-50 border-blue-600" : "border-gray-200"
                 }`}
