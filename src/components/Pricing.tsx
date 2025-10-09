@@ -32,7 +32,7 @@ const Pricing = () => {
       highlighted: false,
     },
     {
-      name: "Formule année scolaire",
+      name: "Formule Année scolaire",
       price: `${regularPrice.toLocaleString('fr-DZ')} DA`,
       period: "/Mois",
       description: t("pricing.regular.description"),
@@ -119,9 +119,14 @@ const Pricing = () => {
                 {plan.description && (
                   <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
                 )}
-                <div className="flex items-baseline justify-center gap-1">
+                <div className="flex items-baseline justify-center gap-1 relative">
                   <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                   {plan.period && <span className="text-gray-600">{plan.period}</span>}
+                  {plan.highlighted && (
+                    <span className="absolute -top-2 -right-12 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg">
+                      -30%
+                    </span>
+                  )}
                 </div>
               </div>
 
