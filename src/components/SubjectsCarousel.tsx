@@ -90,7 +90,7 @@ const SubjectsCarousel = () => {
         {/* First Row - Scrolling Left */}
         <div className="relative mb-6 overflow-hidden">
           <div ref={scrollRef1} className="flex gap-4 will-change-transform">
-            {[...row1Subjects, ...row1Subjects].map((subject, index) => {
+            {[...row1Subjects, ...row1Subjects, ...row1Subjects, ...row1Subjects].map((subject, index) => {
               const Icon = subject.icon;
               return (
                 <div
@@ -110,7 +110,7 @@ const SubjectsCarousel = () => {
         {/* Second Row - Scrolling Right */}
         <div className="relative overflow-hidden">
           <div ref={scrollRef2} className="flex gap-4 will-change-transform">
-            {[...row2Subjects, ...row2Subjects].map((subject, index) => {
+            {[...row2Subjects, ...row2Subjects, ...row2Subjects, ...row2Subjects].map((subject, index) => {
               const Icon = subject.icon;
               return (
                 <div
