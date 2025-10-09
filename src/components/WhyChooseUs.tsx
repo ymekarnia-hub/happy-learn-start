@@ -1,5 +1,6 @@
 import { User, Brain, TrendingUp, GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import studentsImage from "@/assets/students-studying-new.jpg";
 
 const WhyChooseUs = () => {
   const { t } = useTranslation();
@@ -65,6 +66,15 @@ const WhyChooseUs = () => {
                 </div>
               );
             })}
+          </div>
+
+          {/* Right side - Image */}
+          <div className="relative">
+            <img
+              src={studentsImage}
+              alt="Étudiants travaillant ensemble"
+              className="rounded-3xl shadow-2xl w-full h-auto object-cover"
+            />
           </div>
         </div>
       </div>
