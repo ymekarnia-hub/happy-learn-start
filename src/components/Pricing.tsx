@@ -117,7 +117,7 @@ const Pricing = () => {
                 {plan.description && (
                   <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
                 )}
-                <div className="flex items-baseline justify-center gap-1 relative">
+                <div className="flex items-baseline justify-center gap-1 relative mb-4">
                   <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                   {plan.period && <span className="text-gray-600">{plan.period}</span>}
                   {plan.highlighted && (
@@ -127,7 +127,7 @@ const Pricing = () => {
                   )}
                 </div>
                 {plan.immediatePayment && (
-                  <div className="mt-4 p-3 bg-blue-50 border-2 border-blue-600 rounded-lg">
+                  <div className="p-3 bg-blue-50 border-2 border-blue-600 rounded-lg">
                     <p className="text-sm font-semibold text-blue-900 mb-1">
                       Paiement immédiat de
                     </p>
