@@ -44,22 +44,22 @@ const WhyChooseUs = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-start max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-12 items-start max-w-7xl mx-auto">
           {/* Left side - Features */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
                 <div
                   key={index}
-                  className="flex gap-5 p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  className="flex gap-4 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className={`w-14 h-14 ${feature.color} rounded-xl flex items-center justify-center flex-shrink-0 shadow-md`}>
-                    <Icon className="w-7 h-7 text-white" />
+                  <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                    <Icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-xl text-gray-900 mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <h3 className="font-bold text-lg text-gray-900 mb-1">{feature.title}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
@@ -69,12 +69,12 @@ const WhyChooseUs = () => {
           </div>
 
           {/* Right side - Image */}
-          <div className="relative">
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+          <div className="relative h-full">
+            <div className="relative rounded-2xl overflow-hidden shadow-xl h-full">
               <img
                 src={studentsImage}
                 alt="Étudiants travaillant ensemble"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover min-h-[500px]"
               />
             </div>
             {/* Decorative element */}
