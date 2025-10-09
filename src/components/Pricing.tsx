@@ -123,7 +123,7 @@ const Pricing = () => {
                   <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                   {plan.period && <span className="text-gray-600">{plan.period}</span>}
                   {plan.highlighted && (
-                    <span className="absolute -top-3 -right-4 bg-red-500 text-white text-lg font-bold px-4 py-2 rounded-full shadow-lg animate-pulse">
+                    <span className="absolute -top-5 -right-2 bg-red-500 text-white text-lg font-bold px-4 py-2 rounded-full shadow-lg animate-pulse">
                       -30%
                     </span>
                   )}
