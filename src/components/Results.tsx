@@ -1,28 +1,31 @@
 import { Card } from "./ui/card";
 import studentsSuccessImage from "@/assets/students-success.jpg";
 import studentOnlineImage from "@/assets/student-online.jpg";
+import { useTranslation } from "react-i18next";
 
 const Results = () => {
+  const { t } = useTranslation();
+  
   const stats = [
     {
-      value: "98%",
-      label: "Taux de réussite aux examens",
-      description: "Nos élèves excellent dans leurs évaluations",
+      value: t("results.successRate.value"),
+      label: t("results.successRate.label"),
+      description: t("results.successRate.description"),
     },
     {
-      value: "+2.5",
-      label: "Points de moyenne gagnés",
-      description: "Progression moyenne en 3 mois",
+      value: t("results.averageGain.value"),
+      label: t("results.averageGain.label"),
+      description: t("results.averageGain.description"),
     },
     {
-      value: "15 000+",
-      label: "Élèves accompagnés",
-      description: "Depuis notre création",
+      value: t("results.studentsHelped.value"),
+      label: t("results.studentsHelped.label"),
+      description: t("results.studentsHelped.description"),
     },
     {
-      value: "4.9/5",
-      label: "Satisfaction des parents",
-      description: "Note moyenne sur l'ensemble de nos services",
+      value: t("results.satisfaction.value"),
+      label: t("results.satisfaction.label"),
+      description: t("results.satisfaction.description"),
     },
   ];
 
@@ -31,10 +34,10 @@ const Results = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Des résultats qui parlent
+            {t("results.title")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            La preuve de notre efficacité à travers les chiffres
+            {t("results.subtitle")}
           </p>
         </div>
 
@@ -66,10 +69,10 @@ const Results = () => {
             />
             <div className="p-6">
               <h3 className="text-2xl font-bold text-foreground mb-3">
-                Confiance retrouvée
+                {t("results.confidence.title")}
               </h3>
               <p className="text-muted-foreground">
-                Nos élèves regagnent confiance en leurs capacités et développent l'autonomie nécessaire pour réussir leur parcours scolaire.
+                {t("results.confidence.description")}
               </p>
             </div>
           </Card>
@@ -82,10 +85,10 @@ const Results = () => {
             />
             <div className="p-6">
               <h3 className="text-2xl font-bold text-foreground mb-3">
-                Flexibilité totale
+                {t("results.flexibility.title")}
               </h3>
               <p className="text-muted-foreground">
-                Cours en présentiel ou en ligne, horaires adaptés : nous nous ajustons à votre emploi du temps pour un accompagnement optimal.
+                {t("results.flexibility.description")}
               </p>
             </div>
           </Card>

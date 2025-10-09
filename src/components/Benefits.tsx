@@ -1,28 +1,31 @@
 import { BookOpen, Users, TrendingUp, Award } from "lucide-react";
 import { Card } from "./ui/card";
 import studentTutoringImage from "@/assets/student-tutoring-teen.jpg";
+import { useTranslation } from "react-i18next";
 
 const Benefits = () => {
+  const { t } = useTranslation();
+  
   const benefits = [
     {
       icon: Users,
-      title: "Suivi personnalisé",
-      description: "Chaque élève bénéficie d'un accompagnement adapté à ses besoins et son rythme d'apprentissage.",
+      title: t("benefits.personalizedSupport.title"),
+      description: t("benefits.personalizedSupport.description"),
     },
     {
       icon: BookOpen,
-      title: "Pédagogie innovante",
-      description: "Méthodes d'enseignement modernes et interactives qui rendent l'apprentissage plus efficace et agréable.",
+      title: t("benefits.innovativePedagogy.title"),
+      description: t("benefits.innovativePedagogy.description"),
     },
     {
       icon: TrendingUp,
-      title: "Progression rapide",
-      description: "Amélioration moyenne de 2.5 points en 3 mois grâce à notre approche ciblée et motivante.",
+      title: t("benefits.rapidProgress.title"),
+      description: t("benefits.rapidProgress.description"),
     },
     {
       icon: Award,
-      title: "Professeurs certifiés",
-      description: "Enseignants qualifiés et expérimentés, passionnés par la transmission du savoir.",
+      title: t("benefits.certifiedTeachers.title"),
+      description: t("benefits.certifiedTeachers.description"),
     },
   ];
 
@@ -31,10 +34,10 @@ const Benefits = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Pourquoi nous choisir ?
+            {t("benefits.title")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Une approche unique qui transforme les difficultés en réussites
+            {t("benefits.subtitle")}
           </p>
         </div>
 

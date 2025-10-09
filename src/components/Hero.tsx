@@ -1,8 +1,11 @@
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 import heroImage from "@/assets/hero-students.jpg";
+import { useTranslation } from "react-i18next";
 
 const Hero = () => {
+  const { t } = useTranslation();
+  
   return (
     <section id="accueil" className="relative min-h-screen flex items-center pt-20">
       <div className="absolute inset-0 z-0">
@@ -19,21 +22,21 @@ const Hero = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-full mb-8">
             <Sparkles className="h-5 w-5" />
-            <span className="font-medium">Plateforme d'apprentissage en ligne</span>
+            <span className="font-medium">{t("hero.badge")}</span>
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
-            La plateforme qui booste vos résultats scolaires de la 6ème à la terminale
+            {t("hero.title")}
           </h1>
           
           <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-lg px-8 py-6 rounded-lg mb-6">
-            Commencer l'essai gratuit
+            {t("hero.cta")}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
 
           <div className="flex items-center gap-2 text-white">
             <span className="text-xl">🇩🇿</span>
-            <span className="text-base">Programmes officiels de l'éducation nationale algérienne</span>
+            <span className="text-base">{t("hero.programs")}</span>
           </div>
         </div>
       </div>

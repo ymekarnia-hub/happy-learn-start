@@ -1,49 +1,52 @@
 import { Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { useTranslation } from "react-i18next";
 
 const Pricing = () => {
+  const { t } = useTranslation();
+  
   const plans = [
     {
-      name: "Découverte",
-      price: "2 990 DA",
-      period: "/mois",
-      description: "Parfait pour débuter",
+      name: t("pricing.discovery.name"),
+      price: t("pricing.discovery.price"),
+      period: t("pricing.discovery.period"),
+      description: t("pricing.discovery.description"),
       features: [
-        "Accès à 3 matières",
-        "100+ exercices interactifs",
-        "Suivi de progression",
-        "Support par email",
+        t("pricing.discovery.features.subjects"),
+        t("pricing.discovery.features.exercises"),
+        t("pricing.discovery.features.tracking"),
+        t("pricing.discovery.features.support"),
       ],
       highlighted: false,
     },
     {
-      name: "Régulier",
-      price: "4 990 DA",
-      period: "/mois",
-      description: "Le plus populaire",
+      name: t("pricing.regular.name"),
+      price: t("pricing.regular.price"),
+      period: t("pricing.regular.period"),
+      description: t("pricing.regular.description"),
       features: [
-        "Accès à toutes les matières",
-        "500+ exercices interactifs",
-        "Vidéos de cours",
-        "Suivi personnalisé",
-        "Support prioritaire",
-        "Examens blancs",
+        t("pricing.regular.features.allSubjects"),
+        t("pricing.regular.features.exercises"),
+        t("pricing.regular.features.videos"),
+        t("pricing.regular.features.tracking"),
+        t("pricing.regular.features.priority"),
+        t("pricing.regular.features.exams"),
       ],
       highlighted: true,
     },
     {
-      name: "Intensif",
-      price: "7 990 DA",
-      period: "/mois",
-      description: "Pour une préparation complète",
+      name: t("pricing.intensive.name"),
+      price: t("pricing.intensive.price"),
+      period: t("pricing.intensive.period"),
+      description: t("pricing.intensive.description"),
       features: [
-        "Tout du plan Régulier",
-        "Cours en direct chaque semaine",
-        "Correction personnalisée",
-        "Révisions avant examens",
-        "Accès illimité 24/7",
-        "Garantie résultats",
+        t("pricing.intensive.features.everything"),
+        t("pricing.intensive.features.liveCourses"),
+        t("pricing.intensive.features.correction"),
+        t("pricing.intensive.features.revision"),
+        t("pricing.intensive.features.unlimited"),
+        t("pricing.intensive.features.guarantee"),
       ],
       highlighted: false,
     },
@@ -54,10 +57,10 @@ const Pricing = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Découvrir les Formules
+            {t("pricing.title")}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Choisissez la formule qui correspond le mieux à vos besoins et à votre budget
+            {t("pricing.subtitle")}
           </p>
         </div>
 
@@ -74,7 +77,7 @@ const Pricing = () => {
               {plan.highlighted && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
                   <span className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-1 rounded-full text-sm font-bold">
-                    POPULAIRE
+                    {t("pricing.popular")}
                   </span>
                 </div>
               )}
@@ -104,14 +107,14 @@ const Pricing = () => {
                     : "bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                Choisir {plan.name}
+                {t("pricing.choose")} {plan.name}
               </Button>
             </Card>
           ))}
         </div>
 
         <p className="text-center text-gray-600 mt-8">
-          Crédit d'impôt de 50% applicable sur tous nos services
+          {t("pricing.taxCredit")}
         </p>
       </div>
     </section>

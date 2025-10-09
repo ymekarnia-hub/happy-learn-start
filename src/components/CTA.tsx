@@ -1,8 +1,11 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import studentsImage from "@/assets/students-success.jpg";
+import { useTranslation } from "react-i18next";
 
 const CTA = () => {
+  const { t } = useTranslation();
+  
   return (
     <section id="cta" className="relative py-20 overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -17,17 +20,17 @@ const CTA = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Prêt à commencer ton parcours vers la réussite ?
+            {t("cta.title")}
           </h2>
           <p className="text-xl text-white/90 mb-8">
-            Rejoins des milliers d'élèves qui progressent chaque jour avec nos cours en ligne
+            {t("cta.subtitle")}
           </p>
           <Button className="bg-white text-blue-700 hover:bg-gray-100 font-bold text-lg px-8 py-6 rounded-lg">
-            Commencer l'essai gratuit
+            {t("cta.button")}
             <ArrowRight className="ml-2" />
           </Button>
           <p className="text-white/80 mt-4">
-            Sans engagement • 7 jours gratuits • Annulation à tout moment
+            {t("cta.noCommitment")}
           </p>
         </div>
       </div>

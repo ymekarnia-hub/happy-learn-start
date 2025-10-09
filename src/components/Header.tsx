@@ -5,12 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const Header = () => {
+  const { t, i18n } = useTranslation();
   const [session, setSession] = useState<Session | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLangOpen, setIsLangOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState<"fr" | "ar">("fr");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,18 +46,9 @@ const Header = () => {
   };
 
   const changeLanguage = (lang: "fr" | "ar") => {
-    setCurrentLang(lang);
-    
-    // Trigger translation by manipulating URL hash
-    const currentPath = window.location.pathname + window.location.search;
-    if (lang === "ar") {
-      window.location.href = `https://translate.google.com/translate?sl=fr&tl=ar&u=${encodeURIComponent(window.location.href)}`;
-    } else {
-      // Reload to French (original)
-      if (window.location.hostname.includes('translate.google')) {
-        window.location.href = window.location.href.split('&u=')[1] || '/';
-      }
-    }
+    i18n.changeLanguage(lang);
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = lang;
   };
 
   return (
@@ -69,7 +60,7 @@ const Header = () => {
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl text-gray-900 font-bold">AcadémiePlus</span>
+            <span className="text-xl text-gray-900 font-bold">{t("header.logo")}</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -78,21 +69,21 @@ const Header = () => {
               onClick={() => scrollToSection("pricing")}
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6"
             >
-              Découvrir les formules
+              {t("header.discoverPlans")}
             </Button>
 
             <a
-              href="tel:023210000"
+              href={`tel:${t("header.phone").replace(/\s/g, "")}`}
               className="flex items-center gap-2 text-gray-900 font-medium hover:text-blue-600 transition-colors px-4"
             >
               <Phone className="h-5 w-5 text-pink-500" />
-              023 21 00 00
+              {t("header.phone")}
             </a>
 
             {session ? (
               <Button variant="outline" onClick={handleLogout} className="font-medium">
                 <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
+                {t("header.logout")}
               </Button>
             ) : (
               <Button
@@ -100,13 +91,13 @@ const Header = () => {
                 variant="ghost"
                 className="text-gray-900 font-medium hover:text-blue-600"
               >
-                Se connecter
+                {t("header.login")}
               </Button>
             )}
 
             {!session && (
               <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6">
-                Essai gratuit
+                {t("header.freeTrial")}
               </Button>
             )}
 
@@ -115,7 +106,7 @@ const Header = () => {
               <button
                 onClick={() => changeLanguage("fr")}
                 className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                  currentLang === "fr" ? "bg-blue-50" : "hover:bg-gray-100"
+                  i18n.language === "fr" ? "bg-blue-50" : "hover:bg-gray-100"
                 }`}
               >
                 <span className="text-lg">🇫🇷</span>
@@ -124,7 +115,7 @@ const Header = () => {
               <button
                 onClick={() => changeLanguage("ar")}
                 className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                  currentLang === "ar" ? "bg-blue-50" : "hover:bg-gray-100"
+                  i18n.language === "ar" ? "bg-blue-50" : "hover:bg-gray-100"
                 }`}
               >
                 <span className="text-lg">🇩🇿</span>
@@ -149,33 +140,33 @@ const Header = () => {
               onClick={() => scrollToSection("pricing")}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold"
             >
-              Découvrir les formules
+              {t("header.discoverPlans")}
             </Button>
 
             <a
-              href="tel:023210000"
+              href={`tel:${t("header.phone").replace(/\s/g, "")}`}
               className="block text-center text-xl text-gray-900 font-bold hover:text-blue-600 py-2"
             >
-              📞 023 21 00 00
+              📞 {t("header.phone")}
             </a>
 
             {session ? (
               <Button variant="outline" onClick={handleLogout} className="w-full font-bold">
                 <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
+                {t("header.logout")}
               </Button>
             ) : (
               <Button
                 onClick={() => navigate("/auth")}
                 className="w-full text-xl text-gray-900 font-bold bg-transparent hover:bg-gray-100"
               >
-                Se connecter
+                {t("header.login")}
               </Button>
             )}
 
             {!session && (
               <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold">
-                Essai gratuit
+                {t("header.freeTrial")}
               </Button>
             )}
 
@@ -183,7 +174,7 @@ const Header = () => {
               <button
                 onClick={() => changeLanguage("fr")}
                 className={`flex-1 py-2 rounded-lg border ${
-                  currentLang === "fr" ? "bg-blue-50 border-blue-600" : "border-gray-200"
+                  i18n.language === "fr" ? "bg-blue-50 border-blue-600" : "border-gray-200"
                 }`}
               >
                 🇫🇷 Français
@@ -191,7 +182,7 @@ const Header = () => {
               <button
                 onClick={() => changeLanguage("ar")}
                 className={`flex-1 py-2 rounded-lg border ${
-                  currentLang === "ar" ? "bg-blue-50 border-blue-600" : "border-gray-200"
+                  i18n.language === "ar" ? "bg-blue-50 border-blue-600" : "border-gray-200"
                 }`}
               >
                 🇩🇿 العربية

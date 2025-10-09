@@ -4,48 +4,43 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useTranslation } from "react-i18next";
 
 const FAQ = () => {
+  const { t } = useTranslation();
+  
   const faqs = [
     {
-      question: "Comment fonctionne la plateforme de cours en ligne ?",
-      answer:
-        "Notre plateforme vous donne accès 24h/24 et 7j/7 à des cours vidéo de qualité, des exercices interactifs avec correction automatique, et un suivi personnalisé de votre progression. Vous pouvez apprendre à votre rythme depuis n'importe quel appareil.",
+      question: t("faq.questions.howItWorks.question"),
+      answer: t("faq.questions.howItWorks.answer"),
     },
     {
-      question: "Quelles matières sont disponibles ?",
-      answer:
-        "Nous couvrons toutes les matières principales : Mathématiques, Physique, Sciences Naturelles, Français, Arabe, Anglais, Histoire-Géographie, et plus encore. Les contenus suivent strictement les programmes officiels de l'éducation nationale algérienne.",
+      question: t("faq.questions.subjects.question"),
+      answer: t("faq.questions.subjects.answer"),
     },
     {
-      question: "Puis-je essayer gratuitement avant de m'abonner ?",
-      answer:
-        "Oui ! Nous offrons un essai gratuit de 7 jours pour que vous puissiez explorer la plateforme, accéder aux cours et exercices, et voir si notre méthode vous convient avant de vous engager.",
+      question: t("faq.questions.freeTrial.question"),
+      answer: t("faq.questions.freeTrial.answer"),
     },
     {
-      question: "Comment puis-je suivre ma progression ?",
-      answer:
-        "Chaque élève dispose d'un tableau de bord personnel qui affiche sa progression dans chaque matière, ses scores aux exercices, le temps passé sur la plateforme, et des recommandations personnalisées pour améliorer ses points faibles.",
+      question: t("faq.questions.tracking.question"),
+      answer: t("faq.questions.tracking.answer"),
     },
     {
-      question: "Y a-t-il un support en cas de questions ?",
-      answer:
-        "Absolument ! Notre équipe pédagogique est disponible par email et chat pour répondre à toutes vos questions. Les abonnés Premium et Intensif bénéficient également d'un support prioritaire et de sessions de tutorat en direct.",
+      question: t("faq.questions.support.question"),
+      answer: t("faq.questions.support.answer"),
     },
     {
-      question: "Les cours sont-ils conformes au programme algérien ?",
-      answer:
-        "Oui, tous nos contenus sont créés en stricte conformité avec les programmes officiels du ministère de l'Éducation nationale algérien. Nos cours sont élaborés par des enseignants certifiés et expérimentés.",
+      question: t("faq.questions.algerian.question"),
+      answer: t("faq.questions.algerian.answer"),
     },
     {
-      question: "Puis-je changer de formule à tout moment ?",
-      answer:
-        "Oui, vous pouvez passer à une formule supérieure ou inférieure à tout moment. Le changement prendra effet immédiatement et sera pris en compte sur votre prochaine facturation.",
+      question: t("faq.questions.changePlan.question"),
+      answer: t("faq.questions.changePlan.answer"),
     },
     {
-      question: "Comment fonctionne le crédit d'impôt ?",
-      answer:
-        "En tant que service de soutien scolaire, nos cours ouvrent droit à un crédit d'impôt de 50% du montant payé. Nous vous fournissons automatiquement une attestation fiscale à la fin de l'année pour bénéficier de cet avantage.",
+      question: t("faq.questions.taxCredit.question"),
+      answer: t("faq.questions.taxCredit.answer"),
     },
   ];
 
@@ -54,10 +49,10 @@ const FAQ = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Questions Fréquentes
+            {t("faq.title")}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Tout ce que vous devez savoir sur nos cours en ligne
+            {t("faq.subtitle")}
           </p>
         </div>
 
