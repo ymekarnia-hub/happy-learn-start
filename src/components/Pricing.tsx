@@ -127,11 +127,14 @@ const Pricing = () => {
                   )}
                 </div>
                 {plan.immediatePayment && (
-                  <div className="mt-3">
-                    <p className="text-sm text-gray-600">
-                      Paiement immédiat de <span className="font-bold text-gray-900">{plan.immediatePayment}</span>
+                  <div className="mt-4 p-3 bg-blue-50 border-2 border-blue-600 rounded-lg">
+                    <p className="text-sm font-semibold text-blue-900 mb-1">
+                      Paiement immédiat de
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-2xl font-bold text-blue-600">
+                      {plan.immediatePayment}
+                    </p>
+                    <p className="text-xs text-blue-700 mt-1">
                       {plan.paymentPeriod}
                     </p>
                   </div>
