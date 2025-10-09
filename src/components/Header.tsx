@@ -48,19 +48,16 @@ const Header = () => {
   const changeLanguage = (lang: "fr" | "ar") => {
     setCurrentLang(lang);
     
-    // Wait for Google Translate to be ready
-    const tryChangeLanguage = (attempts = 0) => {
-      const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-      if (select) {
-        select.value = lang;
-        select.dispatchEvent(new Event('change'));
-      } else if (attempts < 10) {
-        // Retry after 300ms if widget not ready yet
-        setTimeout(() => tryChangeLanguage(attempts + 1), 300);
+    // Trigger translation by manipulating URL hash
+    const currentPath = window.location.pathname + window.location.search;
+    if (lang === "ar") {
+      window.location.href = `https://translate.google.com/translate?sl=fr&tl=ar&u=${encodeURIComponent(window.location.href)}`;
+    } else {
+      // Reload to French (original)
+      if (window.location.hostname.includes('translate.google')) {
+        window.location.href = window.location.href.split('&u=')[1] || '/';
       }
-    };
-    
-    tryChangeLanguage();
+    }
   };
 
   return (
@@ -134,8 +131,6 @@ const Header = () => {
                 <span className="text-sm font-medium">AR</span>
               </button>
             </div>
-            {/* Hidden Google Translate Element */}
-            <div id="google_translate_element" style={{ display: 'none' }}></div>
           </div>
 
           {/* Mobile Menu Button */}
