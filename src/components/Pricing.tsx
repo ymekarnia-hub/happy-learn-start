@@ -10,6 +10,9 @@ const Pricing = () => {
   const { t } = useTranslation();
   const [isFamily, setIsFamily] = useState(false);
   
+  // Calcul de l'année suivante
+  const nextYear = new Date().getFullYear() + 1;
+  
   // Calcul du prix pour le plan Régulier
   const basePrice = 2500;
   const discountedPrice = basePrice * 0.7; // 30% de réduction = 1750 DA
@@ -37,7 +40,7 @@ const Pricing = () => {
       period: "/Mois",
       description: t("pricing.regular.description"),
       immediatePayment: `${(regularPrice * 10).toLocaleString('fr-DZ')} DA`,
-      paymentPeriod: "sur 10 mois (jusqu'au 31 juillet année=N+1)",
+      paymentPeriod: `sur 10 mois (jusqu'au 31 juillet ${nextYear})`,
       features: [
         t("pricing.regular.features.allSubjects"),
         t("pricing.regular.features.exercises"),
