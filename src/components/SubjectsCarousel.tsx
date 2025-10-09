@@ -46,12 +46,12 @@ const SubjectsCarousel = () => {
       if (Math.abs(position1) >= scroll1.scrollWidth / 2) {
         position1 = 0;
       }
-      if (position2 >= scroll2.scrollWidth / 2) {
+      if (Math.abs(position2) >= scroll2.scrollWidth / 2) {
         position2 = 0;
       }
 
       scroll1.style.transform = `translateX(${position1}px)`;
-      scroll2.style.transform = `translateX(${-position2}px)`;
+      scroll2.style.transform = `translateX(${position2}px)`;
 
       animationId1 = requestAnimationFrame(animate);
     };
@@ -95,12 +95,12 @@ const SubjectsCarousel = () => {
               return (
                 <div
                   key={`${subject.name}-${index}`}
-                  className="flex-shrink-0 w-48 bg-white rounded-2xl shadow-md p-6 flex items-center gap-4 hover:shadow-lg transition-shadow"
+                  className="flex-shrink-0 w-32 bg-white rounded-xl shadow-md p-3 flex flex-col items-center gap-2 hover:shadow-lg transition-shadow"
                 >
-                  <div className={`w-12 h-12 ${subject.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                    <Icon className="w-6 h-6 text-white" />
+                  <div className={`w-10 h-10 ${subject.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="font-semibold text-gray-800">{subject.name}</span>
+                  <span className="font-medium text-gray-800 text-sm text-center leading-tight">{subject.name}</span>
                 </div>
               );
             })}
@@ -115,12 +115,12 @@ const SubjectsCarousel = () => {
               return (
                 <div
                   key={`${subject.name}-${index}`}
-                  className="flex-shrink-0 w-48 bg-white rounded-2xl shadow-md p-6 flex items-center gap-4 hover:shadow-lg transition-shadow"
+                  className="flex-shrink-0 w-32 bg-white rounded-xl shadow-md p-3 flex flex-col items-center gap-2 hover:shadow-lg transition-shadow"
                 >
-                  <div className={`w-12 h-12 ${subject.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                    <Icon className="w-6 h-6 text-white" />
+                  <div className={`w-10 h-10 ${subject.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="font-semibold text-gray-800">{subject.name}</span>
+                  <span className="font-medium text-gray-800 text-sm text-center leading-tight">{subject.name}</span>
                 </div>
               );
             })}
