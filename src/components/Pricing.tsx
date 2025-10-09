@@ -108,13 +108,6 @@ const Pricing = () => {
                   : "border border-gray-200"
               } bg-white relative`}
             >
-              {plan.highlighted && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <span className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-1 rounded-full text-sm font-bold">
-                    Le plus populaire
-                  </span>
-                </div>
-              )}
 
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
