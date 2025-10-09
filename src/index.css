@@ -107,11 +107,18 @@ All colors MUST be HSL.
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+* {
+  @apply border-border;
+}
 
-  body {
-    @apply bg-background text-foreground;
-  }
+body {
+  @apply bg-background text-foreground;
+}
+
+html[lang="ar"],
+html[lang="ar"] body,
+html[lang="ar"] * {
+  direction: ltr !important;
+  text-align: left !important;
+}
 }
