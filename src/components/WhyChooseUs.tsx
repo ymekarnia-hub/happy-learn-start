@@ -44,23 +44,9 @@ const WhyChooseUs = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
-          {/* Left side - Image */}
-          <div className="relative order-2 lg:order-1">
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-              <img
-                src={studentsImage}
-                alt="Étudiants travaillant ensemble"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            {/* Decorative element */}
-            <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl -z-10"></div>
-            <div className="absolute -top-6 -left-6 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl -z-10"></div>
-          </div>
-
-          {/* Right side - Features */}
-          <div className="space-y-6 order-1 lg:order-2">
+        <div className="grid lg:grid-cols-2 gap-16 items-start max-w-7xl mx-auto">
+          {/* Left side - Features */}
+          <div className="space-y-6">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
@@ -80,6 +66,20 @@ const WhyChooseUs = () => {
                 </div>
               );
             })}
+          </div>
+
+          {/* Right side - Image */}
+          <div className="relative">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+              <img
+                src={studentsImage}
+                alt="Étudiants travaillant ensemble"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Decorative element */}
+            <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute -top-6 -left-6 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl -z-10"></div>
           </div>
         </div>
       </div>
