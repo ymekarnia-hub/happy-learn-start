@@ -13,8 +13,9 @@ const Pricing = () => {
   // Calcul du prix pour le plan Régulier
   const basePrice = 2500;
   const discountedPrice = basePrice * 0.7; // 30% de réduction = 1750 DA
-  const familyPrice = basePrice * 1.25; // +25% = 3125 DA
-  const regularPrice = isFamily ? familyPrice : discountedPrice;
+  const familyBasePrice = basePrice * 1.25; // +25% = 3125 DA
+  const familyDiscountedPrice = familyBasePrice * 0.7; // 30% de réduction = 2187.5 DA
+  const regularPrice = isFamily ? familyDiscountedPrice : discountedPrice;
 
   const plans = [
     {
