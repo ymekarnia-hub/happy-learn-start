@@ -1,6 +1,6 @@
 import { User, Brain, TrendingUp, GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import studentsImage from "@/assets/students-studying.jpg";
+import studentsImage from "@/assets/students-studying-new.jpg";
 
 const WhyChooseUs = () => {
   const { t } = useTranslation();
