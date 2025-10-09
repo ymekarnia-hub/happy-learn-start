@@ -1,17 +1,27 @@
 import { Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const Pricing = () => {
   const { t } = useTranslation();
+  const [isFamily, setIsFamily] = useState(false);
   
+  // Calcul du prix pour le plan Régulier
+  const basePrice = 2500;
+  const discountedPrice = basePrice * 0.7; // 30% de réduction = 1750 DA
+  const familyPrice = basePrice * 1.25; // +25% = 3125 DA
+  const regularPrice = isFamily ? familyPrice : discountedPrice;
+
   const plans = [
     {
-      name: t("pricing.discovery.name"),
-      price: t("pricing.discovery.price"),
-      period: t("pricing.discovery.period"),
-      description: t("pricing.discovery.description"),
+      name: "Formule découverte",
+      price: "Gratuit",
+      period: "",
+      description: "",
       features: [
         t("pricing.discovery.features.subjects"),
         t("pricing.discovery.features.exercises"),
@@ -21,9 +31,9 @@ const Pricing = () => {
       highlighted: false,
     },
     {
-      name: t("pricing.regular.name"),
-      price: t("pricing.regular.price"),
-      period: t("pricing.regular.period"),
+      name: "Formule année scolaire",
+      price: `${regularPrice.toLocaleString('fr-DZ')} DA`,
+      period: "/Mois",
       description: t("pricing.regular.description"),
       features: [
         t("pricing.regular.features.allSubjects"),
@@ -64,6 +74,27 @@ const Pricing = () => {
           </p>
         </div>
 
+        {/* Switch pour 1 enfant vs Famille */}
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <Label 
+            htmlFor="family-switch" 
+            className={`text-lg font-semibold cursor-pointer transition-colors ${!isFamily ? 'text-blue-600' : 'text-gray-500'}`}
+          >
+            1 Enfant
+          </Label>
+          <Switch
+            id="family-switch"
+            checked={isFamily}
+            onCheckedChange={setIsFamily}
+          />
+          <Label 
+            htmlFor="family-switch" 
+            className={`text-lg font-semibold cursor-pointer transition-colors ${isFamily ? 'text-blue-600' : 'text-gray-500'}`}
+          >
+            Famille (2 à 3 enfants)
+          </Label>
+        </div>
+
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, index) => (
             <Card
@@ -84,10 +115,12 @@ const Pricing = () => {
 
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                {plan.description && (
+                  <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                )}
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                  <span className="text-gray-600">{plan.period}</span>
+                  {plan.period && <span className="text-gray-600">{plan.period}</span>}
                 </div>
               </div>
 
