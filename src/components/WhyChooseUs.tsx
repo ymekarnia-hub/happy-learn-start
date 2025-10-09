@@ -52,7 +52,7 @@ const WhyChooseUs = () => {
               return (
                 <div
                   key={index}
-                  className="flex gap-4 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                  className="flex gap-4 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:scale-105"
                 >
                   <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm`}>
                     <Icon className="w-6 h-6 text-white" />
