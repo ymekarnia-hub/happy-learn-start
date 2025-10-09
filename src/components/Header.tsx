@@ -1,4 +1,4 @@
-import { GraduationCap, LogOut, Globe, Menu, X } from "lucide-react";
+import { GraduationCap, LogOut, Globe, Menu, X, Phone } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,84 +46,76 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-      <div className="container mx-auto px-4 py-3">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <GraduationCap className="h-8 w-8 text-blue-600" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <GraduationCap className="h-6 w-6 text-white" />
+            </div>
             <span className="text-xl text-gray-900 font-bold">AcadémiePlus</span>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3">
             <Button
               onClick={() => scrollToSection("pricing")}
-              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6"
             >
               Découvrir les formules
             </Button>
 
             <a
               href="tel:023210000"
-              className="text-xl text-gray-900 font-bold hover:text-blue-600 transition-colors"
+              className="flex items-center gap-2 text-gray-900 font-medium hover:text-blue-600 transition-colors px-4"
             >
-              📞 023 21 00 00
+              <Phone className="h-5 w-5 text-pink-500" />
+              023 21 00 00
             </a>
 
             {session ? (
-              <Button variant="outline" onClick={handleLogout} className="font-bold">
+              <Button variant="outline" onClick={handleLogout} className="font-medium">
                 <LogOut className="h-4 w-4 mr-2" />
                 Déconnexion
               </Button>
             ) : (
               <Button
                 onClick={() => navigate("/auth")}
-                className="text-xl text-gray-900 font-bold bg-transparent hover:bg-gray-100"
+                variant="ghost"
+                className="text-gray-900 font-medium hover:text-blue-600"
               >
                 Se connecter
               </Button>
             )}
 
             {!session && (
-              <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6">
                 Essai gratuit
               </Button>
             )}
-          </div>
 
-          {/* Language Selector - Desktop */}
-          <div className="hidden lg:block relative ml-4">
-            <button
-              onClick={() => setIsLangOpen(!isLangOpen)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <Globe className="h-5 w-5 text-gray-700" />
-              <span className="text-lg">{currentLang === "fr" ? "🇫🇷" : "🇩🇿"}</span>
-            </button>
-
-            {isLangOpen && (
-              <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-[150px]">
-                <button
-                  onClick={() => {
-                    setCurrentLang("fr");
-                    setIsLangOpen(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
-                >
-                  🇫🇷 Français
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrentLang("ar");
-                    setIsLangOpen(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
-                >
-                  🇩🇿 العربية
-                </button>
-              </div>
-            )}
+            {/* Language Selector */}
+            <div className="flex items-center gap-2 ml-2">
+              <button
+                onClick={() => setCurrentLang("fr")}
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                  currentLang === "fr" ? "bg-blue-50" : "hover:bg-gray-100"
+                }`}
+              >
+                <span className="text-lg">🇫🇷</span>
+                <span className="text-sm font-medium">FR</span>
+              </button>
+              <button
+                onClick={() => setCurrentLang("ar")}
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                  currentLang === "ar" ? "bg-blue-50" : "hover:bg-gray-100"
+                }`}
+              >
+                <span className="text-lg">🇩🇿</span>
+                <span className="text-sm font-medium">AR</span>
+              </button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
