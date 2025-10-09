@@ -47,11 +47,20 @@ const Header = () => {
 
   const changeLanguage = (lang: "fr" | "ar") => {
     setCurrentLang(lang);
-    const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-    if (select) {
-      select.value = lang;
-      select.dispatchEvent(new Event('change'));
-    }
+    
+    // Wait for Google Translate to be ready
+    const tryChangeLanguage = (attempts = 0) => {
+      const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+      if (select) {
+        select.value = lang;
+        select.dispatchEvent(new Event('change'));
+      } else if (attempts < 10) {
+        // Retry after 300ms if widget not ready yet
+        setTimeout(() => tryChangeLanguage(attempts + 1), 300);
+      }
+    };
+    
+    tryChangeLanguage();
   };
 
   return (
