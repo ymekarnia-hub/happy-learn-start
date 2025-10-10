@@ -267,52 +267,41 @@ const Auth = () => {
                             // Auto-format with slashes
                             let formatted = cleaned.replace(/\//g, '');
                             
-                            // Limit total length to 8 digits (JJMMAAAA)
+                            // Limit to 8 digits max
                             if (formatted.length > 8) {
                               formatted = formatted.slice(0, 8);
                             }
                             
-                            // Validate and format day (01-31)
-                            if (formatted.length >= 1) {
-                              const firstDigit = parseInt(formatted[0]);
-                              if (firstDigit > 3) {
-                                return;
-                              }
-                            }
+                            // Add slashes automatically
                             if (formatted.length >= 2) {
-                              const day = parseInt(formatted.slice(0, 2));
-                              if (day === 0 || day > 31) {
-                                setDateError("Cette date n'est pas valide.");
-                                return;
-                              }
                               formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
                             }
-                            
-                            // Validate and format month (01-12)
-                            if (formatted.length >= 4) {
-                              const monthDigit = parseInt(formatted[3]);
-                              if (monthDigit > 1) {
-                                setDateError("Cette date n'est pas valide.");
-                                return;
-                              }
-                            }
                             if (formatted.length >= 5) {
-                              const month = parseInt(formatted.slice(3, 5));
-                              if (month === 0 || month > 12) {
-                                setDateError("Cette date n'est pas valide.");
-                                return;
-                              }
                               formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
                             }
                             
                             setDateInput(formatted);
                             setDateError("");
                             
-                            // Parse the date if complete (10 characters: JJ/MM/AAAA)
+                            // Only validate when date is complete (10 characters: JJ/MM/AAAA)
                             if (formatted.length === 10) {
                               const [day, month, year] = formatted.split('/').map(Number);
                               
-                              // Validate year is 4 digits and reasonable
+                              // Check if day is valid (01-31)
+                              if (day === 0 || day > 31) {
+                                setDateError("Cette date n'est pas valide.");
+                                setDateOfBirth(undefined);
+                                return;
+                              }
+                              
+                              // Check if month is valid (01-12)
+                              if (month === 0 || month > 12) {
+                                setDateError("Cette date n'est pas valide.");
+                                setDateOfBirth(undefined);
+                                return;
+                              }
+                              
+                              // Check if year is valid (1900 to current year)
                               if (year < 1900 || year > new Date().getFullYear()) {
                                 setDateError("Cette date n'est pas valide.");
                                 setDateOfBirth(undefined);
@@ -321,7 +310,7 @@ const Auth = () => {
                               
                               const date = new Date(year, month - 1, day);
                               
-                              // Validate the date
+                              // Validate the actual date (checks if the date exists, e.g., 31/02 doesn't exist)
                               if (isNaN(date.getTime()) || date.getDate() !== day || date.getMonth() !== month - 1) {
                                 setDateError("Cette date n'est pas valide.");
                                 setDateOfBirth(undefined);
