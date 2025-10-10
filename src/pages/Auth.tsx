@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, User } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -240,22 +240,28 @@ const Auth = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <Input
-                      type="text"
-                      placeholder="Prénom"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      className="bg-secondary/20 border-border"
-                      required
-                    />
-                    <Input
-                      type="text"
-                      placeholder="Nom"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      className="bg-secondary/20 border-border"
-                      required
-                    />
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                      <Input
+                        type="text"
+                        placeholder="Prénom"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="bg-secondary/20 border-2 border-red-500 pl-10"
+                        required
+                      />
+                    </div>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                      <Input
+                        type="text"
+                        placeholder="Nom"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="bg-secondary/20 border-2 border-red-500 pl-10"
+                        required
+                      />
+                    </div>
                   </div>
                   
                   <Input
@@ -293,10 +299,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="enfant" 
                           className={cn(
-                            "flex flex-col items-center justify-center h-32 px-4 rounded-lg border cursor-pointer transition-all",
+                            "flex flex-col items-center justify-center h-32 px-4 rounded-lg border-2 cursor-pointer transition-all",
                             profileType === "enfant" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-secondary/20 border-border hover:bg-secondary/30"
+                              ? "bg-primary text-primary-foreground border-primary shadow-lg" 
+                              : "bg-secondary/20 border-red-500 hover:bg-secondary/30"
                           )}
                         >
                           <RadioGroupItem value="enfant" id="enfant" className="sr-only" />
@@ -306,10 +312,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="parent" 
                           className={cn(
-                            "flex flex-col items-center justify-center h-32 px-4 rounded-lg border cursor-pointer transition-all",
+                            "flex flex-col items-center justify-center h-32 px-4 rounded-lg border-2 cursor-pointer transition-all",
                             profileType === "parent" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-secondary/20 border-border hover:bg-secondary/30"
+                              ? "bg-primary text-primary-foreground border-primary shadow-lg" 
+                              : "bg-secondary/20 border-red-500 hover:bg-secondary/30"
                           )}
                         >
                           <RadioGroupItem value="parent" id="parent" className="sr-only" />
@@ -327,10 +333,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="6eme" 
                           className={cn(
-                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "6eme" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-secondary/20 border-border hover:bg-secondary/30"
+                              ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                              : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
                           <RadioGroupItem value="6eme" id="6eme" className="sr-only" />
@@ -339,10 +345,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="7eme" 
                           className={cn(
-                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "7eme" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-secondary/20 border-border hover:bg-secondary/30"
+                              ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                              : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
                           <RadioGroupItem value="7eme" id="7eme" className="sr-only" />
@@ -351,10 +357,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="8eme" 
                           className={cn(
-                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "8eme" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-secondary/20 border-border hover:bg-secondary/30"
+                              ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                              : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
                           <RadioGroupItem value="8eme" id="8eme" className="sr-only" />
@@ -363,10 +369,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="9eme" 
                           className={cn(
-                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "9eme" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-secondary/20 border-border hover:bg-secondary/30"
+                              ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                              : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
                           <RadioGroupItem value="9eme" id="9eme" className="sr-only" />
@@ -375,10 +381,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="seconde" 
                           className={cn(
-                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "seconde" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                              ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                              : "bg-yellow-50 border-yellow-400 hover:bg-yellow-100 hover:border-yellow-500"
                           )}
                         >
                           <RadioGroupItem value="seconde" id="seconde" className="sr-only" />
@@ -387,10 +393,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="premiere" 
                           className={cn(
-                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "premiere" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                              ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                              : "bg-yellow-50 border-yellow-400 hover:bg-yellow-100 hover:border-yellow-500"
                           )}
                         >
                           <RadioGroupItem value="premiere" id="premiere" className="sr-only" />
@@ -399,10 +405,10 @@ const Auth = () => {
                         <Label 
                           htmlFor="terminale" 
                           className={cn(
-                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "terminale" 
-                              ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                              ? "bg-primary text-primary-foreground border-primary shadow-md" 
+                              : "bg-yellow-50 border-yellow-400 hover:bg-yellow-100 hover:border-yellow-500"
                           )}
                         >
                           <RadioGroupItem value="terminale" id="terminale" className="sr-only" />
