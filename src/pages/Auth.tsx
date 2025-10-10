@@ -9,11 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { Eye, EyeOff, User, Baby } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
+import iconStudent from "@/assets/icon-student.png";
+import iconParent from "@/assets/icon-parent.png";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -244,7 +246,7 @@ const Auth = () => {
                           )}
                         >
                           <RadioGroupItem value="enfant" id="enfant" className="sr-only" />
-                          <Baby className="h-12 w-12 mb-2" />
+                          <img src={iconStudent} alt="Élève" className="h-16 w-16 mb-2 object-contain" />
                           <span className="font-semibold">Élève</span>
                         </Label>
                         <Label 
@@ -257,7 +259,7 @@ const Auth = () => {
                           )}
                         >
                           <RadioGroupItem value="parent" id="parent" className="sr-only" />
-                          <User className="h-12 w-12 mb-2" />
+                          <img src={iconParent} alt="Parent" className="h-16 w-16 mb-2 object-contain" />
                           <span className="font-semibold">Parent</span>
                         </Label>
                       </div>
