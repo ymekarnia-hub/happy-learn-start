@@ -245,7 +245,7 @@ const Auth = () => {
                         >
                           <RadioGroupItem value="enfant" id="enfant" className="sr-only" />
                           <Baby className="h-12 w-12 mb-2" />
-                          <span className="font-semibold">Enfant</span>
+                          <span className="font-semibold">Élève</span>
                         </Label>
                         <Label 
                           htmlFor="parent" 
