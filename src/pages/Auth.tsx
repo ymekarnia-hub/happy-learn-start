@@ -22,6 +22,7 @@ const Auth = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState<Date>();
+  const [dateInput, setDateInput] = useState("");
   const [classLevel, setClassLevel] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -236,17 +237,22 @@ const Auth = () => {
                       <Input
                         type="text"
                         placeholder="JJ/MM/AAAA"
-                        value={dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : ""}
+                        value={dateInput}
                         onChange={(e) => {
                           const value = e.target.value;
+                          // Only allow numbers and slashes
+                          const cleaned = value.replace(/[^\d/]/g, '');
+                          
                           // Auto-format with slashes
-                          let formatted = value.replace(/\D/g, '');
+                          let formatted = cleaned.replace(/\//g, '');
                           if (formatted.length >= 2) {
                             formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
                           }
                           if (formatted.length >= 5) {
                             formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
                           }
+                          
+                          setDateInput(formatted);
                           
                           // Parse the date if complete
                           if (formatted.length === 10) {
@@ -273,7 +279,12 @@ const Auth = () => {
                           <Calendar
                             mode="single"
                             selected={dateOfBirth}
-                            onSelect={setDateOfBirth}
+                            onSelect={(date) => {
+                              setDateOfBirth(date);
+                              if (date) {
+                                setDateInput(format(date, "dd/MM/yyyy"));
+                              }
+                            }}
                             disabled={(date) =>
                               date > new Date() || date < new Date("1900-01-01")
                             }
