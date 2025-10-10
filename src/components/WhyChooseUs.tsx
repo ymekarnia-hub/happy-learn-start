@@ -8,26 +8,26 @@ const WhyChooseUs = () => {
   const features = [
     {
       icon: User,
-      title: "Suivi personnalisé",
-      description: "Grâce à un tableau de bord détaillé, les élèves et les parents peuvent suivre l'évolution des apprentissages, accéder à des outils d'aide aux devoirs et bénéficier d'un suivi pédagogique personnalisé.",
+      titleKey: "whyChooseUs.personalizedSupport.title",
+      descriptionKey: "whyChooseUs.personalizedSupport.description",
       color: "bg-blue-500"
     },
     {
       icon: Brain,
-      title: "L'intelligence artificielle au cœur de la pédagogie",
-      description: "Notre plateforme intègre les avancées de l'IA pour proposer des contenus adaptés et sur-mesure, améliorer la compréhension et accompagner chaque élève dans sa progression.",
+      titleKey: "whyChooseUs.aiPedagogy.title",
+      descriptionKey: "whyChooseUs.aiPedagogy.description",
       color: "bg-orange-500"
     },
     {
       icon: TrendingUp,
-      title: "Progression rapide",
-      description: "Des cours et exercices conçus pour renforcer les connaissances, combler les lacunes et faire évoluer les résultats en un temps record.",
+      titleKey: "whyChooseUs.rapidProgress.title",
+      descriptionKey: "whyChooseUs.rapidProgress.description",
       color: "bg-blue-500"
     },
     {
       icon: GraduationCap,
-      title: "Professeurs certifiés",
-      description: "Enseignants qualifiés et expérimentés, passionnés par la transmission du savoir.",
+      titleKey: "whyChooseUs.certifiedTeachers.title",
+      descriptionKey: "whyChooseUs.certifiedTeachers.description",
       color: "bg-orange-500"
     }
   ];
@@ -37,10 +37,10 @@ const WhyChooseUs = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Pourquoi nous choisir ?
+            {t("whyChooseUs.title")}
           </h2>
           <p className="text-gray-600 text-xl max-w-2xl mx-auto">
-            Une approche unique qui transforme les difficultés en réussites
+            {t("whyChooseUs.subtitle")}
           </p>
         </div>
 
@@ -58,9 +58,9 @@ const WhyChooseUs = () => {
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-gray-900 mb-1">{feature.title}</h3>
+                    <h3 className="font-bold text-lg text-gray-900 mb-1">{t(feature.titleKey)}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      {feature.description}
+                      {t(feature.descriptionKey)}
                     </p>
                   </div>
                 </div>

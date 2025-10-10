@@ -13,25 +13,45 @@
     "cta": "Commencer",
     "programs": "Programmes officiels de l'éducation nationale algérienne"
   },
-  "benefits": {
+  "whyChooseUs": {
     "title": "Pourquoi nous choisir ?",
     "subtitle": "Une approche unique qui transforme les difficultés en réussites",
     "personalizedSupport": {
       "title": "Suivi personnalisé",
-      "description": "Chaque élève bénéficie d'un accompagnement adapté à ses besoins et son rythme d'apprentissage."
+      "description": "Grâce à un tableau de bord détaillé, les élèves et les parents peuvent suivre l'évolution des apprentissages, accéder à des outils d'aide aux devoirs et bénéficier d'un suivi pédagogique personnalisé."
     },
-    "innovativePedagogy": {
-      "title": "Pédagogie innovante",
-      "description": "Méthodes d'enseignement modernes et interactives qui rendent l'apprentissage plus efficace et agréable."
+    "aiPedagogy": {
+      "title": "L'intelligence artificielle au cœur de la pédagogie",
+      "description": "Notre plateforme intègre les avancées de l'IA pour proposer des contenus adaptés et sur-mesure, améliorer la compréhension et accompagner chaque élève dans sa progression."
     },
     "rapidProgress": {
       "title": "Progression rapide",
-      "description": "Amélioration moyenne de 2.5 points en 3 mois grâce à notre approche ciblée et motivante."
+      "description": "Des cours et exercices conçus pour renforcer les connaissances, combler les lacunes et faire évoluer les résultats en un temps record."
     },
     "certifiedTeachers": {
       "title": "Professeurs certifiés",
       "description": "Enseignants qualifiés et expérimentés, passionnés par la transmission du savoir."
     }
+  },
+  "subjects": {
+    "title": "Toutes les matières de la 6ème à la Terminale",
+    "features": {
+      "downloadablePdf": "Cours téléchargeables en PDF",
+      "examPrep": "Préparation au Brevet et au Bac",
+      "exercises": "Cours, exercices & quiz corrigés, fiches, flashcards ..."
+    },
+    "math": "Mathématiques",
+    "physics": "Physique",
+    "french": "Français",
+    "arabic": "Arabe",
+    "history": "Histoire",
+    "chemistry": "Chimie",
+    "english": "Anglais",
+    "naturalSciences": "Sciences Naturelles",
+    "geography": "Géographie",
+    "philosophy": "Philosophie",
+    "islamicEducation": "Éducation Islamique",
+    "computerScience": "Informatique"
   },
   "results": {
     "title": "Des résultats qui parlent",
@@ -65,11 +85,11 @@
       "description": "Cours en présentiel ou en ligne, horaires adaptés : nous nous ajustons à votre emploi du temps pour un accompagnement optimal."
     }
   },
-  "expertise": {
+  "excellence": {
     "title": "Une Pédagogie d'Excellence, Validée par l'Expérience",
     "subtitle": "La garantie d'un contenu fiable et efficace",
-    "intro": "Chez <strong>Excellence Scolaire</strong>, la qualité de l'enseignement est notre priorité absolue. C'est pourquoi tous nos cours, fiches de révision et exercices sont élaborés par une équipe d'enseignants certifiés et passionnés, dotés d'une expérience pédagogique de plus de 20 ans dans l'Éducation Nationale.",
-    "content": "Leur expertise garantit un contenu non seulement conforme aux programmes officiels, mais aussi adapté aux besoins réels des élèves, avec des méthodes qui ont fait leurs preuves sur le terrain. Nous mettons leur savoir-faire au service de la réussite de votre enfant.",
+    "intro1": "Chez <strong>AcadémiePlus</strong>, la qualité de l'enseignement est notre priorité absolue. C'est pourquoi tous nos cours, fiches de révision et exercices sont élaborés par une équipe d'enseignants certifiés et passionnés, dotés d'une expérience pédagogique de plus de 20 ans dans l'Éducation Nationale.",
+    "intro2": "Leur expertise garantit un contenu non seulement conforme aux programmes officiels, mais aussi adapté aux besoins réels des élèves, avec des méthodes qui ont fait leurs preuves sur le terrain. Nous mettons leur savoir-faire au service de la réussite de votre enfant.",
     "certifiedExpertise": {
       "title": "Expertise Certifiée",
       "description": "Une équipe d'enseignants diplômés de l'Éducation Nationale"

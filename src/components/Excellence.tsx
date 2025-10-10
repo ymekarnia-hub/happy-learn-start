@@ -1,25 +1,28 @@
 import { GraduationCap, Calendar, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import teachersImage from "@/assets/teachers-team.jpg";
+import { useTranslation } from "react-i18next";
 
 const Excellence = () => {
+  const { t } = useTranslation();
+  
   const features = [
     {
       icon: GraduationCap,
-      title: "Expertise Certifiée",
-      description: "Une équipe d'enseignants diplômés de l'Éducation Nationale",
+      titleKey: "excellence.certifiedExpertise.title",
+      descriptionKey: "excellence.certifiedExpertise.description",
       color: "bg-blue-500"
     },
     {
       icon: Calendar,
-      title: "Plus de 20 ans d'expérience",
-      description: "Des pédagogues chevronnés qui connaissent les défis de chaque niveau",
+      titleKey: "excellence.experience.title",
+      descriptionKey: "excellence.experience.description",
       color: "bg-blue-500"
     },
     {
       icon: Shield,
-      title: "Contenu Validé",
-      description: "Des supports pédagogiques rigoureusement élaborés et testés",
+      titleKey: "excellence.validatedContent.title",
+      descriptionKey: "excellence.validatedContent.description",
       color: "bg-blue-500"
     }
   ];
@@ -30,10 +33,10 @@ const Excellence = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Une Pédagogie d'Excellence, Validée par l'Expérience
+            {t("excellence.title")}
           </h2>
           <p className="text-gray-600 text-lg">
-            La garantie d'un contenu fiable et efficace
+            {t("excellence.subtitle")}
           </p>
         </div>
 
@@ -41,11 +44,9 @@ const Excellence = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto mb-16">
           {/* Left side - Text */}
           <div className="space-y-4">
+            <p className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: t("excellence.intro1") }} />
             <p className="text-gray-700 leading-relaxed">
-              Chez <span className="font-bold text-blue-600">AcadémiePlus</span>, la qualité de l'enseignement est notre priorité absolue. C'est pourquoi tous nos cours, fiches de révision et exercices sont élaborés par une équipe d'enseignants certifiés et passionnés, dotés d'une expérience pédagogique de plus de 20 ans dans l'Éducation Nationale.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              Leur expertise garantit un contenu non seulement conforme aux programmes officiels, mais aussi adapté aux besoins réels des élèves, avec des méthodes qui ont fait leurs preuves sur le terrain. Nous mettons leur savoir-faire au service de la réussite de votre enfant.
+              {t("excellence.intro2")}
             </p>
           </div>
 
@@ -74,10 +75,10 @@ const Excellence = () => {
                   <Icon className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="font-bold text-lg text-gray-900 mb-2">
-                  {feature.title}
+                  {t(feature.titleKey)}
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  {feature.description}
+                  {t(feature.descriptionKey)}
                 </p>
               </div>
             );
@@ -90,7 +91,7 @@ const Excellence = () => {
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            Consulter nos programmes par matière
+            {t("excellence.cta")}
           </Button>
         </div>
       </div>

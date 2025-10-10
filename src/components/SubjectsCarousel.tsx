@@ -8,24 +8,24 @@ const SubjectsCarousel = () => {
   const scrollRef2 = useRef<HTMLDivElement>(null);
 
   const subjects = [
-    { name: "Mathématiques", icon: Calculator, color: "bg-blue-500" },
-    { name: "Physique", icon: Beaker, color: "bg-purple-500" },
-    { name: "Français", icon: Languages, color: "bg-pink-500" },
-    { name: "Arabe", icon: BookOpen, color: "bg-green-500" },
-    { name: "Histoire", icon: Book, color: "bg-orange-500" },
-    { name: "Chimie", icon: Brain, color: "bg-cyan-500" },
-    { name: "Anglais", icon: Globe, color: "bg-red-500" },
-    { name: "Sciences Naturelles", icon: Lightbulb, color: "bg-emerald-500" },
-    { name: "Géographie", icon: MapPin, color: "bg-teal-500" },
-    { name: "Philosophie", icon: GraduationCap, color: "bg-indigo-500" },
-    { name: "Éducation Islamique", icon: Book, color: "bg-amber-600" },
-    { name: "Informatique", icon: Laptop, color: "bg-violet-500" },
+    { nameKey: "subjects.math", icon: Calculator, color: "bg-blue-500" },
+    { nameKey: "subjects.physics", icon: Beaker, color: "bg-purple-500" },
+    { nameKey: "subjects.french", icon: Languages, color: "bg-pink-500" },
+    { nameKey: "subjects.arabic", icon: BookOpen, color: "bg-green-500" },
+    { nameKey: "subjects.history", icon: Book, color: "bg-orange-500" },
+    { nameKey: "subjects.chemistry", icon: Brain, color: "bg-cyan-500" },
+    { nameKey: "subjects.english", icon: Globe, color: "bg-red-500" },
+    { nameKey: "subjects.naturalSciences", icon: Lightbulb, color: "bg-emerald-500" },
+    { nameKey: "subjects.geography", icon: MapPin, color: "bg-teal-500" },
+    { nameKey: "subjects.philosophy", icon: GraduationCap, color: "bg-indigo-500" },
+    { nameKey: "subjects.islamicEducation", icon: Book, color: "bg-amber-600" },
+    { nameKey: "subjects.computerScience", icon: Laptop, color: "bg-violet-500" },
   ];
 
   const features = [
-    "Cours téléchargeables en PDF",
-    "Préparation au Brevet et au Bac",
-    "Cours, exercices & quiz corrigés, fiches, flashcards ...",
+    "subjects.features.downloadablePdf",
+    "subjects.features.examPrep",
+    "subjects.features.exercises",
   ];
 
   useEffect(() => {
@@ -70,16 +70,16 @@ const SubjectsCarousel = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-            Toutes les matières de la 6ème à la Terminale
+            {t("subjects.title")}
           </h2>
           
           <div className="flex flex-wrap justify-center gap-8 mb-12">
-            {features.map((feature, index) => (
+            {features.map((featureKey, index) => (
               <div key={index} className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
                   <Check className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-gray-700 font-medium">{feature}</span>
+                <span className="text-gray-700 font-medium">{t(featureKey)}</span>
               </div>
             ))}
           </div>
@@ -92,13 +92,13 @@ const SubjectsCarousel = () => {
               const Icon = subject.icon;
               return (
                 <div
-                  key={`${subject.name}-${index}`}
+                  key={`${subject.nameKey}-${index}`}
                   className="flex-shrink-0 w-auto bg-white rounded-xl shadow-md px-4 py-3 flex items-center gap-3 hover:shadow-lg transition-shadow"
                 >
                   <div className={`w-10 h-10 ${subject.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
                     <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="font-medium text-gray-800 text-sm whitespace-nowrap">{subject.name}</span>
+                  <span className="font-medium text-gray-800 text-sm whitespace-nowrap">{t(subject.nameKey)}</span>
                 </div>
               );
             })}
@@ -112,13 +112,13 @@ const SubjectsCarousel = () => {
               const Icon = subject.icon;
               return (
                 <div
-                  key={`${subject.name}-${index}`}
+                  key={`${subject.nameKey}-${index}`}
                   className="flex-shrink-0 w-auto bg-white rounded-xl shadow-md px-4 py-3 flex items-center gap-3 hover:shadow-lg transition-shadow"
                 >
                   <div className={`w-10 h-10 ${subject.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
                     <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="font-medium text-gray-800 text-sm whitespace-nowrap">{subject.name}</span>
+                  <span className="font-medium text-gray-800 text-sm whitespace-nowrap">{t(subject.nameKey)}</span>
                 </div>
               );
             })}
