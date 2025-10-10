@@ -267,17 +267,21 @@ const Auth = () => {
                             // Auto-format with slashes
                             let formatted = cleaned.replace(/\//g, '');
                             
+                            // Limit total length to 8 digits (JJMMAAAA)
+                            if (formatted.length > 8) {
+                              formatted = formatted.slice(0, 8);
+                            }
+                            
                             // Validate and format day (01-31)
                             if (formatted.length >= 1) {
                               const firstDigit = parseInt(formatted[0]);
                               if (firstDigit > 3) {
-                                formatted = '0' + formatted[0] + formatted.slice(1);
+                                return;
                               }
                             }
                             if (formatted.length >= 2) {
                               const day = parseInt(formatted.slice(0, 2));
                               if (day === 0 || day > 31) {
-                                setDateError("Le jour doit être entre 01 et 31");
                                 return;
                               }
                               formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
@@ -287,13 +291,12 @@ const Auth = () => {
                             if (formatted.length >= 4) {
                               const monthDigit = parseInt(formatted[3]);
                               if (monthDigit > 1) {
-                                formatted = formatted.slice(0, 3) + '0' + formatted[3] + formatted.slice(4);
+                                return;
                               }
                             }
                             if (formatted.length >= 5) {
                               const month = parseInt(formatted.slice(3, 5));
                               if (month === 0 || month > 12) {
-                                setDateError("Le mois doit être entre 01 et 12");
                                 return;
                               }
                               formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
@@ -306,9 +309,9 @@ const Auth = () => {
                             if (formatted.length === 10) {
                               const [day, month, year] = formatted.split('/').map(Number);
                               
-                              // Validate year is 4 digits
-                              if (year < 1000 || year > 9999) {
-                                setDateError("L'année doit être sur 4 chiffres");
+                              // Validate year is 4 digits and reasonable
+                              if (year < 1900 || year > new Date().getFullYear()) {
+                                setDateError("L'année doit être entre 1900 et " + new Date().getFullYear());
                                 setDateOfBirth(undefined);
                                 return;
                               }
@@ -317,13 +320,10 @@ const Auth = () => {
                               
                               // Validate the date
                               if (isNaN(date.getTime()) || date.getDate() !== day || date.getMonth() !== month - 1) {
-                                setDateError("Format de date invalide");
+                                setDateError("Cette date n'existe pas");
                                 setDateOfBirth(undefined);
                               } else if (date > new Date()) {
                                 setDateError("La date de naissance ne peut pas être dans le futur");
-                                setDateOfBirth(undefined);
-                              } else if (date < new Date("1900-01-01")) {
-                                setDateError("Veuillez entrer une date de naissance valide");
                                 setDateOfBirth(undefined);
                               } else {
                                 setDateOfBirth(date);
