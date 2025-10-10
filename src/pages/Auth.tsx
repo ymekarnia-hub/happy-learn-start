@@ -246,7 +246,7 @@ const Auth = () => {
                           )}
                         >
                           <RadioGroupItem value="enfant" id="enfant" className="sr-only" />
-                          <img src={iconStudent} alt="Élève" className="h-16 w-16 mb-2 object-contain" />
+                          <img src={iconStudent} alt="Élève" className="h-20 w-20 mb-2 object-contain" />
                           <span className="font-semibold">Élève</span>
                         </Label>
                         <Label 
@@ -259,7 +259,7 @@ const Auth = () => {
                           )}
                         >
                           <RadioGroupItem value="parent" id="parent" className="sr-only" />
-                          <img src={iconParent} alt="Parent" className="h-16 w-16 mb-2 object-contain" />
+                          <img src={iconParent} alt="Parent" className="h-20 w-20 mb-2 object-contain" />
                           <span className="font-semibold">Parent</span>
                         </Label>
                       </div>
