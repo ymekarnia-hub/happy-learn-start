@@ -34,8 +34,7 @@ const SubjectsCarousel = () => {
     
     if (!scroll1 || !scroll2) return;
 
-    let animationId1: number;
-    let animationId2: number;
+    let animationId: number;
     let position1 = 0;
     let position2 = 0;
 
@@ -46,21 +45,20 @@ const SubjectsCarousel = () => {
       if (Math.abs(position1) >= scroll1.scrollWidth / 2) {
         position1 = 0;
       }
-      if (Math.abs(position2) >= scroll2.scrollWidth / 2) {
+      if (position2 >= scroll2.scrollWidth / 2) {
         position2 = 0;
       }
 
       scroll1.style.transform = `translateX(${position1}px)`;
       scroll2.style.transform = `translateX(${position2}px)`;
 
-      animationId1 = requestAnimationFrame(animate);
+      animationId = requestAnimationFrame(animate);
     };
 
-    animationId1 = requestAnimationFrame(animate);
+    animationId = requestAnimationFrame(animate);
 
     return () => {
-      if (animationId1) cancelAnimationFrame(animationId1);
-      if (animationId2) cancelAnimationFrame(animationId2);
+      if (animationId) cancelAnimationFrame(animationId);
     };
   }, []);
 
