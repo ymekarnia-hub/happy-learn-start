@@ -30,6 +30,14 @@ const Auth = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
+  const [touched, setTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    password: false,
+    profileType: false,
+    classLevel: false
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,6 +67,17 @@ const Auth = () => {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Mark all fields as touched for validation
+    setTouched({
+      firstName: true,
+      lastName: true,
+      email: true,
+      password: true,
+      profileType: true,
+      classLevel: true
+    });
+    
     setLoading(true);
 
     try {
@@ -241,24 +260,38 @@ const Auth = () => {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                      <User className={cn(
+                        "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
+                        touched.firstName && firstName ? "text-red-500" : "text-muted-foreground"
+                      )} />
                       <Input
                         type="text"
                         placeholder="Prénom"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="bg-secondary/20 border-2 border-red-500 pl-10"
+                        onBlur={() => setTouched(prev => ({ ...prev, firstName: true }))}
+                        className={cn(
+                          "bg-secondary/20 pl-10",
+                          touched.firstName && firstName ? "border-2 border-red-500" : "border border-border"
+                        )}
                         required
                       />
                     </div>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                      <User className={cn(
+                        "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
+                        touched.lastName && lastName ? "text-red-500" : "text-muted-foreground"
+                      )} />
                       <Input
                         type="text"
                         placeholder="Nom"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="bg-secondary/20 border-2 border-red-500 pl-10"
+                        onBlur={() => setTouched(prev => ({ ...prev, lastName: true }))}
+                        className={cn(
+                          "bg-secondary/20 pl-10",
+                          touched.lastName && lastName ? "border-2 border-red-500" : "border border-border"
+                        )}
                         required
                       />
                     </div>
@@ -294,7 +327,14 @@ const Auth = () => {
 
                   <div className="space-y-2">
                     <Label className="text-foreground">Type de profil</Label>
-                    <RadioGroup value={profileType} onValueChange={setProfileType} required>
+                    <RadioGroup 
+                      value={profileType} 
+                      onValueChange={(value) => {
+                        setProfileType(value);
+                        setTouched(prev => ({ ...prev, profileType: true }));
+                      }} 
+                      required
+                    >
                       <div className="grid grid-cols-2 gap-4">
                         <Label 
                           htmlFor="enfant" 
@@ -302,7 +342,9 @@ const Auth = () => {
                             "flex flex-col items-center justify-center h-32 px-4 rounded-lg border-2 cursor-pointer transition-all",
                             profileType === "enfant" 
                               ? "bg-primary text-primary-foreground border-primary shadow-lg" 
-                              : "bg-secondary/20 border-red-500 hover:bg-secondary/30"
+                              : touched.profileType && profileType
+                              ? "bg-secondary/20 border-red-500 hover:bg-secondary/30"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
                         >
                           <RadioGroupItem value="enfant" id="enfant" className="sr-only" />
@@ -315,7 +357,9 @@ const Auth = () => {
                             "flex flex-col items-center justify-center h-32 px-4 rounded-lg border-2 cursor-pointer transition-all",
                             profileType === "parent" 
                               ? "bg-primary text-primary-foreground border-primary shadow-lg" 
-                              : "bg-secondary/20 border-red-500 hover:bg-secondary/30"
+                              : touched.profileType && profileType
+                              ? "bg-secondary/20 border-red-500 hover:bg-secondary/30"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
                         >
                           <RadioGroupItem value="parent" id="parent" className="sr-only" />
@@ -328,7 +372,14 @@ const Auth = () => {
 
                   <div className="space-y-2">
                     <Label className="text-foreground">Classe</Label>
-                    <RadioGroup value={classLevel} onValueChange={setClassLevel} required>
+                    <RadioGroup 
+                      value={classLevel} 
+                      onValueChange={(value) => {
+                        setClassLevel(value);
+                        setTouched(prev => ({ ...prev, classLevel: true }));
+                      }} 
+                      required
+                    >
                       <div className="grid grid-cols-2 gap-3">
                         <Label 
                           htmlFor="6eme" 
