@@ -259,80 +259,56 @@ const Auth = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type="text"
-                          placeholder="Prénom"
-                          value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
-                          onBlur={() => setTouched(prev => ({ ...prev, firstName: true }))}
-                          className="bg-secondary/20 pl-10 border-border"
-                          required
-                        />
-                      </div>
-                      {touched.firstName && !firstName && (
-                        <p className="text-red-500 text-sm mt-1">Champ obligatoire</p>
-                      )}
-                    </div>
-                    <div>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type="text"
-                          placeholder="Nom"
-                          value={lastName}
-                          onChange={(e) => setLastName(e.target.value)}
-                          onBlur={() => setTouched(prev => ({ ...prev, lastName: true }))}
-                          className="bg-secondary/20 pl-10 border-border"
-                          required
-                        />
-                      </div>
-                      {touched.lastName && !lastName && (
-                        <p className="text-red-500 text-sm mt-1">Champ obligatoire</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Input
-                      type="email"
-                      placeholder="Adresse e-mail"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      onBlur={() => setTouched(prev => ({ ...prev, email: true }))}
-                      className="bg-secondary/20 border-border"
-                      required
-                    />
-                    {touched.email && !email && (
-                      <p className="text-red-500 text-sm mt-1">Champ obligatoire</p>
-                    )}
-                  </div>
-                  
-                  <div>
                     <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Mot de passe"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onBlur={() => setTouched(prev => ({ ...prev, password: true }))}
-                        className="bg-secondary/20 pr-10 border-border"
+                        type="text"
+                        placeholder="Prénom"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="bg-secondary/20 pl-10 border-border"
                         required
-                        minLength={6}
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
                     </div>
-                    {touched.password && !password && (
-                      <p className="text-red-500 text-sm mt-1">Champ obligatoire</p>
-                    )}
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="text"
+                        placeholder="Nom"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="bg-secondary/20 pl-10 border-border"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <Input
+                    type="email"
+                    placeholder="Adresse e-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-secondary/20 border-border"
+                    required
+                  />
+                  
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Mot de passe"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-secondary/20 pr-10 border-border"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
 
                   <div className="space-y-2">
