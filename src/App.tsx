@@ -10,6 +10,7 @@ import Contact from "./pages/Contact";
 import MentionsLegales from "./pages/MentionsLegales";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import Parcourir from "./pages/Parcourir";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/parcourir" element={<Parcourir />} />
               <Route path="/mentions-legales" element={<MentionsLegales />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
