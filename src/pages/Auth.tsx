@@ -4,16 +4,25 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, CalendarIcon } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
+  const [classLevel, setClassLevel] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -66,7 +75,11 @@ const Auth = () => {
           options: {
             emailRedirectTo: `${window.location.origin}/`,
             data: {
-              full_name: fullName,
+              first_name: firstName,
+              last_name: lastName,
+              full_name: `${firstName} ${lastName}`,
+              date_of_birth: dateOfBirth?.toISOString(),
+              class_level: classLevel,
             },
           },
         });
@@ -170,14 +183,25 @@ const Auth = () => {
             <>
               {!isLogin && (
                 <form onSubmit={handleEmailAuth} className="space-y-4">
-                  <Input
-                    type="text"
-                    placeholder="Nom complet"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="bg-yellow-50 border-yellow-200"
-                    required
-                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      type="text"
+                      placeholder="Prénom"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="bg-yellow-50 border-yellow-200"
+                      required
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Nom"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="bg-yellow-50 border-yellow-200"
+                      required
+                    />
+                  </div>
+                  
                   <Input
                     type="email"
                     placeholder="Adresse e-mail"
@@ -186,6 +210,7 @@ const Auth = () => {
                     className="bg-yellow-50 border-yellow-200"
                     required
                   />
+                  
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
@@ -203,6 +228,72 @@ const Auth = () => {
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-foreground">Date de naissance</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal bg-yellow-50 border-yellow-200",
+                            !dateOfBirth && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Sélectionner une date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={dateOfBirth}
+                          onSelect={setDateOfBirth}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-foreground">Classe</Label>
+                    <RadioGroup value={classLevel} onValueChange={setClassLevel} required>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="6eme" id="6eme" />
+                          <Label htmlFor="6eme" className="cursor-pointer">6ème</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="7eme" id="7eme" />
+                          <Label htmlFor="7eme" className="cursor-pointer">7ème</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="8eme" id="8eme" />
+                          <Label htmlFor="8eme" className="cursor-pointer">8ème</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="9eme" id="9eme" />
+                          <Label htmlFor="9eme" className="cursor-pointer">9ème</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="seconde" id="seconde" />
+                          <Label htmlFor="seconde" className="cursor-pointer">Seconde</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="premiere" id="premiere" />
+                          <Label htmlFor="premiere" className="cursor-pointer">1ère</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="terminale" id="terminale" />
+                          <Label htmlFor="terminale" className="cursor-pointer">Terminale</Label>
+                        </div>
+                      </div>
+                    </RadioGroup>
                   </div>
 
                   <Button type="submit" className="w-full bg-primary" disabled={loading}>
