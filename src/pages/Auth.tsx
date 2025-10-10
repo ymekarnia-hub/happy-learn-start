@@ -328,8 +328,6 @@ const Auth = () => {
                             "flex flex-col items-center justify-center h-32 px-4 rounded-lg border-2 cursor-pointer transition-all",
                             profileType === "enfant" 
                               ? "bg-primary text-primary-foreground border-primary shadow-lg" 
-                              : touched.profileType && profileType
-                              ? "bg-secondary/20 border-red-500 hover:bg-secondary/30"
                               : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
                         >
@@ -343,8 +341,6 @@ const Auth = () => {
                             "flex flex-col items-center justify-center h-32 px-4 rounded-lg border-2 cursor-pointer transition-all",
                             profileType === "parent" 
                               ? "bg-primary text-primary-foreground border-primary shadow-lg" 
-                              : touched.profileType && profileType
-                              ? "bg-secondary/20 border-red-500 hover:bg-secondary/30"
                               : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
                         >
