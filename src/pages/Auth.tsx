@@ -312,8 +312,8 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-foreground">Type de profil</Label>
-                    <RadioGroup 
+                    <Label className="text-foreground">Qui es-tu ?</Label>
+                    <RadioGroup
                       value={profileType} 
                       onValueChange={(value) => {
                         setProfileType(value);
