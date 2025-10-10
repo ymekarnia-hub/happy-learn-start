@@ -282,6 +282,7 @@ const Auth = () => {
                             if (formatted.length >= 2) {
                               const day = parseInt(formatted.slice(0, 2));
                               if (day === 0 || day > 31) {
+                                setDateError("Cette date n'est pas valide.");
                                 return;
                               }
                               formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
@@ -291,12 +292,14 @@ const Auth = () => {
                             if (formatted.length >= 4) {
                               const monthDigit = parseInt(formatted[3]);
                               if (monthDigit > 1) {
+                                setDateError("Cette date n'est pas valide.");
                                 return;
                               }
                             }
                             if (formatted.length >= 5) {
                               const month = parseInt(formatted.slice(3, 5));
                               if (month === 0 || month > 12) {
+                                setDateError("Cette date n'est pas valide.");
                                 return;
                               }
                               formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
@@ -311,7 +314,7 @@ const Auth = () => {
                               
                               // Validate year is 4 digits and reasonable
                               if (year < 1900 || year > new Date().getFullYear()) {
-                                setDateError("L'année doit être entre 1900 et " + new Date().getFullYear());
+                                setDateError("Cette date n'est pas valide.");
                                 setDateOfBirth(undefined);
                                 return;
                               }
@@ -320,10 +323,10 @@ const Auth = () => {
                               
                               // Validate the date
                               if (isNaN(date.getTime()) || date.getDate() !== day || date.getMonth() !== month - 1) {
-                                setDateError("Cette date n'existe pas");
+                                setDateError("Cette date n'est pas valide.");
                                 setDateOfBirth(undefined);
                               } else if (date > new Date()) {
-                                setDateError("La date de naissance ne peut pas être dans le futur");
+                                setDateError("Cette date n'est pas valide.");
                                 setDateOfBirth(undefined);
                               } else {
                                 setDateOfBirth(date);
