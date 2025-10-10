@@ -29,9 +29,6 @@ const CTA = () => {
             {t("cta.button")}
             <ArrowRight className="ml-2" />
           </Button>
-          <p className="text-white/80 mt-4">
-            {t("cta.noCommitment")}
-          </p>
         </div>
       </div>
     </section>
