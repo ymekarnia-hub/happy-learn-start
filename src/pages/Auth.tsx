@@ -266,19 +266,53 @@ const Auth = () => {
                             
                             // Auto-format with slashes
                             let formatted = cleaned.replace(/\//g, '');
+                            
+                            // Validate and format day (01-31)
+                            if (formatted.length >= 1) {
+                              const firstDigit = parseInt(formatted[0]);
+                              if (firstDigit > 3) {
+                                formatted = '0' + formatted[0] + formatted.slice(1);
+                              }
+                            }
                             if (formatted.length >= 2) {
+                              const day = parseInt(formatted.slice(0, 2));
+                              if (day === 0 || day > 31) {
+                                setDateError("Le jour doit être entre 01 et 31");
+                                return;
+                              }
                               formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
                             }
+                            
+                            // Validate and format month (01-12)
+                            if (formatted.length >= 4) {
+                              const monthDigit = parseInt(formatted[3]);
+                              if (monthDigit > 1) {
+                                formatted = formatted.slice(0, 3) + '0' + formatted[3] + formatted.slice(4);
+                              }
+                            }
                             if (formatted.length >= 5) {
+                              const month = parseInt(formatted.slice(3, 5));
+                              if (month === 0 || month > 12) {
+                                setDateError("Le mois doit être entre 01 et 12");
+                                return;
+                              }
                               formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
                             }
                             
                             setDateInput(formatted);
                             setDateError("");
                             
-                            // Parse the date if complete
+                            // Parse the date if complete (10 characters: JJ/MM/AAAA)
                             if (formatted.length === 10) {
                               const [day, month, year] = formatted.split('/').map(Number);
+                              
+                              // Validate year is 4 digits
+                              if (year < 1000 || year > 9999) {
+                                setDateError("L'année doit être sur 4 chiffres");
+                                setDateOfBirth(undefined);
+                                return;
+                              }
+                              
                               const date = new Date(year, month - 1, day);
                               
                               // Validate the date
