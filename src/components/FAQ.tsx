@@ -38,10 +38,6 @@ const FAQ = () => {
       question: t("faq.questions.changePlan.question"),
       answer: t("faq.questions.changePlan.answer"),
     },
-    {
-      question: t("faq.questions.taxCredit.question"),
-      answer: t("faq.questions.taxCredit.answer"),
-    },
   ];
 
   return (

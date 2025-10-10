@@ -163,10 +163,6 @@ const Pricing = () => {
             </Card>
           ))}
         </div>
-
-        <p className="text-center text-gray-600 mt-8">
-          {t("pricing.taxCredit")}
-        </p>
       </div>
     </section>
   );

@@ -152,8 +152,7 @@
       }
     },
     "popular": "POPULAIRE",
-    "choose": "Choisir",
-    "taxCredit": "Crédit d'impôt de 50% applicable sur tous nos services"
+    "choose": "Choisir"
   },
   "faq": {
     "title": "Questions Fréquentes",
@@ -186,10 +185,6 @@
       "changePlan": {
         "question": "Puis-je changer de formule à tout moment ?",
         "answer": "Oui, vous pouvez passer à une formule supérieure ou inférieure à tout moment. Le changement prendra effet immédiatement et sera pris en compte sur votre prochaine facturation."
-      },
-      "taxCredit": {
-        "question": "Comment fonctionne le crédit d'impôt ?",
-        "answer": "En tant que service de soutien scolaire, nos cours ouvrent droit à un crédit d'impôt de 50% du montant payé. Nous vous fournissons automatiquement une attestation fiscale à la fin de l'année pour bénéficier de cet avantage."
       }
     }
   },
