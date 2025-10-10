@@ -132,7 +132,7 @@ const Auth = () => {
 
   return (
     <>
-      <Header />
+      <Header minimal={true} />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-background p-4 pt-24">
       <div className="w-full max-w-md">
         <div className="bg-card rounded-2xl shadow-[var(--shadow-elegant)] p-8 border border-border">

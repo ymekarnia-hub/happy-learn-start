@@ -7,7 +7,7 @@ import { Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-const Header = () => {
+const Header = ({ minimal = false }: { minimal?: boolean }) => {
   const { t, i18n } = useTranslation();
   const [session, setSession] = useState<Session | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,77 +64,81 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-3">
-            <Button
-              onClick={() => scrollToSection("pricing")}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6"
-            >
-              {t("header.discoverPlans")}
-            </Button>
-
-            <a
-              href={`tel:${t("header.phone").replace(/\s/g, "")}`}
-              className="flex items-center gap-2 text-gray-900 font-medium hover:text-blue-600 transition-colors px-4"
-            >
-              <Phone className="h-5 w-5 text-pink-500" />
-              {t("header.phone")}
-            </a>
-
-            {session ? (
-              <Button variant="outline" onClick={handleLogout} className="font-medium">
-                <LogOut className="h-4 w-4 mr-2" />
-                {t("header.logout")}
-              </Button>
-            ) : (
+          {!minimal && (
+            <div className="hidden lg:flex items-center gap-3">
               <Button
-                onClick={() => navigate("/auth")}
-                variant="ghost"
-                className="text-gray-900 font-medium hover:text-blue-600"
+                onClick={() => scrollToSection("pricing")}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6"
               >
-                {t("header.login")}
+                {t("header.discoverPlans")}
               </Button>
-            )}
 
-            {!session && (
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6">
-                {t("header.freeTrial")}
-              </Button>
-            )}
+              <a
+                href={`tel:${t("header.phone").replace(/\s/g, "")}`}
+                className="flex items-center gap-2 text-gray-900 font-medium hover:text-blue-600 transition-colors px-4"
+              >
+                <Phone className="h-5 w-5 text-pink-500" />
+                {t("header.phone")}
+              </a>
 
-            {/* Language Selector */}
-            <div className="flex items-center gap-2 ml-2">
-              <button
-                onClick={() => changeLanguage("fr")}
-                className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                  i18n.language === "fr" ? "bg-blue-50" : "hover:bg-gray-100"
-                }`}
-              >
-                <span className="text-lg">🇫🇷</span>
-                <span className="text-sm font-medium">FR</span>
-              </button>
-              <button
-                onClick={() => changeLanguage("ar")}
-                className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                  i18n.language === "ar" ? "bg-blue-50" : "hover:bg-gray-100"
-                }`}
-              >
-                <span className="text-lg">🇩🇿</span>
-                <span className="text-sm font-medium">AR</span>
-              </button>
+              {session ? (
+                <Button variant="outline" onClick={handleLogout} className="font-medium">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {t("header.logout")}
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => navigate("/auth")}
+                  variant="ghost"
+                  className="text-gray-900 font-medium hover:text-blue-600"
+                >
+                  {t("header.login")}
+                </Button>
+              )}
+
+              {!session && (
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6">
+                  {t("header.freeTrial")}
+                </Button>
+              )}
+
+              {/* Language Selector */}
+              <div className="flex items-center gap-2 ml-2">
+                <button
+                  onClick={() => changeLanguage("fr")}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                    i18n.language === "fr" ? "bg-blue-50" : "hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="text-lg">🇫🇷</span>
+                  <span className="text-sm font-medium">FR</span>
+                </button>
+                <button
+                  onClick={() => changeLanguage("ar")}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                    i18n.language === "ar" ? "bg-blue-50" : "hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="text-lg">🇩🇿</span>
+                  <span className="text-sm font-medium">AR</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          {!minimal && (
+            <button
+              className="lg:hidden p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          )}
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
+        {!minimal && isMenuOpen && (
           <div className="lg:hidden mt-4 pb-4 space-y-3">
             <Button
               onClick={() => scrollToSection("pricing")}
