@@ -371,34 +371,90 @@ const Auth = () => {
                     <Label className="text-foreground">Classe</Label>
                     <RadioGroup value={classLevel} onValueChange={setClassLevel} required>
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="6eme" id="6eme" />
-                          <Label htmlFor="6eme" className="cursor-pointer">6ème</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="7eme" id="7eme" />
-                          <Label htmlFor="7eme" className="cursor-pointer">7ème</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="8eme" id="8eme" />
-                          <Label htmlFor="8eme" className="cursor-pointer">8ème</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="9eme" id="9eme" />
-                          <Label htmlFor="9eme" className="cursor-pointer">9ème</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="seconde" id="seconde" />
-                          <Label htmlFor="seconde" className="cursor-pointer">Seconde</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="premiere" id="premiere" />
-                          <Label htmlFor="premiere" className="cursor-pointer">1ère</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="terminale" id="terminale" />
-                          <Label htmlFor="terminale" className="cursor-pointer">Terminale</Label>
-                        </div>
+                        <Label 
+                          htmlFor="6eme" 
+                          className={cn(
+                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            classLevel === "6eme" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                          )}
+                        >
+                          <RadioGroupItem value="6eme" id="6eme" className="sr-only" />
+                          6ème
+                        </Label>
+                        <Label 
+                          htmlFor="7eme" 
+                          className={cn(
+                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            classLevel === "7eme" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                          )}
+                        >
+                          <RadioGroupItem value="7eme" id="7eme" className="sr-only" />
+                          7ème
+                        </Label>
+                        <Label 
+                          htmlFor="8eme" 
+                          className={cn(
+                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            classLevel === "8eme" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                          )}
+                        >
+                          <RadioGroupItem value="8eme" id="8eme" className="sr-only" />
+                          8ème
+                        </Label>
+                        <Label 
+                          htmlFor="9eme" 
+                          className={cn(
+                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            classLevel === "9eme" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                          )}
+                        >
+                          <RadioGroupItem value="9eme" id="9eme" className="sr-only" />
+                          9ème
+                        </Label>
+                        <Label 
+                          htmlFor="seconde" 
+                          className={cn(
+                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            classLevel === "seconde" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                          )}
+                        >
+                          <RadioGroupItem value="seconde" id="seconde" className="sr-only" />
+                          Seconde
+                        </Label>
+                        <Label 
+                          htmlFor="premiere" 
+                          className={cn(
+                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            classLevel === "premiere" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                          )}
+                        >
+                          <RadioGroupItem value="premiere" id="premiere" className="sr-only" />
+                          1ère
+                        </Label>
+                        <Label 
+                          htmlFor="terminale" 
+                          className={cn(
+                            "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
+                            classLevel === "terminale" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                          )}
+                        >
+                          <RadioGroupItem value="terminale" id="terminale" className="sr-only" />
+                          Terminale
+                        </Label>
                       </div>
                     </RadioGroup>
                   </div>
