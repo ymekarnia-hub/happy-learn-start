@@ -421,7 +421,7 @@ const Auth = () => {
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "seconde" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
-                              : "bg-yellow-50 border-yellow-400 hover:bg-yellow-100 hover:border-yellow-500"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
                           <RadioGroupItem value="seconde" id="seconde" className="sr-only" />
@@ -433,7 +433,7 @@ const Auth = () => {
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "premiere" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
-                              : "bg-yellow-50 border-yellow-400 hover:bg-yellow-100 hover:border-yellow-500"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
                           <RadioGroupItem value="premiere" id="premiere" className="sr-only" />
@@ -445,7 +445,7 @@ const Auth = () => {
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
                             classLevel === "terminale" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
-                              : "bg-yellow-50 border-yellow-400 hover:bg-yellow-100 hover:border-yellow-500"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
                           <RadioGroupItem value="terminale" id="terminale" className="sr-only" />
