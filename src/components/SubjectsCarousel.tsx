@@ -36,7 +36,7 @@ const SubjectsCarousel = () => {
 
     let animationId: number;
     let position1 = 0;
-    let position2 = 0;
+    let position2 = -(scroll2.scrollWidth / 2);
 
     const animate = () => {
       position1 -= 0.5;
@@ -45,8 +45,8 @@ const SubjectsCarousel = () => {
       if (Math.abs(position1) >= scroll1.scrollWidth / 2) {
         position1 = 0;
       }
-      if (position2 >= scroll2.scrollWidth / 2) {
-        position2 = 0;
+      if (position2 >= 0) {
+        position2 = -(scroll2.scrollWidth / 2);
       }
 
       scroll1.style.transform = `translateX(${position1}px)`;
