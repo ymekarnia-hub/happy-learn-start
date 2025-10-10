@@ -29,7 +29,7 @@ const Hero = () => {
             {t("hero.title")}
           </h1>
           
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-lg px-8 py-6 rounded-lg mb-6">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg px-8 py-6 rounded-lg mb-6 flex items-center justify-center">
             {t("hero.cta")}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
