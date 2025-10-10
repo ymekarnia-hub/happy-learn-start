@@ -23,6 +23,7 @@ const Auth = () => {
   const [lastName, setLastName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [dateInput, setDateInput] = useState("");
+  const [dateError, setDateError] = useState("");
   const [classLevel, setClassLevel] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,6 +59,25 @@ const Auth = () => {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation de la date de naissance pour l'inscription
+    if (!isLogin && dateInput && dateInput.length === 10) {
+      const [day, month, year] = dateInput.split('/').map(Number);
+      const date = new Date(year, month - 1, day);
+      if (isNaN(date.getTime()) || date.getDate() !== day || date.getMonth() !== month - 1) {
+        setDateError("Format de date invalide");
+        return;
+      }
+      if (date > new Date()) {
+        setDateError("La date de naissance ne peut pas être dans le futur");
+        return;
+      }
+      if (date < new Date("1900-01-01")) {
+        setDateError("Veuillez entrer une date de naissance valide");
+        return;
+      }
+    }
+    
     setLoading(true);
 
     try {
@@ -234,41 +254,65 @@ const Auth = () => {
                   <div className="space-y-2">
                     <Label className="text-foreground">Date de naissance</Label>
                     <div className="flex gap-2">
-                      <Input
-                        type="text"
-                        placeholder="JJ/MM/AAAA"
-                        value={dateInput}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          // Only allow numbers and slashes
-                          const cleaned = value.replace(/[^\d/]/g, '');
-                          
-                          // Auto-format with slashes
-                          let formatted = cleaned.replace(/\//g, '');
-                          if (formatted.length >= 2) {
-                            formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
-                          }
-                          if (formatted.length >= 5) {
-                            formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
-                          }
-                          
-                          setDateInput(formatted);
-                          
-                          // Parse the date if complete
-                          if (formatted.length === 10) {
-                            const [day, month, year] = formatted.split('/').map(Number);
-                            const date = new Date(year, month - 1, day);
-                            if (!isNaN(date.getTime()) && date.getDate() === day && date.getMonth() === month - 1) {
-                              setDateOfBirth(date);
+                      <div className="flex-1">
+                        <Input
+                          type="text"
+                          placeholder="JJ/MM/AAAA"
+                          value={dateInput}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            // Only allow numbers and slashes
+                            const cleaned = value.replace(/[^\d/]/g, '');
+                            
+                            // Auto-format with slashes
+                            let formatted = cleaned.replace(/\//g, '');
+                            if (formatted.length >= 2) {
+                              formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
                             }
-                          }
-                        }}
-                        className="bg-yellow-50 border-yellow-200 flex-1"
-                        maxLength={10}
-                      />
+                            if (formatted.length >= 5) {
+                              formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
+                            }
+                            
+                            setDateInput(formatted);
+                            setDateError("");
+                            
+                            // Parse the date if complete
+                            if (formatted.length === 10) {
+                              const [day, month, year] = formatted.split('/').map(Number);
+                              const date = new Date(year, month - 1, day);
+                              
+                              // Validate the date
+                              if (isNaN(date.getTime()) || date.getDate() !== day || date.getMonth() !== month - 1) {
+                                setDateError("Format de date invalide");
+                                setDateOfBirth(undefined);
+                              } else if (date > new Date()) {
+                                setDateError("La date de naissance ne peut pas être dans le futur");
+                                setDateOfBirth(undefined);
+                              } else if (date < new Date("1900-01-01")) {
+                                setDateError("Veuillez entrer une date de naissance valide");
+                                setDateOfBirth(undefined);
+                              } else {
+                                setDateOfBirth(date);
+                                setDateError("");
+                              }
+                            } else {
+                              setDateOfBirth(undefined);
+                            }
+                          }}
+                          className={cn(
+                            "bg-yellow-50 border-yellow-200",
+                            dateError && "border-red-500"
+                          )}
+                          maxLength={10}
+                        />
+                        {dateError && (
+                          <p className="text-sm text-red-500 mt-1">{dateError}</p>
+                        )}
+                      </div>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
+                            type="button"
                             variant="outline"
                             className="bg-yellow-50 border-yellow-200 px-3"
                           >
@@ -283,6 +327,7 @@ const Auth = () => {
                               setDateOfBirth(date);
                               if (date) {
                                 setDateInput(format(date, "dd/MM/yyyy"));
+                                setDateError("");
                               }
                             }}
                             disabled={(date) =>
