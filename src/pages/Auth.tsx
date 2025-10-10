@@ -356,17 +356,18 @@ const Auth = () => {
                     </RadioGroup>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-foreground">En quelle classe es-tu ?</Label>
-                    <RadioGroup
-                      value={classLevel} 
-                      onValueChange={(value) => {
-                        setClassLevel(value);
-                        setTouched(prev => ({ ...prev, classLevel: true }));
-                      }} 
-                      required
-                    >
-                      <div className="grid grid-cols-2 gap-3">
+                  {profileType === "enfant" && (
+                    <div className="space-y-2">
+                      <Label className="text-foreground">En quelle classe es-tu ?</Label>
+                      <RadioGroup 
+                        value={classLevel} 
+                        onValueChange={(value) => {
+                          setClassLevel(value);
+                          setTouched(prev => ({ ...prev, classLevel: true }));
+                        }} 
+                        required
+                      >
+                        <div className="grid grid-cols-2 gap-3">
                         <Label 
                           htmlFor="6eme" 
                           className={cn(
@@ -454,6 +455,7 @@ const Auth = () => {
                       </div>
                     </RadioGroup>
                   </div>
+                  )}
 
                   <Button type="submit" className="w-full bg-primary" disabled={loading}>
                     {loading ? "Chargement..." : "S'inscrire"}
