@@ -178,14 +178,19 @@ const Auth = () => {
           {showForgotPassword ? (
             /* Forgot Password Form */
             <form onSubmit={handleForgotPassword} className="space-y-4">
-              <Input
-                type="email"
-                placeholder="Adresse e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-secondary/20 border-border"
-                required
-              />
+              <div>
+                <Input
+                  type="email"
+                  placeholder="Adresse e-mail"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-secondary/20 border-border"
+                  required
+                />
+                <p className="text-sm text-muted-foreground mt-2">
+                  Entrez l'adresse e-mail avec laquelle vous vous êtes inscrit. Nous allons vous envoyer un e-mail avec votre nom d'utilisateur et un lien pour réinitialiser votre mot de passe.
+                </p>
+              </div>
 
               <Button type="submit" className="w-full bg-primary" disabled={loading}>
                 {loading ? "Envoi..." : "Réinitialiser le mot de passe"}
