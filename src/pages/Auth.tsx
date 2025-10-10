@@ -357,8 +357,8 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-foreground">Classe</Label>
-                    <RadioGroup 
+                    <Label className="text-foreground">En quelle classe es-tu ?</Label>
+                    <RadioGroup
                       value={classLevel} 
                       onValueChange={(value) => {
                         setClassLevel(value);
