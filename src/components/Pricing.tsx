@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
 const Pricing = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isFamily, setIsFamily] = useState(false);
   
   // Calcul de l'année suivante
@@ -116,7 +116,7 @@ const Pricing = () => {
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                 {plan.description && (
-                  <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                  <p className={`text-sm mb-4 ${i18n.language === 'ar' ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>{plan.description}</p>
                 )}
                 <div className="flex items-baseline justify-center gap-1 relative mb-4">
                   <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
