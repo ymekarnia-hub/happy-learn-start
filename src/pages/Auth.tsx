@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
+import Header from "@/components/Header";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -130,7 +131,9 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-background p-4">
+    <>
+      <Header />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-background p-4 pt-24">
       <div className="w-full max-w-md">
         <div className="bg-card rounded-2xl shadow-[var(--shadow-elegant)] p-8 border border-border">
           {/* Title */}
@@ -355,6 +358,7 @@ const Auth = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
