@@ -2,9 +2,11 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 import heroImage from "@/assets/hero-students.jpg";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   return (
     <section id="accueil" className="relative min-h-screen flex items-center pt-20">
@@ -29,7 +31,10 @@ const Hero = () => {
             {t("hero.title")}
           </h1>
           
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-2xl px-16 py-9 rounded-lg mb-6 flex items-center justify-center">
+          <Button 
+            onClick={() => navigate('/auth')}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-2xl px-16 py-9 rounded-lg mb-6 flex items-center justify-center"
+          >
             {t("hero.cta")}
             <ArrowRight className="ml-2 h-6 w-6" />
           </Button>
