@@ -261,20 +261,14 @@ const Auth = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <div className="relative">
-                        <User className={cn(
-                          "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
-                          touched.firstName && !firstName ? "text-red-500" : "text-muted-foreground"
-                        )} />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           type="text"
                           placeholder="Prénom"
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           onBlur={() => setTouched(prev => ({ ...prev, firstName: true }))}
-                          className={cn(
-                            "bg-secondary/20 pl-10",
-                            touched.firstName && !firstName ? "border-2 border-red-500" : "border border-border"
-                          )}
+                          className="bg-secondary/20 pl-10 border-border"
                           required
                         />
                       </div>
@@ -284,20 +278,14 @@ const Auth = () => {
                     </div>
                     <div>
                       <div className="relative">
-                        <User className={cn(
-                          "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
-                          touched.lastName && !lastName ? "text-red-500" : "text-muted-foreground"
-                        )} />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           type="text"
                           placeholder="Nom"
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           onBlur={() => setTouched(prev => ({ ...prev, lastName: true }))}
-                          className={cn(
-                            "bg-secondary/20 pl-10",
-                            touched.lastName && !lastName ? "border-2 border-red-500" : "border border-border"
-                          )}
+                          className="bg-secondary/20 pl-10 border-border"
                           required
                         />
                       </div>
@@ -314,10 +302,7 @@ const Auth = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       onBlur={() => setTouched(prev => ({ ...prev, email: true }))}
-                      className={cn(
-                        "bg-secondary/20",
-                        touched.email && !email ? "border-2 border-red-500" : "border-border"
-                      )}
+                      className="bg-secondary/20 border-border"
                       required
                     />
                     {touched.email && !email && (
@@ -333,10 +318,7 @@ const Auth = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onBlur={() => setTouched(prev => ({ ...prev, password: true }))}
-                        className={cn(
-                          "bg-secondary/20 pr-10",
-                          touched.password && !password ? "border-2 border-red-500" : "border-border"
-                        )}
+                        className="bg-secondary/20 pr-10 border-border"
                         required
                         minLength={6}
                       />
