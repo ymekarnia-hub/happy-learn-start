@@ -116,9 +116,18 @@ body {
 }
 
 html[lang="ar"],
-html[lang="ar"] body,
-html[lang="ar"] * {
+html[lang="ar"] body {
   direction: ltr !important;
-  text-align: left !important;
+}
+
+.text-center,
+.text-center h1,
+.text-center h2,
+.text-center h3,
+.text-center h4,
+.text-center h5,
+.text-center h6,
+.text-center p {
+  text-align: center !important;
 }
 }
