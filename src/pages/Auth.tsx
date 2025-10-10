@@ -232,32 +232,57 @@ const Auth = () => {
 
                   <div className="space-y-2">
                     <Label className="text-foreground">Date de naissance</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal bg-yellow-50 border-yellow-200",
-                            !dateOfBirth && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Sélectionner une date</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={dateOfBirth}
-                          onSelect={setDateOfBirth}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder="JJ/MM/AAAA"
+                        value={dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // Auto-format with slashes
+                          let formatted = value.replace(/\D/g, '');
+                          if (formatted.length >= 2) {
+                            formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
                           }
-                          initialFocus
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                          if (formatted.length >= 5) {
+                            formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
+                          }
+                          
+                          // Parse the date if complete
+                          if (formatted.length === 10) {
+                            const [day, month, year] = formatted.split('/').map(Number);
+                            const date = new Date(year, month - 1, day);
+                            if (!isNaN(date.getTime()) && date.getDate() === day && date.getMonth() === month - 1) {
+                              setDateOfBirth(date);
+                            }
+                          }
+                        }}
+                        className="bg-yellow-50 border-yellow-200 flex-1"
+                        maxLength={10}
+                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="bg-yellow-50 border-yellow-200 px-3"
+                          >
+                            <CalendarIcon className="h-4 w-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateOfBirth}
+                            onSelect={setDateOfBirth}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
