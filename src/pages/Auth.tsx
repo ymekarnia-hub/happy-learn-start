@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { Eye, EyeOff, CalendarIcon } from "lucide-react";
+import { Eye, EyeOff, User, Baby } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -21,9 +21,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState<Date>();
-  const [dateInput, setDateInput] = useState("");
-  const [dateError, setDateError] = useState("");
+  const [profileType, setProfileType] = useState("");
   const [classLevel, setClassLevel] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -59,25 +57,6 @@ const Auth = () => {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation de la date de naissance pour l'inscription
-    if (!isLogin && dateInput && dateInput.length === 10) {
-      const [day, month, year] = dateInput.split('/').map(Number);
-      const date = new Date(year, month - 1, day);
-      if (isNaN(date.getTime()) || date.getDate() !== day || date.getMonth() !== month - 1) {
-        setDateError("Format de date invalide");
-        return;
-      }
-      if (date > new Date()) {
-        setDateError("La date de naissance ne peut pas être dans le futur");
-        return;
-      }
-      if (date < new Date("1900-01-01")) {
-        setDateError("Veuillez entrer une date de naissance valide");
-        return;
-      }
-    }
-    
     setLoading(true);
 
     try {
@@ -99,7 +78,7 @@ const Auth = () => {
               first_name: firstName,
               last_name: lastName,
               full_name: `${firstName} ${lastName}`,
-              date_of_birth: dateOfBirth?.toISOString(),
+              profile_type: profileType,
               class_level: classLevel,
             },
           },
@@ -168,7 +147,7 @@ const Auth = () => {
     <>
       <Header minimal={true} />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-background p-4 pt-24">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-2xl">
         <div className="bg-card rounded-2xl shadow-[var(--shadow-elegant)] p-8 border border-border">
           {/* Title */}
           <h1 className="text-3xl font-bold text-center text-foreground mb-8">
@@ -183,7 +162,7 @@ const Auth = () => {
                 placeholder="Adresse e-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-yellow-50 border-yellow-200"
+                className="bg-secondary/20 border-border"
                 required
               />
 
@@ -210,7 +189,7 @@ const Auth = () => {
                       placeholder="Prénom"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
-                      className="bg-yellow-50 border-yellow-200"
+                      className="bg-secondary/20 border-border"
                       required
                     />
                     <Input
@@ -218,7 +197,7 @@ const Auth = () => {
                       placeholder="Nom"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
-                      className="bg-yellow-50 border-yellow-200"
+                      className="bg-secondary/20 border-border"
                       required
                     />
                   </div>
@@ -228,7 +207,7 @@ const Auth = () => {
                     placeholder="Adresse e-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-yellow-50 border-yellow-200"
+                    className="bg-secondary/20 border-border"
                     required
                   />
                   
@@ -238,7 +217,7 @@ const Auth = () => {
                       placeholder="Mot de passe"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="bg-yellow-50 border-yellow-200 pr-10"
+                      className="bg-secondary/20 border-border pr-10"
                       required
                       minLength={6}
                     />
@@ -252,119 +231,37 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-foreground">Date de naissance</Label>
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <Input
-                          type="text"
-                          placeholder="JJ/MM/AAAA"
-                          value={dateInput}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            // Only allow numbers and slashes
-                            const cleaned = value.replace(/[^\d/]/g, '');
-                            
-                            // Auto-format with slashes
-                            let formatted = cleaned.replace(/\//g, '');
-                            
-                            // Limit to 8 digits max
-                            if (formatted.length > 8) {
-                              formatted = formatted.slice(0, 8);
-                            }
-                            
-                            // Add slashes automatically
-                            if (formatted.length >= 2) {
-                              formatted = formatted.slice(0, 2) + '/' + formatted.slice(2);
-                            }
-                            if (formatted.length >= 5) {
-                              formatted = formatted.slice(0, 5) + '/' + formatted.slice(5, 9);
-                            }
-                            
-                            setDateInput(formatted);
-                            setDateError("");
-                            
-                            // Only validate when date is complete (10 characters: JJ/MM/AAAA)
-                            if (formatted.length === 10) {
-                              const [day, month, year] = formatted.split('/').map(Number);
-                              
-                              // Check if day is valid (01-31)
-                              if (day === 0 || day > 31) {
-                                setDateError("Cette date n'est pas valide.");
-                                setDateOfBirth(undefined);
-                                return;
-                              }
-                              
-                              // Check if month is valid (01-12)
-                              if (month === 0 || month > 12) {
-                                setDateError("Cette date n'est pas valide.");
-                                setDateOfBirth(undefined);
-                                return;
-                              }
-                              
-                              // Check if year is valid (1900 to current year)
-                              if (year < 1900 || year > new Date().getFullYear()) {
-                                setDateError("Cette date n'est pas valide.");
-                                setDateOfBirth(undefined);
-                                return;
-                              }
-                              
-                              const date = new Date(year, month - 1, day);
-                              
-                              // Validate the actual date (checks if the date exists, e.g., 31/02 doesn't exist)
-                              if (isNaN(date.getTime()) || date.getDate() !== day || date.getMonth() !== month - 1) {
-                                setDateError("Cette date n'est pas valide.");
-                                setDateOfBirth(undefined);
-                              } else if (date > new Date()) {
-                                setDateError("Cette date n'est pas valide.");
-                                setDateOfBirth(undefined);
-                              } else {
-                                setDateOfBirth(date);
-                                setDateError("");
-                              }
-                            } else {
-                              setDateOfBirth(undefined);
-                            }
-                          }}
+                    <Label className="text-foreground">Type de profil</Label>
+                    <RadioGroup value={profileType} onValueChange={setProfileType} required>
+                      <div className="grid grid-cols-2 gap-4">
+                        <Label 
+                          htmlFor="enfant" 
                           className={cn(
-                            "bg-yellow-50 border-yellow-200",
-                            dateError && "border-red-500"
+                            "flex flex-col items-center justify-center h-32 px-4 rounded-lg border cursor-pointer transition-all",
+                            profileType === "enfant" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
-                          maxLength={10}
-                        />
-                        {dateError && (
-                          <p className="text-sm text-red-500 mt-1">{dateError}</p>
-                        )}
+                        >
+                          <RadioGroupItem value="enfant" id="enfant" className="sr-only" />
+                          <Baby className="h-12 w-12 mb-2" />
+                          <span className="font-semibold">Enfant</span>
+                        </Label>
+                        <Label 
+                          htmlFor="parent" 
+                          className={cn(
+                            "flex flex-col items-center justify-center h-32 px-4 rounded-lg border cursor-pointer transition-all",
+                            profileType === "parent" 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-secondary/20 border-border hover:bg-secondary/30"
+                          )}
+                        >
+                          <RadioGroupItem value="parent" id="parent" className="sr-only" />
+                          <User className="h-12 w-12 mb-2" />
+                          <span className="font-semibold">Parent</span>
+                        </Label>
                       </div>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="bg-yellow-50 border-yellow-200 px-3"
-                          >
-                            <CalendarIcon className="h-4 w-4" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={dateOfBirth}
-                            onSelect={(date) => {
-                              setDateOfBirth(date);
-                              if (date) {
-                                setDateInput(format(date, "dd/MM/yyyy"));
-                                setDateError("");
-                              }
-                            }}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                            className={cn("p-3 pointer-events-auto")}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                    </RadioGroup>
                   </div>
 
                   <div className="space-y-2">
@@ -377,7 +274,7 @@ const Auth = () => {
                             "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
                             classLevel === "6eme" 
                               ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
                         >
                           <RadioGroupItem value="6eme" id="6eme" className="sr-only" />
@@ -389,7 +286,7 @@ const Auth = () => {
                             "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
                             classLevel === "7eme" 
                               ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
                         >
                           <RadioGroupItem value="7eme" id="7eme" className="sr-only" />
@@ -401,7 +298,7 @@ const Auth = () => {
                             "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
                             classLevel === "8eme" 
                               ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
                         >
                           <RadioGroupItem value="8eme" id="8eme" className="sr-only" />
@@ -413,7 +310,7 @@ const Auth = () => {
                             "flex items-center justify-center h-10 px-4 rounded-md border cursor-pointer transition-all",
                             classLevel === "9eme" 
                               ? "bg-primary text-primary-foreground border-primary" 
-                              : "bg-yellow-50 border-yellow-200 hover:bg-yellow-100"
+                              : "bg-secondary/20 border-border hover:bg-secondary/30"
                           )}
                         >
                           <RadioGroupItem value="9eme" id="9eme" className="sr-only" />
@@ -541,7 +438,7 @@ const Auth = () => {
                       placeholder="Adresse e-mail"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="bg-yellow-50 border-yellow-200"
+                      className="bg-secondary/20 border-border"
                       required
                     />
 
@@ -551,7 +448,7 @@ const Auth = () => {
                         placeholder="Mot de passe"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="bg-yellow-50 border-yellow-200 pr-10"
+                        className="bg-secondary/20 border-border pr-10"
                         required
                         minLength={6}
                       />
