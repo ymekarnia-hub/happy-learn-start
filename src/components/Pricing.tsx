@@ -22,10 +22,10 @@ const Pricing = () => {
 
   const plans = [
     {
-      name: "Formule découverte",
-      price: "Gratuit",
-      period: "",
-      description: "",
+      name: t("pricing.discovery.name"),
+      price: t("pricing.discovery.price"),
+      period: t("pricing.discovery.period"),
+      description: t("pricing.discovery.description"),
       features: [
         t("pricing.discovery.features.subjects"),
         t("pricing.discovery.features.exercises"),
@@ -35,12 +35,13 @@ const Pricing = () => {
       highlighted: false,
     },
     {
-      name: "Formule Année scolaire",
+      name: t("pricing.regular.name"),
       price: `${regularPrice.toLocaleString('fr-DZ')} DA`,
       period: "/Mois",
       description: t("pricing.regular.description"),
       immediatePayment: `${(regularPrice * 10).toLocaleString('fr-DZ')} DA`,
-      paymentPeriod: `pour une période de 10 mois allant jusqu'au 31 juillet ${nextYear}`,
+      immediatePaymentLabel: t("pricing.regular.immediatePayment"),
+      paymentPeriod: `${t("pricing.regular.paymentPeriod")} ${nextYear}`,
       features: [
         t("pricing.regular.features.allSubjects"),
         t("pricing.regular.features.exercises"),
@@ -52,10 +53,10 @@ const Pricing = () => {
       highlighted: true,
     },
     {
-      name: "Formule Mensuelle",
+      name: t("pricing.intensive.name"),
       price: `${(isFamily ? 3125 : 2500).toLocaleString('fr-DZ')} DA`,
       period: "/Mois",
-      description: "",
+      description: t("pricing.intensive.description"),
       features: [
         t("pricing.intensive.features.everything"),
         t("pricing.intensive.features.liveCourses"),
@@ -86,7 +87,7 @@ const Pricing = () => {
             htmlFor="family-switch" 
             className={`text-lg font-semibold cursor-pointer transition-colors ${!isFamily ? 'text-blue-600' : 'text-gray-500'}`}
           >
-            1 Enfant
+            {t("pricing.switchOneChild")}
           </Label>
           <Switch
             id="family-switch"
@@ -97,7 +98,7 @@ const Pricing = () => {
             htmlFor="family-switch" 
             className={`text-lg font-semibold cursor-pointer transition-colors ${isFamily ? 'text-blue-600' : 'text-gray-500'}`}
           >
-            Famille (2 à 3 enfants)
+            {t("pricing.switchFamily")}
           </Label>
         </div>
 
@@ -129,7 +130,7 @@ const Pricing = () => {
                 {plan.immediatePayment && (
                   <div className="p-3 bg-blue-50 border-2 border-blue-600 rounded-lg">
                     <p className="text-sm font-semibold text-blue-900 mb-1">
-                      Paiement immédiat de
+                      {plan.immediatePaymentLabel}
                     </p>
                     <p className="text-2xl font-bold text-blue-600">
                       {plan.immediatePayment}

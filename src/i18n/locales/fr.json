@@ -107,11 +107,13 @@
   "pricing": {
     "title": "Découvrir les Formules",
     "subtitle": "Choisissez la formule qui correspond le mieux à vos besoins et à votre budget",
+    "switchOneChild": "1 Enfant",
+    "switchFamily": "Famille (2 à 3 enfants)",
     "discovery": {
-      "name": "Découverte",
-      "price": "2 990 DA",
-      "period": "/mois",
-      "description": "Parfait pour débuter",
+      "name": "Formule découverte",
+      "price": "Gratuit",
+      "period": "",
+      "description": "",
       "features": {
         "subjects": "Accès à 3 matières",
         "exercises": "100+ exercices interactifs",
@@ -120,10 +122,12 @@
       }
     },
     "regular": {
-      "name": "Régulier",
+      "name": "Formule Année scolaire",
       "price": "4 990 DA",
       "period": "/mois",
       "description": "Le plus populaire",
+      "immediatePayment": "Paiement immédiat de",
+      "paymentPeriod": "pour une période de 10 mois allant jusqu'au 31 juillet",
       "features": {
         "allSubjects": "Accès à toutes les matières",
         "exercises": "500+ exercices interactifs",
@@ -134,10 +138,10 @@
       }
     },
     "intensive": {
-      "name": "Intensif",
+      "name": "Formule Mensuelle",
       "price": "7 990 DA",
       "period": "/mois",
-      "description": "Pour une préparation complète",
+      "description": "",
       "features": {
         "everything": "Tout du plan Régulier",
         "liveCourses": "Cours en direct chaque semaine",

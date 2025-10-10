@@ -107,11 +107,13 @@
   "pricing": {
     "title": "اكتشف الصيغ",
     "subtitle": "اختر الصيغة التي تناسب احتياجاتك وميزانيتك",
+    "switchOneChild": "طفل واحد",
+    "switchFamily": "عائلة (2 إلى 3 أطفال)",
     "discovery": {
-      "name": "الاكتشاف",
-      "price": "2 990 دج",
-      "period": "/شهر",
-      "description": "مثالي للبداية",
+      "name": "صيغة الاكتشاف",
+      "price": "مجاني",
+      "period": "",
+      "description": "",
       "features": {
         "subjects": "الوصول إلى 3 مواد",
         "exercises": "+100 تمرين تفاعلي",
@@ -120,10 +122,12 @@
       }
     },
     "regular": {
-      "name": "العادي",
+      "name": "صيغة السنة الدراسية",
       "price": "4 990 دج",
       "period": "/شهر",
       "description": "الأكثر شعبية",
+      "immediatePayment": "الدفع الفوري",
+      "paymentPeriod": "لمدة 10 أشهر حتى 31 يوليو",
       "features": {
         "allSubjects": "الوصول إلى جميع المواد",
         "exercises": "+500 تمرين تفاعلي",
@@ -134,10 +138,10 @@
       }
     },
     "intensive": {
-      "name": "المكثف",
+      "name": "الصيغة الشهرية",
       "price": "7 990 دج",
       "period": "/شهر",
-      "description": "للتحضير الكامل",
+      "description": "",
       "features": {
         "everything": "كل شيء من الخطة العادية",
         "liveCourses": "دروس مباشرة كل أسبوع",
