@@ -2,11 +2,19 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BookOpen, Users, GraduationCap, Settings } from "lucide-react";
+import { BookOpen, Users, GraduationCap, Settings, Search, LogOut, User as UserIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Profile {
   id: string;
@@ -23,6 +31,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -86,6 +95,15 @@ const Dashboard = () => {
     return levels[level as keyof typeof levels] || level;
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Déconnexion",
+      description: "Vous avez été déconnecté avec succès",
+    });
+    navigate("/");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -96,37 +114,87 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-8 mt-16">
-        <div className="max-w-6xl mx-auto">
-          {/* Profile Header */}
-          <Card className="mb-8">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={profile?.avatar_url || undefined} />
-                  <AvatarFallback className="text-2xl">
-                    {profile?.full_name?.charAt(0).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h1 className="text-3xl font-bold">{profile?.full_name || 'Utilisateur'}</h1>
-                  <p className="text-muted-foreground">{profile?.email}</p>
-                  <div className="flex gap-2 mt-2">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
-                      {profile?.role && getRoleName(profile.role)}
-                    </span>
-                    {profile?.school_level && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-secondary/10 text-secondary">
-                        {getSchoolLevelName(profile.school_level)}
-                      </span>
-                    )}
-                  </div>
-                </div>
+      {/* Custom Header for Dashboard */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div 
+              className="flex items-center gap-2 cursor-pointer" 
+              onClick={() => navigate("/")}
+            >
+              <BookOpen className="h-6 w-6 text-primary" />
+              <span className="text-xl font-bold">Méthode Singapour</span>
+            </div>
+
+            {/* Search Bar */}
+            <div className="flex-1 max-w-xl mx-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Rechercher un cours, une matière..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-full"
+                />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Right Side: Premium Button + User Menu */}
+            <div className="flex items-center gap-4">
+              <Button 
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold"
+                onClick={() => navigate("/pricing")}
+              >
+                Passer Premium
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="flex items-center gap-2 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={profile?.avatar_url || undefined} />
+                      <AvatarFallback>
+                        {profile?.full_name?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left hidden md:block">
+                      <p className="text-sm font-medium">{profile?.full_name || 'Utilisateur'}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {profile?.school_level && getSchoolLevelName(profile.school_level)}
+                      </p>
+                    </div>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => navigate("/account")}>
+                    <UserIcon className="mr-2 h-4 w-4" />
+                    <span>Gérer mon compte</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Se déconnecter</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <main className="container mx-auto px-4 py-8 mt-20">
+        <div className="max-w-6xl mx-auto">
+          {/* Welcome Message */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">
+              Bonjour {profile?.full_name || 'Utilisateur'} 👋
+            </h1>
+            <p className="text-muted-foreground">
+              Bienvenue sur votre tableau de bord
+            </p>
+          </div>
 
           {/* Dashboard Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
