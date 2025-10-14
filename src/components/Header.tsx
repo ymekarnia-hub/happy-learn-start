@@ -56,7 +56,10 @@ const Header = ({ minimal = false }: { minimal?: boolean }) => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <div 
+            onClick={() => navigate("/")}
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          >
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
