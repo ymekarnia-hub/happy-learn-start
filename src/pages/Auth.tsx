@@ -38,6 +38,7 @@ const Auth = () => {
     profileType: false,
     classLevel: false
   });
+  const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,15 +69,8 @@ const Auth = () => {
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Mark all fields as touched for validation
-    setTouched({
-      firstName: true,
-      lastName: true,
-      email: true,
-      password: true,
-      profileType: true,
-      classLevel: true
-    });
+    // Marquer le formulaire comme soumis pour afficher les erreurs
+    setSubmitted(true);
 
     // Validation pour l'inscription
     if (!isLogin) {
@@ -301,7 +295,7 @@ const Auth = () => {
                         onBlur={() => setTouched(prev => ({ ...prev, firstName: true }))}
                         className={cn(
                           "bg-secondary/20 pl-10",
-                          touched.firstName && !firstName ? "border-red-500 border-2" : "border-border"
+                          (submitted || touched.firstName) && !firstName ? "border-red-500 border-2" : "border-border"
                         )}
                         required
                       />
@@ -319,7 +313,7 @@ const Auth = () => {
                         onBlur={() => setTouched(prev => ({ ...prev, lastName: true }))}
                         className={cn(
                           "bg-secondary/20 pl-10",
-                          touched.lastName && !lastName ? "border-red-500 border-2" : "border-border"
+                          (submitted || touched.lastName) && !lastName ? "border-red-500 border-2" : "border-border"
                         )}
                         required
                       />
@@ -337,7 +331,7 @@ const Auth = () => {
                     onBlur={() => setTouched(prev => ({ ...prev, email: true }))}
                     className={cn(
                       "bg-secondary/20",
-                      touched.email && !email ? "border-red-500 border-2" : "border-border"
+                      (submitted || touched.email) && !email ? "border-red-500 border-2" : "border-border"
                     )}
                     required
                   />
@@ -354,7 +348,7 @@ const Auth = () => {
                       onBlur={() => setTouched(prev => ({ ...prev, password: true }))}
                       className={cn(
                         "bg-secondary/20 pr-10",
-                        touched.password && !password ? "border-red-500 border-2" : "border-border"
+                        (submitted || touched.password) && !password ? "border-red-500 border-2" : "border-border"
                       )}
                       required
                       minLength={6}
@@ -380,7 +374,7 @@ const Auth = () => {
                     >
                       <div className={cn(
                         "grid grid-cols-2 gap-4 p-1 rounded-lg",
-                        touched.profileType && !profileType ? "ring-2 ring-red-500" : ""
+                        (submitted || touched.profileType) && !profileType ? "ring-2 ring-red-500" : ""
                       )}>
                         <Label 
                           htmlFor="enfant" 
@@ -425,7 +419,7 @@ const Auth = () => {
                       >
                         <div className={cn(
                           "grid grid-cols-2 gap-3 p-1 rounded-lg",
-                          touched.classLevel && !classLevel ? "ring-2 ring-red-500" : ""
+                          (submitted || touched.classLevel) && !classLevel && profileType === "enfant" ? "ring-2 ring-red-500" : ""
                         )}>
                         <Label
                           htmlFor="sixieme" 
