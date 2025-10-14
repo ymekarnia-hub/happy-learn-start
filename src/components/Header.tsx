@@ -97,7 +97,10 @@ const Header = ({ minimal = false }: { minimal?: boolean }) => {
               )}
 
               {!session && (
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6">
+                <Button 
+                  onClick={() => navigate("/auth")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6"
+                >
                   {t("header.freeTrial")}
                 </Button>
               )}
@@ -169,7 +172,10 @@ const Header = ({ minimal = false }: { minimal?: boolean }) => {
             )}
 
             {!session && (
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold">
+              <Button 
+                onClick={() => navigate("/auth")}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold"
+              >
                 {t("header.freeTrial")}
               </Button>
             )}
