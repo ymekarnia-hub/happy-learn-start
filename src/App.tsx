@@ -11,6 +11,7 @@ import MentionsLegales from "./pages/MentionsLegales";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Parcourir from "./pages/Parcourir";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/parcourir" element={<Parcourir />} />
               <Route path="/mentions-legales" element={<MentionsLegales />} />

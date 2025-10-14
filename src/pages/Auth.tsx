@@ -47,8 +47,8 @@ const Auth = () => {
         setSession(session);
         
         if (session) {
-          setTimeout(() => {
-            navigate("/");
+        setTimeout(() => {
+            navigate("/dashboard");
           }, 0);
         }
       }
@@ -58,7 +58,7 @@ const Auth = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
 
@@ -94,13 +94,13 @@ const Auth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/dashboard`,
             data: {
               first_name: firstName,
               last_name: lastName,
               full_name: `${firstName} ${lastName}`,
-              profile_type: profileType,
-              class_level: classLevel,
+              role: profileType === 'enfant' ? 'student' : 'parent',
+              school_level: classLevel,
             },
           },
         });
