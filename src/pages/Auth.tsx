@@ -106,11 +106,15 @@ const Auth = () => {
         });
 
         if (error) throw error;
-        toast.success("Compte créé ! Vérifiez votre email.");
+        toast.success("Compte créé avec succès ! Veuillez vérifier votre boîte email et cliquer sur le lien de confirmation pour activer votre compte.", {
+          duration: 8000,
+        });
       }
     } catch (error: any) {
       if (error.message.includes("Email not confirmed")) {
-        toast.error("Veuillez confirmer votre email avant de vous connecter.");
+        toast.error("Veuillez d'abord confirmer votre email en cliquant sur le lien envoyé dans votre boîte de réception.", {
+          duration: 6000,
+        });
       } else if (error.message.includes("Invalid login credentials")) {
         toast.error("Email ou mot de passe incorrect.");
       } else if (error.message.includes("User already registered")) {
