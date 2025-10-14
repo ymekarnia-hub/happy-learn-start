@@ -200,34 +200,6 @@ const Dashboard = () => {
 
           {/* Dashboard Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {profile?.role === 'student' && (
-              <>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/parcourir')}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5" />
-                      Mes Cours
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">Accédez à vos cours et ressources pédagogiques</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <GraduationCap className="h-5 w-5" />
-                      Mes Exercices
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">Entraînez-vous avec des exercices interactifs</p>
-                  </CardContent>
-                </Card>
-              </>
-            )}
-
             {profile?.role === 'parent' && (
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader>
