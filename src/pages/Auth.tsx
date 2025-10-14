@@ -49,7 +49,7 @@ const Auth = () => {
         
         if (session) {
         setTimeout(() => {
-            navigate("/dashboard");
+            navigate("/liste-cours");
           }, 0);
         }
       }
@@ -59,7 +59,7 @@ const Auth = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        navigate("/dashboard");
+        navigate("/liste-cours");
       }
     });
 
