@@ -374,87 +374,87 @@ const Auth = () => {
                       >
                         <div className="grid grid-cols-2 gap-3">
                         <Label 
-                          htmlFor="college_sixieme" 
+                          htmlFor="sixieme" 
                           className={cn(
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
-                            classLevel === "college_sixieme" 
+                            classLevel === "sixieme" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
                               : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
-                          <RadioGroupItem value="college_sixieme" id="college_sixieme" className="sr-only" />
+                          <RadioGroupItem value="sixieme" id="sixieme" className="sr-only" />
                           6ème
                         </Label>
                         <Label 
-                          htmlFor="college_cinquieme" 
+                          htmlFor="cinquieme" 
                           className={cn(
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
-                            classLevel === "college_cinquieme" 
+                            classLevel === "cinquieme" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
                               : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
-                          <RadioGroupItem value="college_cinquieme" id="college_cinquieme" className="sr-only" />
+                          <RadioGroupItem value="cinquieme" id="cinquieme" className="sr-only" />
                           5ème
                         </Label>
                         <Label 
-                          htmlFor="college_quatrieme" 
+                          htmlFor="quatrieme" 
                           className={cn(
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
-                            classLevel === "college_quatrieme" 
+                            classLevel === "quatrieme" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
                               : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
-                          <RadioGroupItem value="college_quatrieme" id="college_quatrieme" className="sr-only" />
+                          <RadioGroupItem value="quatrieme" id="quatrieme" className="sr-only" />
                           4ème
                         </Label>
                         <Label 
-                          htmlFor="college_troisieme" 
+                          htmlFor="troisieme" 
                           className={cn(
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
-                            classLevel === "college_troisieme"
+                            classLevel === "troisieme" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
                               : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
-                          <RadioGroupItem value="college_troisieme" id="college_troisieme" className="sr-only" />
+                          <RadioGroupItem value="troisieme" id="troisieme" className="sr-only" />
                           3ème
                         </Label>
                         <Label 
-                          htmlFor="lycee_seconde" 
+                          htmlFor="seconde" 
                           className={cn(
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
-                            classLevel === "lycee_seconde" 
+                            classLevel === "seconde" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
                               : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
-                          <RadioGroupItem value="lycee_seconde" id="lycee_seconde" className="sr-only" />
+                          <RadioGroupItem value="seconde" id="seconde" className="sr-only" />
                           Seconde
                         </Label>
                         <Label 
-                          htmlFor="lycee_premiere" 
+                          htmlFor="premiere" 
                           className={cn(
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
-                            classLevel === "lycee_premiere" 
+                            classLevel === "premiere" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
                               : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
-                          <RadioGroupItem value="lycee_premiere" id="lycee_premiere" className="sr-only" />
+                          <RadioGroupItem value="premiere" id="premiere" className="sr-only" />
                           1ère
                         </Label>
                         <Label 
-                          htmlFor="lycee_terminale" 
+                          htmlFor="terminale" 
                           className={cn(
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
-                            classLevel === "lycee_terminale" 
+                            classLevel === "terminale" 
                               ? "bg-primary text-primary-foreground border-primary shadow-md" 
                               : "bg-secondary/20 border-border hover:bg-secondary/30 hover:border-primary"
                           )}
                         >
-                          <RadioGroupItem value="lycee_terminale" id="lycee_terminale" className="sr-only" />
+                          <RadioGroupItem value="terminale" id="terminale" className="sr-only" />
                           Terminale
                         </Label>
                       </div>
