@@ -121,9 +121,6 @@ const ListeCours = () => {
     subject.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const generalSubjects = filteredSubjects.filter(s => s.category === 'general');
-  const specialitySubjects = filteredSubjects.filter(s => s.category === 'speciality');
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -211,15 +208,15 @@ const ListeCours = () => {
             </div>
           </div>
 
-          {/* General Subjects */}
-          {generalSubjects.length > 0 && (
+          {/* All Subjects */}
+          {filteredSubjects.length > 0 && (
             <section className="mb-12">
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                 <BookOpen className="h-6 w-6 text-primary" />
-                Matières Générales
+                Toutes les matières
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {generalSubjects.map((subject, index) => {
+                {filteredSubjects.map((subject, index) => {
                   const Icon = subject.icon;
                   return (
                     <Card
@@ -227,42 +224,6 @@ const ListeCours = () => {
                       className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 hover:border-primary/50 animate-fade-in overflow-hidden"
                       style={{
                         animationDelay: `${index * 50}ms`,
-                        backgroundColor: `${subject.color}15`
-                      }}
-                      onClick={() => navigate(`/cours/${subject.id}`)}
-                    >
-                      <CardContent className="p-6 flex flex-col items-center text-center gap-4">
-                        <div 
-                          className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
-                          style={{ backgroundColor: subject.color }}
-                        >
-                          <Icon className="h-8 w-8 text-white" />
-                        </div>
-                        <h3 className="font-semibold text-lg leading-tight">{subject.name}</h3>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            </section>
-          )}
-
-          {/* Speciality Subjects */}
-          {specialitySubjects.length > 0 && (
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <GraduationCap className="h-6 w-6 text-accent" />
-                Spécialités
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {specialitySubjects.map((subject, index) => {
-                  const Icon = subject.icon;
-                  return (
-                    <Card
-                      key={subject.id}
-                      className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 hover:border-accent/50 animate-fade-in overflow-hidden"
-                      style={{
-                        animationDelay: `${(generalSubjects.length + index) * 50}ms`,
                         backgroundColor: `${subject.color}15`
                       }}
                       onClick={() => navigate(`/cours/${subject.id}`)}
