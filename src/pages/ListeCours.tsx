@@ -33,6 +33,14 @@ interface Subject {
   category: 'general' | 'speciality';
 }
 
+interface DbSubject {
+  id: string;
+  name: string;
+  icon_name: string;
+  color: string;
+  category: 'general' | 'speciality';
+}
+
 const ListeCours = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -40,6 +48,7 @@ const ListeCours = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [subjects, setSubjects] = useState<Subject[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -73,6 +82,11 @@ const ListeCours = () => {
 
       if (error) throw error;
       setProfile(data);
+      
+      // Fetch subjects for the user's school level
+      if (data?.school_level) {
+        await fetchSubjects(data.school_level);
+      }
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -81,6 +95,50 @@ const ListeCours = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSubjects = async (schoolLevel: string) => {
+    try {
+      const { data: classSubjects, error } = await supabase
+        .from('class_subjects')
+        .select(`
+          subject_id,
+          subjects:subject_id (
+            id,
+            name,
+            icon_name,
+            color,
+            category
+          )
+        `)
+        .eq('school_level', schoolLevel as any);
+
+      if (error) throw error;
+
+      const iconMap: Record<string, any> = {
+        Brain, Landmark, Languages, BookOpen, Calculator, Globe, 
+        Microscope, Beaker, Palette, Music, HeartPulse, Code
+      };
+
+      const subjectsData: Subject[] = classSubjects
+        .filter(cs => cs.subjects)
+        .map((cs: any) => ({
+          id: cs.subjects.id,
+          name: cs.subjects.name,
+          icon: iconMap[cs.subjects.icon_name] || BookOpen,
+          color: cs.subjects.color,
+          category: cs.subjects.category
+        }));
+
+      setSubjects(subjectsData);
+    } catch (error: any) {
+      console.error('Error fetching subjects:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les matières",
+        variant: "destructive",
+      });
     }
   };
 
@@ -102,48 +160,9 @@ const ListeCours = () => {
     navigate("/");
   };
 
-  const subjects: Subject[] = [
-    { id: 'philosophie', name: 'Philosophie', icon: Brain, color: 'hsl(350 89% 70%)', category: 'general' },
-    { id: 'histoire', name: 'Histoire-Géographie', icon: Landmark, color: 'hsl(27 96% 61%)', category: 'general' },
-    { id: 'anglais', name: 'Anglais', icon: Languages, color: 'hsl(200 94% 65%)', category: 'general' },
-    { id: 'francais', name: 'Français', icon: BookOpen, color: 'hsl(140 60% 60%)', category: 'general' },
-    { id: 'mathematiques', name: 'Mathématiques', icon: Calculator, color: 'hsl(250 75% 65%)', category: 'general' },
-    { id: 'ses', name: 'SES', icon: Globe, color: 'hsl(33 100% 70%)', category: 'speciality' },
-    { id: 'svt', name: 'SVT', icon: Microscope, color: 'hsl(140 60% 60%)', category: 'speciality' },
-    { id: 'physique', name: 'Physique-Chimie', icon: Beaker, color: 'hsl(200 94% 65%)', category: 'speciality' },
-    { id: 'arts', name: 'Arts Plastiques', icon: Palette, color: 'hsl(280 80% 70%)', category: 'speciality' },
-    { id: 'musique', name: 'Éducation Musicale', icon: Music, color: 'hsl(320 85% 70%)', category: 'speciality' },
-    { id: 'eps', name: 'EPS', icon: HeartPulse, color: 'hsl(10 90% 65%)', category: 'speciality' },
-    { id: 'nsi', name: 'NSI', icon: Code, color: 'hsl(190 80% 60%)', category: 'speciality' },
-  ];
-
-  // Matières par niveau scolaire
-  const getSubjectsBySchoolLevel = (schoolLevel: string | null): string[] => {
-    if (!schoolLevel) return subjects.map(s => s.id);
-
-    const subjectsByLevel: Record<string, string[]> = {
-      cp: ['francais', 'mathematiques'],
-      ce1: ['francais', 'mathematiques', 'anglais'],
-      ce2: ['francais', 'mathematiques', 'anglais'],
-      cm1: ['francais', 'mathematiques', 'anglais', 'histoire'],
-      cm2: ['francais', 'mathematiques', 'anglais', 'histoire'],
-      sixieme: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'eps', 'arts', 'musique'],
-      cinquieme: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'eps', 'arts', 'musique'],
-      quatrieme: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'eps', 'arts', 'musique'],
-      troisieme: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'eps', 'arts', 'musique'],
-      seconde: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'ses', 'eps', 'arts', 'musique'],
-      premiere: ['francais', 'philosophie', 'anglais', 'histoire', 'mathematiques', 'svt', 'physique', 'ses', 'nsi', 'eps', 'arts', 'musique'],
-      terminale: ['philosophie', 'anglais', 'histoire', 'mathematiques', 'svt', 'physique', 'ses', 'nsi', 'eps', 'arts', 'musique'],
-    };
-
-    return subjectsByLevel[schoolLevel] || subjects.map(s => s.id);
-  };
-
-  const allowedSubjectIds = getSubjectsBySchoolLevel(profile?.school_level);
-  
-  const filteredSubjects = subjects
-    .filter(subject => allowedSubjectIds.includes(subject.id))
-    .filter(subject => subject.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredSubjects = subjects.filter(subject =>
+    subject.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading) {
     return (

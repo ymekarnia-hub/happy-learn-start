@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      class_subjects: {
+        Row: {
+          created_at: string
+          id: string
+          is_mandatory: boolean
+          school_level: Database["public"]["Enums"]["school_level"]
+          subject_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_mandatory?: boolean
+          school_level: Database["public"]["Enums"]["school_level"]
+          subject_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_mandatory?: boolean
+          school_level?: Database["public"]["Enums"]["school_level"]
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_subjects_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       parent_children: {
         Row: {
           child_id: string
@@ -95,6 +127,33 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"] | null
           school_level?: Database["public"]["Enums"]["school_level"] | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      subjects: {
+        Row: {
+          category: string
+          color: string
+          created_at: string
+          icon_name: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          color: string
+          created_at?: string
+          icon_name: string
+          id: string
+          name: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string
+          icon_name?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
