@@ -90,18 +90,25 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Connexion réussie !");
       } else {
+        // Préparer les données utilisateur
+        const userData: any = {
+          first_name: firstName,
+          last_name: lastName,
+          full_name: `${firstName} ${lastName}`,
+          role: profileType === 'enfant' ? 'student' : 'parent',
+        };
+        
+        // N'inclure school_level que pour les élèves
+        if (profileType === 'enfant' && classLevel) {
+          userData.school_level = classLevel;
+        }
+        
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: {
-              first_name: firstName,
-              last_name: lastName,
-              full_name: `${firstName} ${lastName}`,
-              role: profileType === 'enfant' ? 'student' : 'parent',
-              school_level: classLevel,
-            },
+            data: userData,
           },
         });
 
