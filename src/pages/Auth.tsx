@@ -77,6 +77,19 @@ const Auth = () => {
       profileType: true,
       classLevel: true
     });
+
+    // Validation pour l'inscription
+    if (!isLogin) {
+      if (!firstName || !lastName || !email || !password || !profileType) {
+        toast.error("Veuillez remplir tous les champs obligatoires.");
+        return;
+      }
+      
+      if (profileType === 'enfant' && !classLevel) {
+        toast.error("Veuillez sélectionner votre classe.");
+        return;
+      }
+    }
     
     setLoading(true);
 
