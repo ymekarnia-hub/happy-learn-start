@@ -126,7 +126,7 @@ const Dashboard = () => {
               <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                 <GraduationCap className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl text-gray-900 font-bold">Méthode Singapour</span>
+              <span className="text-xl text-gray-900 font-bold">AcadémiePlus</span>
             </div>
 
             {/* Search Bar */}
