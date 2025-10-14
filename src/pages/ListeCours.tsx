@@ -117,9 +117,33 @@ const ListeCours = () => {
     { id: 'nsi', name: 'NSI', icon: Code, color: 'hsl(190 80% 60%)', category: 'speciality' },
   ];
 
-  const filteredSubjects = subjects.filter(subject =>
-    subject.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Matières par niveau scolaire
+  const getSubjectsBySchoolLevel = (schoolLevel: string | null): string[] => {
+    if (!schoolLevel) return subjects.map(s => s.id);
+
+    const subjectsByLevel: Record<string, string[]> = {
+      cp: ['francais', 'mathematiques'],
+      ce1: ['francais', 'mathematiques', 'anglais'],
+      ce2: ['francais', 'mathematiques', 'anglais'],
+      cm1: ['francais', 'mathematiques', 'anglais', 'histoire'],
+      cm2: ['francais', 'mathematiques', 'anglais', 'histoire'],
+      sixieme: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'eps', 'arts', 'musique'],
+      cinquieme: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'eps', 'arts', 'musique'],
+      quatrieme: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'eps', 'arts', 'musique'],
+      troisieme: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'eps', 'arts', 'musique'],
+      seconde: ['francais', 'mathematiques', 'anglais', 'histoire', 'svt', 'physique', 'ses', 'eps', 'arts', 'musique'],
+      premiere: ['francais', 'philosophie', 'anglais', 'histoire', 'mathematiques', 'svt', 'physique', 'ses', 'nsi', 'eps', 'arts', 'musique'],
+      terminale: ['philosophie', 'anglais', 'histoire', 'mathematiques', 'svt', 'physique', 'ses', 'nsi', 'eps', 'arts', 'musique'],
+    };
+
+    return subjectsByLevel[schoolLevel] || subjects.map(s => s.id);
+  };
+
+  const allowedSubjectIds = getSubjectsBySchoolLevel(profile?.school_level);
+  
+  const filteredSubjects = subjects
+    .filter(subject => allowedSubjectIds.includes(subject.id))
+    .filter(subject => subject.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   if (loading) {
     return (
