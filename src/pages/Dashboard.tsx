@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BookOpen, Users, GraduationCap, Settings, Search, LogOut, User as UserIcon } from "lucide-react";
+import { Users, GraduationCap, Settings, Search, LogOut, User as UserIcon, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -120,11 +120,13 @@ const Dashboard = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div 
-              className="flex items-center gap-2 cursor-pointer" 
+              className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" 
               onClick={() => navigate("/")}
             >
-              <BookOpen className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">Méthode Singapour</span>
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                <GraduationCap className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-xl text-gray-900 font-bold">Méthode Singapour</span>
             </div>
 
             {/* Search Bar */}
