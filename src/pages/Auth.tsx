@@ -281,8 +281,15 @@ const Auth = () => {
                         type="text"
                         placeholder="Prénom"
                         value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className="bg-secondary/20 pl-10 border-border"
+                        onChange={(e) => {
+                          setFirstName(e.target.value);
+                          setTouched(prev => ({ ...prev, firstName: true }));
+                        }}
+                        onBlur={() => setTouched(prev => ({ ...prev, firstName: true }))}
+                        className={cn(
+                          "bg-secondary/20 pl-10",
+                          touched.firstName && !firstName ? "border-red-500 border-2" : "border-border"
+                        )}
                         required
                       />
                     </div>
@@ -292,8 +299,15 @@ const Auth = () => {
                         type="text"
                         placeholder="Nom"
                         value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="bg-secondary/20 pl-10 border-border"
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                          setTouched(prev => ({ ...prev, lastName: true }));
+                        }}
+                        onBlur={() => setTouched(prev => ({ ...prev, lastName: true }))}
+                        className={cn(
+                          "bg-secondary/20 pl-10",
+                          touched.lastName && !lastName ? "border-red-500 border-2" : "border-border"
+                        )}
                         required
                       />
                     </div>
@@ -303,8 +317,15 @@ const Auth = () => {
                     type="email"
                     placeholder="Adresse e-mail"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-secondary/20 border-border"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setTouched(prev => ({ ...prev, email: true }));
+                    }}
+                    onBlur={() => setTouched(prev => ({ ...prev, email: true }))}
+                    className={cn(
+                      "bg-secondary/20",
+                      touched.email && !email ? "border-red-500 border-2" : "border-border"
+                    )}
                     required
                   />
                   
@@ -313,8 +334,15 @@ const Auth = () => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Mot de passe"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-secondary/20 pr-10 border-border"
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setTouched(prev => ({ ...prev, password: true }));
+                      }}
+                      onBlur={() => setTouched(prev => ({ ...prev, password: true }))}
+                      className={cn(
+                        "bg-secondary/20 pr-10",
+                        touched.password && !password ? "border-red-500 border-2" : "border-border"
+                      )}
                       required
                       minLength={6}
                     />
@@ -337,7 +365,10 @@ const Auth = () => {
                       }} 
                       required
                     >
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className={cn(
+                        "grid grid-cols-2 gap-4 p-1 rounded-lg",
+                        touched.profileType && !profileType ? "ring-2 ring-red-500" : ""
+                      )}>
                         <Label 
                           htmlFor="enfant" 
                           className={cn(
@@ -379,8 +410,11 @@ const Auth = () => {
                         }} 
                         required
                       >
-                        <div className="grid grid-cols-2 gap-3">
-                        <Label 
+                        <div className={cn(
+                          "grid grid-cols-2 gap-3 p-1 rounded-lg",
+                          touched.classLevel && !classLevel ? "ring-2 ring-red-500" : ""
+                        )}>
+                        <Label
                           htmlFor="sixieme" 
                           className={cn(
                             "flex items-center justify-center h-10 px-4 rounded-md border-2 cursor-pointer transition-all font-medium",
@@ -464,9 +498,9 @@ const Auth = () => {
                           <RadioGroupItem value="terminale" id="terminale" className="sr-only" />
                           Terminale
                         </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
+                        </div>
+                      </RadioGroup>
+                    </div>
                   )}
 
                   <Button type="submit" className="w-full bg-primary" disabled={loading}>
