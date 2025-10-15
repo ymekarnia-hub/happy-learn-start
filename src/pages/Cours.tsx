@@ -183,7 +183,7 @@ const Cours = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{course.title}</BreadcrumbPage>
+              <BreadcrumbPage>{subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
