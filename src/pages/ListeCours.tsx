@@ -270,7 +270,7 @@ const ListeCours = () => {
                         backgroundColor: `${subject.color}15`
                       }}
                     >
-                      <CardContent className="p-6 space-y-4">
+                      <CardContent className="p-6">
                         <div className="flex flex-col items-center text-center gap-4">
                           <div 
                             className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
@@ -279,36 +279,6 @@ const ListeCours = () => {
                             <Icon className="h-8 w-8 text-white" />
                           </div>
                           <h3 className="font-semibold text-lg leading-tight">{subject.name}</h3>
-                        </div>
-                        
-                        <div className="grid grid-cols-3 gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => navigate(`/cours/${subject.id}`)}
-                          >
-                            <BookOpen className="h-3 w-3 mr-1" />
-                            Cours
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => navigate(`/revision/${subject.id}`)}
-                          >
-                            <BookMarked className="h-3 w-3 mr-1" />
-                            Réviser
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => navigate(`/simulation/${subject.id}`)}
-                          >
-                            <Target className="h-3 w-3 mr-1" />
-                            Examen
-                          </Button>
                         </div>
                       </CardContent>
                     </Card>
