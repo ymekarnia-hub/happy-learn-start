@@ -60,7 +60,7 @@ const Cours = () => {
         .eq("school_level", profile?.school_level)
         .order("order_index")
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (courseError) throw courseError;
       setCourse(courseData);
