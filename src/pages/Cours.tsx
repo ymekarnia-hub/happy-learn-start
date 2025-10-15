@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { CourseHeader } from "@/components/course/CourseHeader";
-import { CourseNavigation } from "@/components/course/CourseNavigation";
 import { CourseContent } from "@/components/course/CourseContent";
+import { ChapterGrid } from "@/components/course/ChapterGrid";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
@@ -22,10 +21,13 @@ const Cours = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [course, setCourse] = useState<any>(null);
+  const [subject, setSubject] = useState<any>(null);
+  const [schoolLevel, setSchoolLevel] = useState<string>("");
   const [chapters, setChapters] = useState<any[]>([]);
   const [activeChapter, setActiveChapter] = useState<any>(null);
   const [materials, setMaterials] = useState<any[]>([]);
   const [progress, setProgress] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "content">("grid");
 
   useEffect(() => {
     if (subjectId) {
@@ -52,6 +54,17 @@ const Cours = () => {
         .select("school_level")
         .eq("id", user.id)
         .single();
+
+      setSchoolLevel(profile?.school_level || "");
+
+      // Fetch subject details
+      const { data: subjectData } = await supabase
+        .from("subjects")
+        .select("*")
+        .eq("id", subjectId)
+        .single();
+
+      setSubject(subjectData);
 
       const { data: courseData, error: courseError } = await supabase
         .from("courses")
@@ -170,47 +183,72 @@ const Cours = () => {
   ).length;
   const progressPercentage = (completedChapters / chapters.length) * 100;
 
+  const schoolLevelLabels: Record<string, string> = {
+    "sixieme": "6ème",
+    "cinquieme": "5ème",
+    "quatrieme": "4ème",
+    "troisieme": "3ème",
+    "seconde": "Seconde",
+    "premiere": "Première",
+    "terminale": "Terminale"
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background">
       <div className="container mx-auto px-4 py-8">
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Catalogue</BreadcrumbPage>
+              <BreadcrumbPage>{schoolLevelLabels[schoolLevel] || "Catalogue"}</BreadcrumbPage>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}</BreadcrumbPage>
+              <BreadcrumbPage>{subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
         <div className="space-y-6">
-          <CourseHeader
-            title={course.title}
-            description={course.description}
-            difficulty={course.difficulty}
-            duration={course.duration_minutes}
-            progress={progressPercentage}
-            subjectColor="#000000"
-          />
+          <div>
+            <h1 className="text-4xl font-bold mb-2">
+              {subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}
+            </h1>
+            {course && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-muted-foreground">Progression globale</span>
+                  <span className="font-medium">{Math.round(progressPercentage)}%</span>
+                </div>
+                <Progress value={progressPercentage} className="h-2" />
+              </div>
+            )}
+          </div>
 
-          <div className="grid lg:grid-cols-4 gap-6">
-            <div className="lg:col-span-1">
-              <CourseNavigation
-                chapters={chapters.map(c => ({
-                  ...c,
-                  completed: progress.some(p => p.chapter_id === c.id)
-                }))}
-                activeChapterId={activeChapter?.id}
-                onChapterSelect={(id) => {
-                  const chapter = chapters.find(c => c.id === id);
-                  if (chapter) setActiveChapter(chapter);
-                }}
-              />
-            </div>
-
-            <div className="lg:col-span-3">
+          {viewMode === "grid" ? (
+            <ChapterGrid
+              chapters={chapters.map(c => ({
+                ...c,
+                completed: progress.some(p => p.chapter_id === c.id)
+              }))}
+              onChapterSelect={(id) => {
+                const chapter = chapters.find(c => c.id === id);
+                if (chapter) {
+                  setActiveChapter(chapter);
+                  setViewMode("content");
+                }
+              }}
+            />
+          ) : (
+            <div className="space-y-4">
+              <Button
+                variant="ghost"
+                onClick={() => setViewMode("grid")}
+                className="mb-4"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Retour aux chapitres
+              </Button>
+              
               {activeChapter && (
                 <CourseContent
                   content={activeChapter.content}
@@ -219,12 +257,12 @@ const Cours = () => {
                   onMarkComplete={handleMarkComplete}
                   onPrevious={() => handleChapterChange("prev")}
                   onNext={() => handleChapterChange("next")}
-                  hasPrevious={currentIndex > 0}
-                  hasNext={currentIndex < chapters.length - 1}
+                  hasPrevious={chapters.findIndex(c => c.id === activeChapter?.id) > 0}
+                  hasNext={chapters.findIndex(c => c.id === activeChapter?.id) < chapters.length - 1}
                 />
               )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
