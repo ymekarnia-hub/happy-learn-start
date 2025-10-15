@@ -160,9 +160,6 @@ const Cours = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-bold mb-4">Cours non trouvé</h2>
-        <Button onClick={() => navigate("/liste-cours")}>
-          Retour au catalogue
-        </Button>
       </div>
     );
   }
