@@ -264,11 +264,12 @@ const ListeCours = () => {
                   return (
                     <Card
                       key={subject.id}
-                      className="group transition-all duration-300 hover:shadow-2xl border-2 hover:border-primary/50 animate-fade-in overflow-hidden"
+                      className="group transition-all duration-300 hover:shadow-2xl border-2 hover:border-primary/50 animate-fade-in overflow-hidden cursor-pointer"
                       style={{
                         animationDelay: `${index * 50}ms`,
                         backgroundColor: `${subject.color}15`
                       }}
+                      onClick={() => navigate(`/cours/${subject.id}`)}
                     >
                       <CardContent className="p-6">
                         <div className="flex flex-col items-center text-center gap-4">
