@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { GraduationCap, Search, LogOut, User as UserIcon, BookOpen, Beaker, Globe, Calculator, Brain, Palette, Landmark, Languages, Microscope, Music, HeartPulse, Code } from "lucide-react";
+import { GraduationCap, Search, LogOut, User as UserIcon, BookOpen, Beaker, Globe, Calculator, Brain, Palette, Landmark, Languages, Microscope, Music, HeartPulse, Code, BookMarked, Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -264,21 +264,52 @@ const ListeCours = () => {
                   return (
                     <Card
                       key={subject.id}
-                      className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 hover:border-primary/50 animate-fade-in overflow-hidden"
+                      className="group transition-all duration-300 hover:shadow-2xl border-2 hover:border-primary/50 animate-fade-in overflow-hidden"
                       style={{
                         animationDelay: `${index * 50}ms`,
                         backgroundColor: `${subject.color}15`
                       }}
-                      onClick={() => navigate(`/cours/${subject.id}`)}
                     >
-                      <CardContent className="p-6 flex flex-col items-center text-center gap-4">
-                        <div 
-                          className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
-                          style={{ backgroundColor: subject.color }}
-                        >
-                          <Icon className="h-8 w-8 text-white" />
+                      <CardContent className="p-6 space-y-4">
+                        <div className="flex flex-col items-center text-center gap-4">
+                          <div 
+                            className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
+                            style={{ backgroundColor: subject.color }}
+                          >
+                            <Icon className="h-8 w-8 text-white" />
+                          </div>
+                          <h3 className="font-semibold text-lg leading-tight">{subject.name}</h3>
                         </div>
-                        <h3 className="font-semibold text-lg leading-tight">{subject.name}</h3>
+                        
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => navigate(`/cours/${subject.id}`)}
+                          >
+                            <BookOpen className="h-3 w-3 mr-1" />
+                            Cours
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => navigate(`/revision/${subject.id}`)}
+                          >
+                            <BookMarked className="h-3 w-3 mr-1" />
+                            Réviser
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => navigate(`/simulation/${subject.id}`)}
+                          >
+                            <Target className="h-3 w-3 mr-1" />
+                            Examen
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   );

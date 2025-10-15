@@ -13,6 +13,9 @@ import Auth from "./pages/Auth";
 import Parcourir from "./pages/Parcourir";
 import Dashboard from "./pages/Dashboard";
 import ListeCours from "./pages/ListeCours";
+import Cours from "./pages/Cours";
+import Revision from "./pages/Revision";
+import Simulation from "./pages/Simulation";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +32,9 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/liste-cours" element={<ListeCours />} />
+              <Route path="/cours/:subjectId" element={<Cours />} />
+              <Route path="/revision/:subjectId" element={<Revision />} />
+              <Route path="/simulation/:subjectId" element={<Simulation />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/parcourir" element={<Parcourir />} />
               <Route path="/mentions-legales" element={<MentionsLegales />} />

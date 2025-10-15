@@ -46,6 +46,170 @@ export type Database = {
           },
         ]
       }
+      course_chapters: {
+        Row: {
+          content: string
+          course_id: string
+          created_at: string
+          id: string
+          order_index: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          course_id: string
+          created_at?: string
+          id?: string
+          order_index?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          course_id?: string
+          created_at?: string
+          id?: string
+          order_index?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_chapters_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_materials: {
+        Row: {
+          chapter_id: string
+          created_at: string
+          file_size: number | null
+          id: string
+          title: string
+          type: string
+          url: string
+        }
+        Insert: {
+          chapter_id: string
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          title: string
+          type: string
+          url: string
+        }
+        Update: {
+          chapter_id?: string
+          created_at?: string
+          file_size?: number | null
+          id?: string
+          title?: string
+          type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_materials_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "course_chapters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          created_at: string
+          description: string | null
+          difficulty: string | null
+          duration_minutes: number | null
+          id: string
+          order_index: number
+          school_level: Database["public"]["Enums"]["school_level"]
+          subject_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          duration_minutes?: number | null
+          id?: string
+          order_index?: number
+          school_level: Database["public"]["Enums"]["school_level"]
+          subject_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          duration_minutes?: number | null
+          id?: string
+          order_index?: number
+          school_level?: Database["public"]["Enums"]["school_level"]
+          subject_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_attempts: {
+        Row: {
+          answers: Json
+          created_at: string
+          duration_seconds: number
+          id: string
+          score: number
+          subject_id: string
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          answers: Json
+          created_at?: string
+          duration_seconds: number
+          id?: string
+          score: number
+          subject_id: string
+          total_questions: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          score?: number
+          subject_id?: string
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_attempts_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       parent_children: {
         Row: {
           child_id: string
@@ -130,6 +294,50 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_questions: {
+        Row: {
+          correct_answer: string
+          created_at: string
+          difficulty: string | null
+          explanation: string | null
+          id: string
+          options: Json
+          question: string
+          school_level: Database["public"]["Enums"]["school_level"]
+          subject_id: string
+        }
+        Insert: {
+          correct_answer: string
+          created_at?: string
+          difficulty?: string | null
+          explanation?: string | null
+          id?: string
+          options: Json
+          question: string
+          school_level: Database["public"]["Enums"]["school_level"]
+          subject_id: string
+        }
+        Update: {
+          correct_answer?: string
+          created_at?: string
+          difficulty?: string | null
+          explanation?: string | null
+          id?: string
+          options?: Json
+          question?: string
+          school_level?: Database["public"]["Enums"]["school_level"]
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subjects: {
         Row: {
           category: string
@@ -156,6 +364,47 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      user_progress: {
+        Row: {
+          chapter_id: string
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          last_position: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chapter_id: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_position?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_position?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "course_chapters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
