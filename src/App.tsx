@@ -22,28 +22,26 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <I18nextProvider i18n={i18n}>
-      <div dir="ltr">
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/liste-cours" element={<ListeCours />} />
-              <Route path="/cours/:subjectId" element={<Cours />} />
-              <Route path="/revision/:subjectId" element={<Revision />} />
-              <Route path="/simulation/:subjectId" element={<Simulation />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/parcourir" element={<Parcourir />} />
-              <Route path="/mentions-legales" element={<MentionsLegales />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </div>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/liste-cours" element={<ListeCours />} />
+            <Route path="/cours/:subjectId" element={<Cours />} />
+            <Route path="/revision/:subjectId" element={<Revision />} />
+            <Route path="/simulation/:subjectId" element={<Simulation />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/parcourir" element={<Parcourir />} />
+            <Route path="/mentions-legales" element={<MentionsLegales />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
     </I18nextProvider>
   </QueryClientProvider>
 );
