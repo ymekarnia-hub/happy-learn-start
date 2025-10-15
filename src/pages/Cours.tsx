@@ -179,9 +179,7 @@ const Cours = () => {
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/liste-cours">Catalogue</Link>
-              </BreadcrumbLink>
+              <BreadcrumbPage>Catalogue</BreadcrumbPage>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
