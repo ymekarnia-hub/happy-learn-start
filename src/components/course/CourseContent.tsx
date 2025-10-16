@@ -135,7 +135,7 @@ export const CourseContent = ({
                     key={section.id}
                     href={`#${section.id}`}
                     className={`flex items-start gap-3 text-base font-bold transition-colors hover:text-primary ${
-                      activeSection === section.id ? 'text-primary font-bold' : 'text-muted-foreground'
+                      activeSection === section.id ? 'text-primary font-bold' : 'text-foreground'
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
