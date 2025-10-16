@@ -37,7 +37,7 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
       {Object.entries(themes).map(([themeName, themeChapters]) => (
         <div key={themeName} className="space-y-6">
           <div>
-            <p className="text-sm text-muted-foreground mb-1">
+            <p className="text-lg font-semibold text-primary mb-2">
               {themeName}
             </p>
             <h2 className="text-2xl font-bold">
