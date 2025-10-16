@@ -308,7 +308,9 @@ const Cours = () => {
         <div className="space-y-6">
           <div>
             <h1 className="text-4xl font-bold mb-2">
-              {subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}
+              {viewMode === "content" && activeChapter 
+                ? activeChapter.title 
+                : subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}
             </h1>
           </div>
 
