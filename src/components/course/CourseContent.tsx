@@ -142,7 +142,7 @@ export const CourseContent = ({
                       setActiveSection(section.id);
                     }}
                   >
-                    <Badge variant="secondary" className="flex-shrink-0">
+                    <Badge variant="secondary" className="flex-shrink-0 font-bold text-foreground text-base">
                       {romanNumerals[section.number - 1] || section.number}
                     </Badge>
                     <span className="leading-tight">{section.title}</span>
