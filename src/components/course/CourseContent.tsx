@@ -101,8 +101,8 @@ export const CourseContent = ({
       )}
 
       {/* Main content with sidebar */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start relative">
-        {/* Content Section */}
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {/* Content Section - Scrollable */}
         <div className="flex-1 w-full lg:w-auto space-y-6">
           <div className="bg-card rounded-lg p-6 border-2">
             <div 
@@ -131,10 +131,10 @@ export const CourseContent = ({
           </div>
         </div>
 
-        {/* Sidebar - Table of Contents */}
+        {/* Sidebar - Table of Contents - Fixed Position */}
         {sections.length > 0 && (
           <aside className="hidden lg:block w-80 flex-shrink-0">
-            <div className="sticky top-6 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto">
+            <div className="fixed top-24 right-8 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-8rem)] overflow-y-auto shadow-lg">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire
