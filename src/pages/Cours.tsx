@@ -220,14 +220,15 @@ const Cours = () => {
         return false;
       };
 
-      // Titre principal
-      doc.setDrawColor(0);
-      doc.setLineWidth(0.5);
+      // Titre principal avec couleur
+      doc.setDrawColor(59, 130, 246); // Bleu
+      doc.setLineWidth(1);
       doc.line(margin, yPosition, pageWidth - margin, yPosition);
       yPosition += 8;
       
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
+      doc.setTextColor(59, 130, 246); // Bleu pour le titre
       const titleLines = doc.splitTextToSize(activeChapter.title, maxWidth);
       titleLines.forEach((line: string) => {
         doc.text(line, pageWidth / 2, yPosition, { align: 'center' });
@@ -235,6 +236,7 @@ const Cours = () => {
       });
       
       yPosition += 3;
+      doc.setDrawColor(59, 130, 246);
       doc.line(margin, yPosition, pageWidth - margin, yPosition);
       yPosition += 12;
 
@@ -254,13 +256,14 @@ const Cours = () => {
             yPosition += 8;
             doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor(37, 99, 235); // Bleu foncé pour H2
             const h2Lines = doc.splitTextToSize(text, maxWidth);
             h2Lines.forEach((line: string) => {
               doc.text(line, margin, yPosition);
               yPosition += 7;
             });
             yPosition += 3;
+            doc.setTextColor(0, 0, 0); // Reset couleur
             break;
 
           case 'h3':
@@ -268,12 +271,13 @@ const Cours = () => {
             yPosition += 6;
             doc.setFontSize(13);
             doc.setFont('helvetica', 'bold');
-            doc.setFillColor(243, 244, 246);
+            doc.setFillColor(219, 234, 254); // Fond bleu clair
             const h3Height = 8;
             doc.rect(margin, yPosition - 5, maxWidth, h3Height, 'F');
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor(30, 64, 175); // Bleu foncé pour le texte H3
             doc.text(text, margin + 3, yPosition);
             yPosition += 6;
+            doc.setTextColor(0, 0, 0); // Reset couleur
             break;
 
           case 'p':
@@ -293,21 +297,23 @@ const Cours = () => {
           case 'blockquote':
             checkPageBreak(15);
             yPosition += 4;
-            doc.setFillColor(249, 250, 251);
+            doc.setFillColor(254, 249, 195); // Fond jaune clair
             doc.setFontSize(11);
             doc.setFont('helvetica', 'italic');
             const bqLines = doc.splitTextToSize(text, maxWidth - 8);
             const bqHeight = bqLines.length * 5 + 6;
             doc.rect(margin, yPosition - 3, maxWidth, bqHeight, 'F');
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(1);
+            doc.setDrawColor(234, 179, 8); // Bordure jaune foncé
+            doc.setLineWidth(1.5);
             doc.line(margin, yPosition - 3, margin, yPosition + bqHeight - 3);
+            doc.setTextColor(113, 63, 18); // Texte marron
             bqLines.forEach((line: string) => {
               doc.text(line, margin + 5, yPosition);
               yPosition += 5;
             });
             yPosition += 6;
             doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0); // Reset couleur
             break;
 
           case 'ul':
@@ -318,6 +324,7 @@ const Cours = () => {
                 checkPageBreak(6);
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
                 const liLines = doc.splitTextToSize('• ' + liText, maxWidth - 8);
                 liLines.forEach((line: string, index: number) => {
                   doc.text(line, margin + (index > 0 ? 5 : 0), yPosition);
@@ -336,11 +343,13 @@ const Cours = () => {
                 checkPageBreak(6);
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
+                doc.setTextColor(22, 101, 52); // Vert foncé pour les numéros
                 const liLines = doc.splitTextToSize(`${index + 1}. ${liText}`, maxWidth - 8);
                 liLines.forEach((line: string, lineIndex: number) => {
                   doc.text(line, margin + (lineIndex > 0 ? 5 : 0), yPosition);
                   yPosition += 5;
                 });
+                doc.setTextColor(0, 0, 0); // Reset couleur
               }
             });
             yPosition += 3;
