@@ -206,8 +206,8 @@ const Cours = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/parcourir" className="transition-colors hover:text-foreground">
-                {schoolLevelLabels[schoolLevel] || "Catalogue"}
+              <BreadcrumbLink href="/liste-cours" className="transition-colors hover:text-foreground">
+                {schoolLevelLabels[schoolLevel] || "Mes matières"}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
