@@ -131,7 +131,7 @@ export const CourseContent = ({
           </div>
         </div>
 
-        {/* Sidebar - Table of Contents - Sticky Position */}
+        {/* Sidebar - Table of Contents - Static Position */}
         {sections.length > 0 && (
           <aside className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
