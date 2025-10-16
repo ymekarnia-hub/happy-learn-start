@@ -80,6 +80,21 @@ export const CourseContent = ({
 
   return (
     <div className="space-y-6">
+      {/* Download PDF Button aligned with chapter title */}
+      {onDownloadPDF && (
+        <div className="flex justify-end">
+          <Button
+            onClick={onDownloadPDF}
+            variant="default"
+            size="lg"
+            className="bg-primary hover:bg-primary/90"
+          >
+            <Download className="h-5 w-5 mr-2" />
+            Télécharger en PDF
+          </Button>
+        </div>
+      )}
+
       {/* Video Section */}
       {videos.length > 0 && (
         <div className="space-y-4">
@@ -122,21 +137,7 @@ export const CourseContent = ({
 
         {/* Sidebar - Table of Contents */}
         {sections.length > 0 && (
-          <aside className="hidden lg:block w-80 flex-shrink-0 space-y-4">
-            {/* Download PDF Button */}
-            {onDownloadPDF && (
-              <div className="flex justify-center">
-                <Button
-                  onClick={onDownloadPDF}
-                  variant="outline"
-                  className="w-full"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Télécharger en PDF
-                </Button>
-              </div>
-            )}
-            
+          <aside className="hidden lg:block w-80 flex-shrink-0">
             {/* Table of Contents */}
             <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
               <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
