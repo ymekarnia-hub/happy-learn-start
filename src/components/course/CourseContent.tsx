@@ -125,7 +125,7 @@ export const CourseContent = ({
           <aside className="hidden lg:block w-80 flex-shrink-0">
             {/* Table of Contents */}
             <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire
               </h3>
@@ -134,8 +134,8 @@ export const CourseContent = ({
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className={`flex items-start gap-3 text-sm transition-colors hover:text-primary ${
-                      activeSection === section.id ? 'text-primary font-medium' : 'text-muted-foreground'
+                    className={`flex items-start gap-3 text-base font-bold transition-colors hover:text-primary ${
+                      activeSection === section.id ? 'text-primary font-bold' : 'text-muted-foreground'
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
