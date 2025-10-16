@@ -83,14 +83,6 @@ export const CourseContent = ({
 
   return (
     <div className="space-y-6">
-      {/* Header with download button */}
-      <div className="flex items-center justify-end">
-        <Button variant="outline" onClick={handleDownloadPDF}>
-          <Download className="h-4 w-4 mr-2" />
-          Télécharger en PDF
-        </Button>
-      </div>
-
       {/* Video Section */}
       {videos.length > 0 && (
         <div className="space-y-4">
@@ -131,10 +123,22 @@ export const CourseContent = ({
           </div>
         </div>
 
-        {/* Sidebar - Table of Contents - Static Position */}
+        {/* Sidebar - Table of Contents & Download Button */}
         {sections.length > 0 && (
-          <aside className="hidden lg:block w-80 flex-shrink-0">
-            <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
+          <aside className="hidden lg:block w-80 flex-shrink-0 space-y-4">
+            {/* Download Button */}
+            <div className="flex items-center justify-center">
+              <Button 
+                className="w-full py-6 text-base font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg" 
+                onClick={handleDownloadPDF}
+              >
+                <Download className="h-5 w-5 mr-2" />
+                Télécharger en PDF
+              </Button>
+            </div>
+            
+            {/* Table of Contents */}
+            <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-12rem)] overflow-y-auto shadow-lg">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire
