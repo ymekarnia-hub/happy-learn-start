@@ -349,6 +349,7 @@ const Cours = () => {
                   onNext={() => handleChapterChange("next")}
                   hasPrevious={chapters.findIndex(c => c.id === activeChapter?.id) > 0}
                   hasNext={chapters.findIndex(c => c.id === activeChapter?.id) < chapters.length - 1}
+                  onDownloadPDF={() => window.print()}
                 />
               )}
             </div>
