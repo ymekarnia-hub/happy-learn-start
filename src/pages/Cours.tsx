@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { CourseContent } from "@/components/course/CourseContent";
+import { PDFContent } from "@/components/course/PDFContent";
 import { ChapterGrid } from "@/components/course/ChapterGrid";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -192,21 +193,60 @@ const Cours = () => {
   };
 
   const handleDownloadPDF = async () => {
-    if (!activeChapter || !contentRef.current) return;
+    if (!activeChapter) return;
 
     try {
       const html2pdf = (await import('html2pdf.js')).default;
       
-      const element = contentRef.current;
+      // Créer un élément temporaire avec le contenu formaté pour PDF
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      document.body.appendChild(tempDiv);
+      
+      // Importer React et ReactDOM pour le rendu
+      const { createRoot } = await import('react-dom/client');
+      const { PDFContent } = await import('@/components/course/PDFContent');
+      
+      const root = createRoot(tempDiv);
+      root.render(
+        <PDFContent 
+          chapterTitle={activeChapter.title} 
+          content={activeChapter.content} 
+        />
+      );
+      
+      // Attendre que le rendu soit terminé
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const opt = {
-        margin: [10, 10, 10, 10] as [number, number, number, number],
+        margin: [15, 15, 15, 15] as [number, number, number, number],
         filename: `${activeChapter.title}.pdf`,
-        image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+        image: { type: 'jpeg' as const, quality: 0.95 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true,
+          letterRendering: true,
+          logging: false
+        },
+        jsPDF: { 
+          unit: 'mm' as const, 
+          format: 'a4' as const, 
+          orientation: 'portrait' as const 
+        },
+        pagebreak: { 
+          mode: ['avoid-all', 'css', 'legacy'] as any,
+          before: '.page-break-before',
+          after: '.page-break-after',
+          avoid: ['h2', 'h3', 'blockquote', 'p']
+        }
       };
 
-      await html2pdf().set(opt).from(element).save();
+      await html2pdf().set(opt).from(tempDiv).save();
+      
+      // Nettoyer
+      root.unmount();
+      document.body.removeChild(tempDiv);
       
       toast({
         title: "PDF téléchargé",
