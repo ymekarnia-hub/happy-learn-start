@@ -44,7 +44,7 @@ export const ActivityCards = ({ onCardClick }: ActivityCardsProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+    <div className="flex gap-3 mb-6 max-w-md">
       {cards.map((card) => {
         const Icon = card.icon;
         const isActive = false;
@@ -53,23 +53,21 @@ export const ActivityCards = ({ onCardClick }: ActivityCardsProps) => {
           <Card
             key={card.id}
             className={cn(
-              "relative overflow-hidden transition-all duration-200 cursor-pointer group",
-              "hover:shadow-md border-2",
-              isActive 
-                ? "bg-card border-primary/20 shadow-sm" 
-                : "bg-card/50 border-border/50 hover:border-primary/30"
+              "flex-1 overflow-hidden transition-all duration-200 cursor-pointer group",
+              "hover:shadow-md border",
+              "bg-card/50 border-border/50 hover:border-primary/30"
             )}
             onClick={() => !card.locked && onCardClick?.(card.id)}
           >
-            <CardContent className="p-4 flex flex-col items-center justify-center space-y-2 relative">
+            <CardContent className="p-3 flex flex-col items-center justify-center space-y-1.5 relative">
               <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm"
                 style={{ backgroundColor: card.color }}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="h-4 w-4" />
               </div>
               
-              <span className="text-xs font-medium text-center text-foreground">
+              <span className="text-[10px] font-medium text-center text-foreground leading-tight">
                 {card.title}
               </span>
             </CardContent>
