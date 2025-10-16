@@ -208,12 +208,12 @@ const Cours = () => {
 
       // Fonction pour convertir HSL en RGB
       const hslToRgb = (hslString: string): [number, number, number] => {
-        const match = hslString.match(/hsl\((\d+)\s+(\d+)%\s+(\d+)%\)/);
-        if (!match) return [59, 130, 246]; // Bleu par défaut
+        const match = hslString.match(/hsl\((\d+\.?\d*)\s+(\d+\.?\d*)%\s+(\d+\.?\d*)%\)/);
+        if (!match) return [0, 0, 0]; // Noir par défaut
         
-        const h = parseInt(match[1]) / 360;
-        const s = parseInt(match[2]) / 100;
-        const l = parseInt(match[3]) / 100;
+        const h = parseFloat(match[1]) / 360;
+        const s = parseFloat(match[2]) / 100;
+        const l = parseFloat(match[3]) / 100;
         
         let r, g, b;
         if (s === 0) {
