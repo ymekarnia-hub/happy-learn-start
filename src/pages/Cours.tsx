@@ -5,7 +5,7 @@ import { CourseContent } from "@/components/course/CourseContent";
 import { ChapterGrid } from "@/components/course/ChapterGrid";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, GraduationCap, LogOut, User as UserIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Breadcrumb,
@@ -15,6 +15,15 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Cours = () => {
   const { subjectId } = useParams();
@@ -29,6 +38,7 @@ const Cours = () => {
   const [materials, setMaterials] = useState<any[]>([]);
   const [progress, setProgress] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "content">("grid");
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     if (subjectId) {
@@ -50,13 +60,14 @@ const Cours = () => {
         return;
       }
 
-      const { data: profile } = await supabase
+      const { data: profileData } = await supabase
         .from("profiles")
-        .select("school_level")
+        .select("*")
         .eq("id", user.id)
         .single();
 
-      setSchoolLevel(profile?.school_level || "");
+      setProfile(profileData);
+      setSchoolLevel(profileData?.school_level || "");
 
       // Fetch subject details
       const { data: subjectData } = await supabase
@@ -162,6 +173,24 @@ const Cours = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
+  const getSchoolLevelName = (level: string) => {
+    const labels: Record<string, string> = {
+      sixieme: "6ème",
+      cinquieme: "5ème",
+      quatrieme: "4ème",
+      troisieme: "3ème",
+      seconde: "Seconde",
+      premiere: "Première",
+      terminale: "Terminale",
+    };
+    return labels[level] || level;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -196,7 +225,50 @@ const Cours = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background">
-      <div className="container mx-auto px-4 py-8">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold">EduPlatform</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={profile?.avatar_url} alt={profile?.full_name} />
+                    <AvatarFallback>
+                      <UserIcon className="h-5 w-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{profile?.full_name}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {profile?.school_level && getSchoolLevelName(profile.school_level)}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  <span>Tableau de bord</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Déconnexion</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8 pt-24">
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
