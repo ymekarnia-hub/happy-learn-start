@@ -45,7 +45,7 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl">
             {themeChapters.map((chapter, index) => (
               <Card
                 key={chapter.id}
@@ -53,12 +53,12 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
                 onClick={() => onChapterSelect(chapter.id)}
               >
                 <CardContent className="p-0">
-                  <div className="relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/30 p-6 min-h-[180px] flex items-center justify-center">
+                  <div className="relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/30 p-4 min-h-[120px] flex items-center justify-center">
                     {/* Fond décoratif avec formules mathématiques */}
                     <div className="absolute inset-0 opacity-10 overflow-hidden">
-                      <div className="absolute top-2 left-2 text-4xl font-serif">∫</div>
-                      <div className="absolute top-12 right-4 text-3xl">π</div>
-                      <div className="absolute bottom-4 left-8 text-2xl">∑</div>
+                      <div className="absolute top-2 left-2 text-3xl font-serif">∫</div>
+                      <div className="absolute top-8 right-4 text-2xl">π</div>
+                      <div className="absolute bottom-4 left-8 text-xl">∑</div>
                       <div className="absolute top-1/2 right-8 text-3xl">√</div>
                       <div className="absolute bottom-8 right-12 text-xl">θ</div>
                     </div>
