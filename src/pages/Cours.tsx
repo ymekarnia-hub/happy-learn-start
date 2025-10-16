@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { CourseContent } from "@/components/course/CourseContent";
@@ -28,6 +28,7 @@ const Cours = () => {
   const { subjectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const contentRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [course, setCourse] = useState<any>(null);
   const [subject, setSubject] = useState<any>(null);
@@ -190,6 +191,37 @@ const Cours = () => {
     return labels[level] || level;
   };
 
+  const handleDownloadPDF = async () => {
+    if (!activeChapter || !contentRef.current) return;
+
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+      
+      const element = contentRef.current;
+      const opt = {
+        margin: [10, 10, 10, 10] as [number, number, number, number],
+        filename: `${activeChapter.title}.pdf`,
+        image: { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+      };
+
+      await html2pdf().set(opt).from(element).save();
+      
+      toast({
+        title: "PDF téléchargé",
+        description: "Le chapitre a été téléchargé avec succès",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de générer le PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -338,7 +370,7 @@ const Cours = () => {
               }}
             />
           ) : (
-            <div className="space-y-4">
+            <div ref={contentRef} className="space-y-4">
               {activeChapter && (
                 <CourseContent
                   content={activeChapter.content}
@@ -349,7 +381,7 @@ const Cours = () => {
                   onNext={() => handleChapterChange("next")}
                   hasPrevious={chapters.findIndex(c => c.id === activeChapter?.id) > 0}
                   hasNext={chapters.findIndex(c => c.id === activeChapter?.id) < chapters.length - 1}
-                  onDownloadPDF={() => window.print()}
+                  onDownloadPDF={handleDownloadPDF}
                 />
               )}
             </div>
