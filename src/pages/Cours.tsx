@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CourseContent } from "@/components/course/CourseContent";
 import { PDFContent } from "@/components/course/PDFContent";
 import { ChapterGrid } from "@/components/course/ChapterGrid";
+import { ActivityCards } from "@/components/course/ActivityCards";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, GraduationCap, LogOut, User as UserIcon } from "lucide-react";
@@ -558,6 +559,8 @@ const Cours = () => {
                 : subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}
             </h1>
           </div>
+
+          {viewMode === "content" && <ActivityCards />}
 
           {viewMode === "grid" ? (
             <ChapterGrid
