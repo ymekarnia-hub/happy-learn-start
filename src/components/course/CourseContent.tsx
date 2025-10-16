@@ -21,6 +21,7 @@ interface CourseContentProps {
   onNext?: () => void;
   hasPrevious?: boolean;
   hasNext?: boolean;
+  onDownloadPDF?: () => void;
 }
 
 interface Section {
@@ -38,7 +39,8 @@ export const CourseContent = ({
   onPrevious,
   onNext,
   hasPrevious,
-  hasNext
+  hasNext,
+  onDownloadPDF
 }: CourseContentProps) => {
   const [sections, setSections] = useState<Section[]>([]);
   const [activeSection, setActiveSection] = useState<string>("");
@@ -75,11 +77,6 @@ export const CourseContent = ({
   }>;
 
   const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
-
-  const handleDownloadPDF = () => {
-    // TODO: Implement PDF download functionality
-    console.log("Download PDF");
-  };
 
   return (
     <div className="space-y-6">
@@ -123,22 +120,11 @@ export const CourseContent = ({
           </div>
         </div>
 
-        {/* Sidebar - Table of Contents & Download Button */}
+        {/* Sidebar - Table of Contents */}
         {sections.length > 0 && (
-          <aside className="hidden lg:block w-80 flex-shrink-0 space-y-4">
-            {/* Download Button */}
-            <div className="flex items-center justify-center">
-              <Button 
-                className="w-full py-6 text-base font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg" 
-                onClick={handleDownloadPDF}
-              >
-                <Download className="h-5 w-5 mr-2" />
-                Télécharger en PDF
-              </Button>
-            </div>
-            
+          <aside className="hidden lg:block w-80 flex-shrink-0">
             {/* Table of Contents */}
-            <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-12rem)] overflow-y-auto shadow-lg">
+            <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire

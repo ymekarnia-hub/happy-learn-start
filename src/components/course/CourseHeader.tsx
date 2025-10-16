@@ -1,4 +1,4 @@
-import { Clock, BarChart3, BookOpen } from "lucide-react";
+import { Clock, BarChart3, BookOpen, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,6 +10,7 @@ interface CourseHeaderProps {
   duration?: number;
   progress?: number;
   subjectColor: string;
+  onDownloadPDF?: () => void;
 }
 
 export const CourseHeader = ({
@@ -18,7 +19,8 @@ export const CourseHeader = ({
   difficulty,
   duration,
   progress = 0,
-  subjectColor
+  subjectColor,
+  onDownloadPDF
 }: CourseHeaderProps) => {
   const difficultyColors = {
     facile: "bg-green-500",
@@ -36,7 +38,18 @@ export const CourseHeader = ({
           )}
         </div>
         
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex items-center gap-3">
+          {onDownloadPDF && (
+            <Button 
+              className="py-6 text-base font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg" 
+              onClick={onDownloadPDF}
+            >
+              <Download className="h-5 w-5 mr-2" />
+              Télécharger PDF
+            </Button>
+          )}
+          
+          <div className="flex gap-2 flex-wrap">
           {difficulty && (
             <Badge className={difficultyColors[difficulty as keyof typeof difficultyColors]}>
               <BarChart3 className="h-3 w-3 mr-1" />
@@ -49,6 +62,7 @@ export const CourseHeader = ({
               {duration} min
             </Badge>
           )}
+          </div>
         </div>
       </div>
 
