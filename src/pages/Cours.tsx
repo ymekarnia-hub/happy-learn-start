@@ -202,22 +202,35 @@ const Cours = () => {
       const tempDiv = document.createElement('div');
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
+      tempDiv.style.width = '210mm'; // Largeur A4
+      tempDiv.style.backgroundColor = 'white';
+      tempDiv.style.padding = '20mm';
       document.body.appendChild(tempDiv);
       
-      // Importer React et ReactDOM pour le rendu
-      const { createRoot } = await import('react-dom/client');
-      const { PDFContent } = await import('@/components/course/PDFContent');
-      
-      const root = createRoot(tempDiv);
-      root.render(
-        <PDFContent 
-          chapterTitle={activeChapter.title} 
-          content={activeChapter.content} 
-        />
-      );
-      
-      // Attendre que le rendu soit terminé
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Injecter le contenu HTML directement
+      tempDiv.innerHTML = `
+        <div style="color: black; font-family: Arial, sans-serif;">
+          <div style="border-bottom: 2px solid black; padding-bottom: 16px; margin-bottom: 32px;">
+            <h1 style="font-size: 28px; font-weight: bold; text-align: center; margin: 0; color: black;">
+              ${activeChapter.title}
+            </h1>
+          </div>
+          
+          <div style="line-height: 1.75; color: black;">
+            ${activeChapter.content
+              .replace(/<h2/g, '<h2 style="font-size: 22px; font-weight: bold; margin-top: 32px; margin-bottom: 16px; color: black; page-break-after: avoid;"')
+              .replace(/<h3/g, '<h3 style="font-size: 18px; font-weight: 600; margin-top: 24px; margin-bottom: 12px; color: black; background-color: #f3f4f6; padding: 8px 16px; border-radius: 4px; page-break-after: avoid;"')
+              .replace(/<p/g, '<p style="font-size: 14px; margin-bottom: 16px; color: black; line-height: 1.75; page-break-inside: avoid;"')
+              .replace(/<ul/g, '<ul style="margin-left: 24px; margin-bottom: 16px; list-style-type: disc; color: black;"')
+              .replace(/<ol/g, '<ol style="margin-left: 24px; margin-bottom: 16px; list-style-type: decimal; color: black;"')
+              .replace(/<li/g, '<li style="font-size: 14px; margin-bottom: 8px; color: black; line-height: 1.75;"')
+              .replace(/<blockquote/g, '<blockquote style="background-color: #f9fafb; border-left: 4px solid black; padding: 16px; margin: 16px 0; font-style: italic; page-break-inside: avoid; color: black;"')
+              .replace(/<strong/g, '<strong style="font-weight: bold; color: black;"')
+              .replace(/<em/g, '<em style="font-style: italic; color: black;"')
+            }
+          </div>
+        </div>
+      `;
       
       const opt = {
         margin: [15, 15, 15, 15] as [number, number, number, number],
@@ -227,7 +240,8 @@ const Cours = () => {
           scale: 2, 
           useCORS: true,
           letterRendering: true,
-          logging: false
+          logging: false,
+          backgroundColor: '#ffffff'
         },
         jsPDF: { 
           unit: 'mm' as const, 
@@ -235,17 +249,14 @@ const Cours = () => {
           orientation: 'portrait' as const 
         },
         pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy'] as any,
-          before: '.page-break-before',
-          after: '.page-break-after',
-          avoid: ['h2', 'h3', 'blockquote', 'p']
+          mode: ['avoid-all', 'css'] as any,
+          avoid: ['h2', 'h3', 'blockquote', 'p', 'li']
         }
       };
 
       await html2pdf().set(opt).from(tempDiv).save();
       
       // Nettoyer
-      root.unmount();
       document.body.removeChild(tempDiv);
       
       toast({
