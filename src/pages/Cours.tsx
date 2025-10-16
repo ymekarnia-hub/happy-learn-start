@@ -196,68 +196,115 @@ const Cours = () => {
     if (!activeChapter) return;
 
     try {
-      const html2pdf = (await import('html2pdf.js')).default;
+      console.log("Starting PDF generation for:", activeChapter.title);
       
-      // Créer un élément temporaire avec le contenu formaté pour PDF
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Configuration de la page
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const maxWidth = pageWidth - (2 * margin);
+      let yPosition = margin;
+
+      // Fonction pour ajouter du texte avec retour à la ligne
+      const addText = (text: string, fontSize: number, isBold: boolean = false, isItalic: boolean = false) => {
+        doc.setFontSize(fontSize);
+        doc.setFont('helvetica', isBold ? 'bold' : (isItalic ? 'italic' : 'normal'));
+        
+        const lines = doc.splitTextToSize(text, maxWidth);
+        
+        lines.forEach((line: string) => {
+          if (yPosition + 10 > pageHeight - margin) {
+            doc.addPage();
+            yPosition = margin;
+          }
+          doc.text(line, margin, yPosition);
+          yPosition += fontSize * 0.5;
+        });
+      };
+
+      // Titre
+      doc.setFillColor(0, 0, 0);
+      doc.rect(margin, yPosition, maxWidth, 1, 'F');
+      yPosition += 5;
+      addText(activeChapter.title, 20, true);
+      yPosition += 10;
+      doc.rect(margin, yPosition, maxWidth, 1, 'F');
+      yPosition += 15;
+
+      // Parser le contenu HTML
       const tempDiv = document.createElement('div');
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.left = '-9999px';
-      tempDiv.style.width = '210mm'; // Largeur A4
-      tempDiv.style.backgroundColor = 'white';
-      tempDiv.style.padding = '20mm';
-      document.body.appendChild(tempDiv);
+      tempDiv.innerHTML = activeChapter.content;
       
-      // Injecter le contenu HTML directement
-      tempDiv.innerHTML = `
-        <div style="color: black; font-family: Arial, sans-serif;">
-          <div style="border-bottom: 2px solid black; padding-bottom: 16px; margin-bottom: 32px;">
-            <h1 style="font-size: 28px; font-weight: bold; text-align: center; margin: 0; color: black;">
-              ${activeChapter.title}
-            </h1>
-          </div>
+      const processNode = (node: Node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent?.trim();
+          if (text) {
+            addText(text, 11);
+          }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as HTMLElement;
           
-          <div style="line-height: 1.75; color: black;">
-            ${activeChapter.content
-              .replace(/<h2/g, '<h2 style="font-size: 22px; font-weight: bold; margin-top: 32px; margin-bottom: 16px; color: black; page-break-after: avoid;"')
-              .replace(/<h3/g, '<h3 style="font-size: 18px; font-weight: 600; margin-top: 24px; margin-bottom: 12px; color: black; background-color: #f3f4f6; padding: 8px 16px; border-radius: 4px; page-break-after: avoid;"')
-              .replace(/<p/g, '<p style="font-size: 14px; margin-bottom: 16px; color: black; line-height: 1.75; page-break-inside: avoid;"')
-              .replace(/<ul/g, '<ul style="margin-left: 24px; margin-bottom: 16px; list-style-type: disc; color: black;"')
-              .replace(/<ol/g, '<ol style="margin-left: 24px; margin-bottom: 16px; list-style-type: decimal; color: black;"')
-              .replace(/<li/g, '<li style="font-size: 14px; margin-bottom: 8px; color: black; line-height: 1.75;"')
-              .replace(/<blockquote/g, '<blockquote style="background-color: #f9fafb; border-left: 4px solid black; padding: 16px; margin: 16px 0; font-style: italic; page-break-inside: avoid; color: black;"')
-              .replace(/<strong/g, '<strong style="font-weight: bold; color: black;"')
-              .replace(/<em/g, '<em style="font-style: italic; color: black;"')
-            }
-          </div>
-        </div>
-      `;
-      
-      const opt = {
-        margin: [15, 15, 15, 15] as [number, number, number, number],
-        filename: `${activeChapter.title}.pdf`,
-        image: { type: 'jpeg' as const, quality: 0.95 },
-        html2canvas: { 
-          scale: 2, 
-          useCORS: true,
-          letterRendering: true,
-          logging: false,
-          backgroundColor: '#ffffff'
-        },
-        jsPDF: { 
-          unit: 'mm' as const, 
-          format: 'a4' as const, 
-          orientation: 'portrait' as const 
-        },
-        pagebreak: { 
-          mode: ['avoid-all', 'css'] as any,
-          avoid: ['h2', 'h3', 'blockquote', 'p', 'li']
+          switch (element.tagName.toLowerCase()) {
+            case 'h2':
+              yPosition += 10;
+              addText(element.textContent || '', 16, true);
+              yPosition += 5;
+              break;
+            case 'h3':
+              yPosition += 8;
+              addText(element.textContent || '', 14, true);
+              yPosition += 4;
+              break;
+            case 'p':
+              addText(element.textContent || '', 11);
+              yPosition += 5;
+              break;
+            case 'ul':
+            case 'ol':
+              element.childNodes.forEach((li, index) => {
+                if (li.nodeType === Node.ELEMENT_NODE) {
+                  const prefix = element.tagName === 'OL' ? `${index + 1}. ` : '• ';
+                  addText(prefix + (li.textContent || ''), 11);
+                  yPosition += 2;
+                }
+              });
+              yPosition += 5;
+              break;
+            case 'blockquote':
+              yPosition += 5;
+              doc.setFillColor(249, 250, 251);
+              const blockHeight = doc.splitTextToSize(element.textContent || '', maxWidth - 10).length * 6;
+              doc.rect(margin, yPosition - 5, maxWidth, blockHeight + 5, 'F');
+              doc.setDrawColor(0, 0, 0);
+              doc.setLineWidth(1);
+              doc.line(margin, yPosition - 5, margin, yPosition + blockHeight);
+              addText(element.textContent || '', 11, false, true);
+              yPosition += 5;
+              break;
+            case 'strong':
+              addText(element.textContent || '', 11, true);
+              break;
+            case 'em':
+              addText(element.textContent || '', 11, false, true);
+              break;
+            default:
+              element.childNodes.forEach(processNode);
+          }
         }
       };
 
-      await html2pdf().set(opt).from(tempDiv).save();
-      
-      // Nettoyer
-      document.body.removeChild(tempDiv);
+      tempDiv.childNodes.forEach(processNode);
+
+      // Sauvegarder le PDF
+      doc.save(`${activeChapter.title}.pdf`);
+      console.log("PDF generated successfully");
       
       toast({
         title: "PDF téléchargé",
