@@ -80,20 +80,22 @@ export const CourseContent = ({
 
   return (
     <div className="space-y-6">
-      {/* Download PDF Button aligned with chapter title */}
-      {onDownloadPDF && (
-        <div className="flex justify-end">
-          <Button
-            onClick={onDownloadPDF}
-            variant="default"
-            size="lg"
-            className="bg-primary hover:bg-primary/90"
-          >
-            <Download className="h-5 w-5 mr-2" />
-            Télécharger en PDF
-          </Button>
-        </div>
-      )}
+      {/* Download PDF Button aligned with sidebar */}
+      <div className="flex justify-end">
+        {onDownloadPDF && (
+          <div className="w-80">
+            <Button
+              onClick={onDownloadPDF}
+              variant="default"
+              size="lg"
+              className="bg-primary hover:bg-primary/90 w-full"
+            >
+              <Download className="h-5 w-5 mr-2" />
+              Télécharger en PDF
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Video Section */}
       {videos.length > 0 && (
