@@ -82,7 +82,7 @@ const Cours = () => {
         .from("courses")
         .select("*")
         .eq("subject_id", subjectId)
-        .eq("school_level", profile?.school_level)
+        .eq("school_level", profileData?.school_level)
         .order("order_index")
         .limit(1)
         .maybeSingle();
