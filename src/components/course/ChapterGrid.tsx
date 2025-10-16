@@ -25,6 +25,13 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
     return acc;
   }, {} as Record<string, Chapter[]>);
 
+  // Descriptions des thèmes
+  const themeDescriptions: Record<string, string> = {
+    "Thème 1": "La poésie du Moyen Âge au XVIIIe siècle",
+    "Thème 2": "Les outils d'analyse d'un texte littéraire",
+    "Thème 3": "Étude de la langue"
+  };
+
   return (
     <div className="space-y-12">
       {Object.entries(themes).map(([themeName, themeChapters]) => (
@@ -34,6 +41,9 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
               {themeName.startsWith("Thème") ? themeName : `Thème ${themeName}`}
             </p>
             <h2 className="text-2xl font-bold">{themeChapters[0]?.theme || themeName}</h2>
+            {themeDescriptions[themeName] && (
+              <p className="text-muted-foreground mt-2">{themeDescriptions[themeName]}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
