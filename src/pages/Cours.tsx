@@ -205,104 +205,155 @@ const Cours = () => {
         format: 'a4'
       });
 
-      // Configuration de la page
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 20;
       const maxWidth = pageWidth - (2 * margin);
       let yPosition = margin;
 
-      // Fonction pour ajouter du texte avec retour à la ligne
-      const addText = (text: string, fontSize: number, isBold: boolean = false, isItalic: boolean = false) => {
-        doc.setFontSize(fontSize);
-        doc.setFont('helvetica', isBold ? 'bold' : (isItalic ? 'italic' : 'normal'));
-        
-        const lines = doc.splitTextToSize(text, maxWidth);
-        
-        lines.forEach((line: string) => {
-          if (yPosition + 10 > pageHeight - margin) {
-            doc.addPage();
-            yPosition = margin;
-          }
-          doc.text(line, margin, yPosition);
-          yPosition += fontSize * 0.5;
-        });
+      const checkPageBreak = (neededSpace: number = 10) => {
+        if (yPosition + neededSpace > pageHeight - margin) {
+          doc.addPage();
+          yPosition = margin;
+          return true;
+        }
+        return false;
       };
 
-      // Titre
-      doc.setFillColor(0, 0, 0);
-      doc.rect(margin, yPosition, maxWidth, 1, 'F');
-      yPosition += 5;
-      addText(activeChapter.title, 20, true);
-      yPosition += 10;
-      doc.rect(margin, yPosition, maxWidth, 1, 'F');
-      yPosition += 15;
+      // Titre principal
+      doc.setDrawColor(0);
+      doc.setLineWidth(0.5);
+      doc.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+      
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
+      const titleLines = doc.splitTextToSize(activeChapter.title, maxWidth);
+      titleLines.forEach((line: string) => {
+        doc.text(line, pageWidth / 2, yPosition, { align: 'center' });
+        yPosition += 8;
+      });
+      
+      yPosition += 3;
+      doc.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 12;
 
       // Parser le contenu HTML
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = activeChapter.content;
       
-      const processNode = (node: Node) => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          const text = node.textContent?.trim();
-          if (text) {
-            addText(text, 11);
-          }
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          const element = node as HTMLElement;
-          
-          switch (element.tagName.toLowerCase()) {
-            case 'h2':
-              yPosition += 10;
-              addText(element.textContent || '', 16, true);
+      const processElement = (element: Element) => {
+        const tagName = element.tagName.toLowerCase();
+        const text = element.textContent?.trim() || '';
+        
+        if (!text && tagName !== 'ul' && tagName !== 'ol') return;
+
+        switch (tagName) {
+          case 'h2':
+            checkPageBreak(15);
+            yPosition += 8;
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(0, 0, 0);
+            const h2Lines = doc.splitTextToSize(text, maxWidth);
+            h2Lines.forEach((line: string) => {
+              doc.text(line, margin, yPosition);
+              yPosition += 7;
+            });
+            yPosition += 3;
+            break;
+
+          case 'h3':
+            checkPageBreak(12);
+            yPosition += 6;
+            doc.setFontSize(13);
+            doc.setFont('helvetica', 'bold');
+            doc.setFillColor(243, 244, 246);
+            const h3Height = 8;
+            doc.rect(margin, yPosition - 5, maxWidth, h3Height, 'F');
+            doc.setTextColor(0, 0, 0);
+            doc.text(text, margin + 3, yPosition);
+            yPosition += 6;
+            break;
+
+          case 'p':
+            checkPageBreak(8);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            const pLines = doc.splitTextToSize(text, maxWidth);
+            pLines.forEach((line: string) => {
+              checkPageBreak(6);
+              doc.text(line, margin, yPosition);
               yPosition += 5;
-              break;
-            case 'h3':
-              yPosition += 8;
-              addText(element.textContent || '', 14, true);
-              yPosition += 4;
-              break;
-            case 'p':
-              addText(element.textContent || '', 11);
+            });
+            yPosition += 3;
+            break;
+
+          case 'blockquote':
+            checkPageBreak(15);
+            yPosition += 4;
+            doc.setFillColor(249, 250, 251);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'italic');
+            const bqLines = doc.splitTextToSize(text, maxWidth - 8);
+            const bqHeight = bqLines.length * 5 + 6;
+            doc.rect(margin, yPosition - 3, maxWidth, bqHeight, 'F');
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(1);
+            doc.line(margin, yPosition - 3, margin, yPosition + bqHeight - 3);
+            bqLines.forEach((line: string) => {
+              doc.text(line, margin + 5, yPosition);
               yPosition += 5;
-              break;
-            case 'ul':
-            case 'ol':
-              element.childNodes.forEach((li, index) => {
-                if (li.nodeType === Node.ELEMENT_NODE) {
-                  const prefix = element.tagName === 'OL' ? `${index + 1}. ` : '• ';
-                  addText(prefix + (li.textContent || ''), 11);
-                  yPosition += 2;
-                }
-              });
-              yPosition += 5;
-              break;
-            case 'blockquote':
-              yPosition += 5;
-              doc.setFillColor(249, 250, 251);
-              const blockHeight = doc.splitTextToSize(element.textContent || '', maxWidth - 10).length * 6;
-              doc.rect(margin, yPosition - 5, maxWidth, blockHeight + 5, 'F');
-              doc.setDrawColor(0, 0, 0);
-              doc.setLineWidth(1);
-              doc.line(margin, yPosition - 5, margin, yPosition + blockHeight);
-              addText(element.textContent || '', 11, false, true);
-              yPosition += 5;
-              break;
-            case 'strong':
-              addText(element.textContent || '', 11, true);
-              break;
-            case 'em':
-              addText(element.textContent || '', 11, false, true);
-              break;
-            default:
-              element.childNodes.forEach(processNode);
-          }
+            });
+            yPosition += 6;
+            doc.setFont('helvetica', 'normal');
+            break;
+
+          case 'ul':
+            yPosition += 2;
+            element.querySelectorAll('li').forEach((li) => {
+              const liText = li.textContent?.trim() || '';
+              if (liText) {
+                checkPageBreak(6);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                const liLines = doc.splitTextToSize('• ' + liText, maxWidth - 8);
+                liLines.forEach((line: string, index: number) => {
+                  doc.text(line, margin + (index > 0 ? 5 : 0), yPosition);
+                  yPosition += 5;
+                });
+              }
+            });
+            yPosition += 3;
+            break;
+
+          case 'ol':
+            yPosition += 2;
+            element.querySelectorAll('li').forEach((li, index) => {
+              const liText = li.textContent?.trim() || '';
+              if (liText) {
+                checkPageBreak(6);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                const liLines = doc.splitTextToSize(`${index + 1}. ${liText}`, maxWidth - 8);
+                liLines.forEach((line: string, lineIndex: number) => {
+                  doc.text(line, margin + (lineIndex > 0 ? 5 : 0), yPosition);
+                  yPosition += 5;
+                });
+              }
+            });
+            yPosition += 3;
+            break;
+
+          default:
+            // Pour les éléments non gérés, traiter récursivement les enfants
+            Array.from(element.children).forEach(child => processElement(child));
         }
       };
 
-      tempDiv.childNodes.forEach(processNode);
+      Array.from(tempDiv.children).forEach(child => processElement(child));
 
-      // Sauvegarder le PDF
       doc.save(`${activeChapter.title}.pdf`);
       console.log("PDF generated successfully");
       
