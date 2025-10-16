@@ -53,7 +53,7 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
                 onClick={() => onChapterSelect(chapter.id)}
               >
                 <CardContent className="p-0">
-                  <div className="relative bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-950/30 dark:to-pink-900/30 p-3 min-h-[80px] flex items-center justify-center">
+                  <div className="relative bg-gradient-to-br from-pink-100 to-pink-200 dark:from-pink-900/50 dark:to-pink-800/50 p-3 min-h-[80px] flex items-center justify-center">
                     {/* Fond décoratif avec formules mathématiques */}
                     <div className="absolute inset-0 opacity-10 overflow-hidden">
                       <div className="absolute top-1 left-2 text-sm font-serif">∫</div>
