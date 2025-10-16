@@ -36,8 +36,9 @@ const Revision = () => {
         .eq("id", user.id)
         .single();
 
+      // Utiliser la vue publique qui n'inclut pas les réponses
       const { data, error } = await supabase
-        .from("quiz_questions")
+        .from("quiz_questions_public")
         .select("*")
         .eq("subject_id", subjectId)
         .eq("school_level", profile?.school_level);
@@ -131,12 +132,23 @@ const Revision = () => {
             <Progress value={progress} className="h-2" />
           </div>
 
-          <FlashCard
+          {/* FlashCard désactivé temporairement car les réponses ne sont plus accessibles directement */}
+          <div className="text-center p-6 bg-card rounded-lg border-2">
+            <h3 className="text-xl font-bold mb-2">Mode révision temporairement indisponible</h3>
+            <p className="text-muted-foreground">
+              Cette fonctionnalité sera bientôt disponible avec un système sécurisé de flashcards.
+            </p>
+            <Button onClick={() => navigate("/liste-cours")} className="mt-4">
+              Retour au catalogue
+            </Button>
+          </div>
+
+          {/* <FlashCard
             question={currentQuestion.question}
             answer={currentQuestion.correct_answer}
             onNext={handleNext}
             onDifficulty={handleDifficulty}
-          />
+          /> */}
 
           {currentIndex === questions.length - 1 && reviewed.size === questions.length && (
             <div className="text-center p-6 bg-card rounded-lg border-2">

@@ -41,8 +41,9 @@ const Simulation = () => {
         .eq("id", user.id)
         .single();
 
+      // Utiliser la vue publique qui n'inclut pas les réponses correctes
       const { data, error } = await supabase
-        .from("quiz_questions")
+        .from("quiz_questions_public")
         .select("*")
         .eq("subject_id", subjectId)
         .eq("school_level", profile?.school_level)
@@ -197,9 +198,9 @@ const Simulation = () => {
           </div>
 
           <QuizQuestion
+            questionId={currentQuestion.id}
             question={currentQuestion.question}
             options={currentQuestion.options}
-            correctAnswer={currentQuestion.correct_answer}
             explanation={currentQuestion.explanation}
             onAnswer={handleAnswer}
             showResult={true}
