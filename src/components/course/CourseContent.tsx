@@ -101,9 +101,9 @@ export const CourseContent = ({
       )}
 
       {/* Main content with sidebar */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 items-start relative">
         {/* Content Section */}
-        <div className="flex-1 w-full space-y-6">
+        <div className="flex-1 w-full lg:w-auto space-y-6">
           <div className="bg-card rounded-lg p-6 border-2">
             <div 
               className="prose prose-slate dark:prose-invert max-w-none
@@ -133,13 +133,13 @@ export const CourseContent = ({
 
         {/* Sidebar - Table of Contents */}
         {sections.length > 0 && (
-          <div className="w-full lg:w-80 lg:flex-shrink-0">
-            <div className="bg-card rounded-lg p-4 border-2 sticky top-6 max-h-[calc(100vh-4rem)] overflow-y-auto">
+          <aside className="hidden lg:block w-80 flex-shrink-0">
+            <div className="sticky top-6 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire
               </h3>
-              <div className="space-y-3">
+              <nav className="space-y-3">
                 {sections.map((section) => (
                   <a
                     key={section.id}
@@ -158,9 +158,9 @@ export const CourseContent = ({
                     <span className="leading-tight">{section.title}</span>
                   </a>
                 ))}
-              </div>
+              </nav>
             </div>
-          </div>
+          </aside>
         )}
       </div>
 
