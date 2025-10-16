@@ -102,38 +102,9 @@ export const CourseContent = ({
 
       {/* Main content with sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Content Section */}
-        <div className="lg:col-span-3 space-y-6">
-          <div className="bg-card rounded-lg p-6 border-2">
-            <div 
-              className="prose prose-slate dark:prose-invert max-w-none
-                [&_h2]:flex [&_h2]:items-center [&_h2]:gap-3 [&_h2]:mb-4
-                [&_h2]:text-xl [&_h2]:font-bold
-                [&_h2::before]:content-[attr(data-number)] 
-                [&_h2::before]:flex [&_h2::before]:items-center [&_h2::before]:justify-center
-                [&_h2::before]:w-8 [&_h2::before]:h-8 [&_h2::before]:rounded-full
-                [&_h2::before]:bg-primary [&_h2::before]:text-primary-foreground
-                [&_h2::before]:text-sm [&_h2::before]:font-semibold
-                [&_h3]:flex [&_h3]:items-baseline [&_h3]:gap-3
-                [&_h3]:bg-primary [&_h3]:text-primary-foreground
-                [&_h3]:px-4 [&_h3]:py-2 [&_h3]:rounded-lg
-                [&_h3]:inline-block [&_h3]:font-semibold
-                [&_blockquote]:bg-muted [&_blockquote]:border-l-4 
-                [&_blockquote]:border-primary [&_blockquote]:p-4 
-                [&_blockquote]:my-4 [&_blockquote]:rounded
-                [&_blockquote]:italic [&_blockquote]:not-italic
-                [&_blockquote_p]:m-0
-                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2
-                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2
-                [&_p]:mb-4 [&_p]:leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
-          </div>
-        </div>
-
         {/* Sidebar - Table of Contents */}
         {sections.length > 0 && (
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 lg:order-2">
             <div className="bg-card rounded-lg p-4 border-2 sticky top-6">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
@@ -162,6 +133,35 @@ export const CourseContent = ({
             </div>
           </div>
         )}
+
+        {/* Content Section */}
+        <div className="lg:col-span-3 lg:order-1 space-y-6">
+          <div className="bg-card rounded-lg p-6 border-2">
+            <div 
+              className="prose prose-slate dark:prose-invert max-w-none
+                [&_h2]:flex [&_h2]:items-center [&_h2]:gap-3 [&_h2]:mb-4
+                [&_h2]:text-xl [&_h2]:font-bold
+                [&_h2::before]:content-[attr(data-number)] 
+                [&_h2::before]:flex [&_h2::before]:items-center [&_h2::before]:justify-center
+                [&_h2::before]:w-8 [&_h2::before]:h-8 [&_h2::before]:rounded-full
+                [&_h2::before]:bg-primary [&_h2::before]:text-primary-foreground
+                [&_h2::before]:text-sm [&_h2::before]:font-semibold
+                [&_h3]:flex [&_h3]:items-baseline [&_h3]:gap-3
+                [&_h3]:bg-primary [&_h3]:text-primary-foreground
+                [&_h3]:px-4 [&_h3]:py-2 [&_h3]:rounded-lg
+                [&_h3]:inline-block [&_h3]:font-semibold
+                [&_blockquote]:bg-muted [&_blockquote]:border-l-4 
+                [&_blockquote]:border-primary [&_blockquote]:p-4 
+                [&_blockquote]:my-4 [&_blockquote]:rounded
+                [&_blockquote]:italic [&_blockquote]:not-italic
+                [&_blockquote_p]:m-0
+                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2
+                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2
+                [&_p]:mb-4 [&_p]:leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Documents Section */}
