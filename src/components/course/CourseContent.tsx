@@ -105,7 +105,7 @@ export const CourseContent = ({
         {/* Sidebar - Table of Contents */}
         {sections.length > 0 && (
           <div className="lg:col-span-1 lg:order-2">
-            <div className="bg-card rounded-lg p-4 border-2 sticky top-6">
+            <div className="bg-card rounded-lg p-4 border-2 sticky top-6 max-h-[calc(100vh-4rem)] overflow-y-auto">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire
