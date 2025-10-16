@@ -1,4 +1,4 @@
-import { BookOpen, FileText, Brain, Lock } from "lucide-react";
+import { BookOpen, FileText, Brain } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -57,24 +57,18 @@ export const ActivityCards = ({ onCardClick }: ActivityCardsProps) => {
             )}
             onClick={() => !card.locked && onCardClick?.(card.id)}
           >
-            <CardContent className="p-6 flex flex-col items-center justify-center space-y-3 relative">
-              {card.locked && (
-                <div className="absolute top-2 right-2">
-                  <Lock className="h-4 w-4 text-muted-foreground" />
-                </div>
-              )}
-              
+            <CardContent className="p-4 flex flex-col items-center justify-center space-y-2 relative">
               <div className={cn(
-                "w-12 h-12 rounded-full flex items-center justify-center transition-colors",
+                "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
                 isActive 
                   ? "bg-primary text-primary-foreground" 
                   : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
               )}>
-                <Icon className="h-6 w-6" />
+                <Icon className="h-5 w-5" />
               </div>
               
               <span className={cn(
-                "text-sm font-medium text-center",
+                "text-xs font-medium text-center",
                 isActive ? "text-foreground" : "text-muted-foreground"
               )}>
                 {card.title}
