@@ -256,6 +256,10 @@ const Cours = () => {
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    <GraduationCap className="mr-2 h-4 w-4" />
+                    <span>Tableau de bord</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/account")}>
                     <UserIcon className="mr-2 h-4 w-4" />
                     <span>Gérer mon compte</span>
