@@ -76,14 +76,6 @@ export const CourseContent = ({
         </Button>
 
         <Button
-          variant={completed ? "secondary" : "default"}
-          onClick={onMarkComplete}
-        >
-          <CheckCircle2 className="h-4 w-4 mr-2" />
-          {completed ? "Complété" : "Marquer comme complété"}
-        </Button>
-
-        <Button
           onClick={onNext}
           disabled={!hasNext}
         >
