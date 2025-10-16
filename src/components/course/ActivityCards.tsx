@@ -59,15 +59,15 @@ export const ActivityCards = ({ onCardClick }: ActivityCardsProps) => {
             )}
             onClick={() => !card.locked && onCardClick?.(card.id)}
           >
-            <CardContent className="p-3 flex flex-col items-center justify-center space-y-1.5 relative">
+            <CardContent className="p-4 flex flex-col items-center justify-center space-y-2 relative">
               <div 
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm"
                 style={{ backgroundColor: card.color }}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-5 w-5" />
               </div>
               
-              <span className="text-[10px] font-medium text-center text-foreground leading-tight">
+              <span className="text-xs font-medium text-center text-foreground leading-tight">
                 {card.title}
               </span>
             </CardContent>
