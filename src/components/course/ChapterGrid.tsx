@@ -53,26 +53,26 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
                 onClick={() => onChapterSelect(chapter.id)}
               >
                 <CardContent className="p-0">
-                  <div className="relative bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-950/30 dark:to-pink-900/30 p-4 min-h-[90px] flex items-center justify-center">
+                  <div className="relative bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-950/30 dark:to-pink-900/30 p-3 min-h-[70px] flex items-center justify-center">
                     {/* Fond décoratif avec formules mathématiques */}
                     <div className="absolute inset-0 opacity-10 overflow-hidden">
-                      <div className="absolute top-1 left-2 text-lg font-serif">∫</div>
-                      <div className="absolute top-5 right-3 text-base">π</div>
-                      <div className="absolute bottom-2 left-5 text-sm">∑</div>
+                      <div className="absolute top-1 left-2 text-sm font-serif">∫</div>
+                      <div className="absolute top-4 right-2 text-xs">π</div>
+                      <div className="absolute bottom-1 left-4 text-xs">∑</div>
                     </div>
                     
-                    <h3 className="text-sm font-semibold text-center relative z-10 px-2 leading-tight">
+                    <h3 className="text-xs font-semibold text-center relative z-10 px-1 leading-tight">
                       {chapter.title}
                     </h3>
                   </div>
 
-                  <div className="bg-card p-3 space-y-1.5">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                  <div className="bg-card p-2 space-y-1">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
                       Chapitre {chapter.order_index + 1}
                     </p>
                     <Progress 
                       value={chapter.completed ? 100 : 0} 
-                      className="h-1.5"
+                      className="h-1"
                     />
                   </div>
                 </CardContent>
