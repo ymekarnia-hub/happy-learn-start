@@ -46,7 +46,7 @@ export const CourseContent = ({
   const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
-    // Parse content to extract sections (looking for h2 or numbered sections)
+    // Parse content to extract sections and add IDs to headings
     const parser = new DOMParser();
     const doc = parser.parseFromString(content, 'text/html');
     const headings = doc.querySelectorAll('h2, h3');
@@ -54,6 +54,7 @@ export const CourseContent = ({
     const parsedSections: Section[] = [];
     headings.forEach((heading, index) => {
       const sectionId = `section-${index}`;
+      heading.id = sectionId; // Add ID to the heading element
       parsedSections.push({
         id: sectionId,
         number: index + 1,
@@ -67,6 +68,14 @@ export const CourseContent = ({
       setActiveSection(parsedSections[0].id);
     }
   }, [content]);
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveSection(sectionId);
+    }
+  };
 
   const videos = materials.filter(m => m.type === "video");
   const documents = materials.filter(m => m.type !== "video") as Array<{
@@ -151,12 +160,12 @@ export const CourseContent = ({
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className={`flex items-start gap-3 text-base font-bold transition-colors hover:text-primary ${
+                    className={`flex items-start gap-3 text-base font-bold transition-colors hover:text-primary cursor-pointer ${
                       activeSection === section.id ? 'text-primary font-bold' : 'text-foreground'
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
-                      setActiveSection(section.id);
+                      scrollToSection(section.id);
                     }}
                   >
                     <Badge variant="secondary" className="flex-shrink-0 font-bold text-foreground text-base">
