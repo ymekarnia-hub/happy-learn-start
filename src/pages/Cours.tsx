@@ -292,7 +292,16 @@ const Cours = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}</BreadcrumbPage>
+              {viewMode === "content" ? (
+                <BreadcrumbLink 
+                  onClick={() => setViewMode("grid")}
+                  className="cursor-pointer transition-colors hover:text-foreground"
+                >
+                  {subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}
+                </BreadcrumbLink>
+              ) : (
+                <BreadcrumbPage>{subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}</BreadcrumbPage>
+              )}
             </BreadcrumbItem>
             {viewMode === "content" && activeChapter && (
               <>
