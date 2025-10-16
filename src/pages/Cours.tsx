@@ -236,21 +236,19 @@ const Cours = () => {
         return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
       };
 
-      // Récupérer la couleur du sujet
-      const subjectColor = subject?.color || 'hsl(140 60% 60%)';
-      const [primaryR, primaryG, primaryB] = hslToRgb(subjectColor);
-      
-      // Créer des variations de couleur
-      const darkerColor: [number, number, number] = [
-        Math.max(0, primaryR - 40),
-        Math.max(0, primaryG - 40),
-        Math.max(0, primaryB - 40)
-      ];
-      const lighterColor: [number, number, number] = [
-        Math.min(255, primaryR + 80),
-        Math.min(255, primaryG + 80),
-        Math.min(255, primaryB + 80)
-      ];
+      // Récupérer les couleurs CSS du design system
+      const getComputedColor = (varName: string): [number, number, number] => {
+        const rootStyles = getComputedStyle(document.documentElement);
+        const hslValue = rootStyles.getPropertyValue(varName).trim();
+        if (!hslValue) return [0, 0, 0];
+        return hslToRgb(`hsl(${hslValue})`);
+      };
+
+      // Couleurs du design system
+      const primaryColor = getComputedColor('--primary');
+      const mutedColor = getComputedColor('--muted');
+      const foregroundColor = getComputedColor('--foreground');
+      const primaryForeground = getComputedColor('--primary-foreground');
 
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
@@ -267,15 +265,15 @@ const Cours = () => {
         return false;
       };
 
-      // Titre principal avec couleur du sujet
-      doc.setDrawColor(primaryR, primaryG, primaryB);
+      // Titre principal avec couleur primary
+      doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.setLineWidth(1);
       doc.line(margin, yPosition, pageWidth - margin, yPosition);
       yPosition += 8;
       
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryR, primaryG, primaryB);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       const titleLines = doc.splitTextToSize(activeChapter.title, maxWidth);
       titleLines.forEach((line: string) => {
         doc.text(line, pageWidth / 2, yPosition, { align: 'center' });
@@ -283,7 +281,7 @@ const Cours = () => {
       });
       
       yPosition += 3;
-      doc.setDrawColor(primaryR, primaryG, primaryB);
+      doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.line(margin, yPosition, pageWidth - margin, yPosition);
       yPosition += 12;
 
@@ -303,14 +301,14 @@ const Cours = () => {
             yPosition += 8;
             doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
-            doc.setTextColor(darkerColor[0], darkerColor[1], darkerColor[2]);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
             const h2Lines = doc.splitTextToSize(text, maxWidth);
             h2Lines.forEach((line: string) => {
               doc.text(line, margin, yPosition);
               yPosition += 7;
             });
             yPosition += 3;
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor(foregroundColor[0], foregroundColor[1], foregroundColor[2]);
             break;
 
           case 'h3':
@@ -318,20 +316,20 @@ const Cours = () => {
             yPosition += 6;
             doc.setFontSize(13);
             doc.setFont('helvetica', 'bold');
-            doc.setFillColor(lighterColor[0], lighterColor[1], lighterColor[2]);
+            doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
             const h3Height = 8;
             doc.rect(margin, yPosition - 5, maxWidth, h3Height, 'F');
-            doc.setTextColor(darkerColor[0], darkerColor[1], darkerColor[2]);
+            doc.setTextColor(primaryForeground[0], primaryForeground[1], primaryForeground[2]);
             doc.text(text, margin + 3, yPosition);
             yPosition += 6;
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor(foregroundColor[0], foregroundColor[1], foregroundColor[2]);
             break;
 
           case 'p':
             checkPageBreak(8);
             doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor(foregroundColor[0], foregroundColor[1], foregroundColor[2]);
             const pLines = doc.splitTextToSize(text, maxWidth);
             pLines.forEach((line: string) => {
               checkPageBreak(6);
@@ -344,23 +342,23 @@ const Cours = () => {
           case 'blockquote':
             checkPageBreak(15);
             yPosition += 4;
-            doc.setFillColor(lighterColor[0], lighterColor[1], lighterColor[2]);
+            doc.setFillColor(mutedColor[0], mutedColor[1], mutedColor[2]);
             doc.setFontSize(11);
             doc.setFont('helvetica', 'italic');
             const bqLines = doc.splitTextToSize(text, maxWidth - 8);
             const bqHeight = bqLines.length * 5 + 6;
             doc.rect(margin, yPosition - 3, maxWidth, bqHeight, 'F');
-            doc.setDrawColor(primaryR, primaryG, primaryB);
+            doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
             doc.setLineWidth(1.5);
             doc.line(margin, yPosition - 3, margin, yPosition + bqHeight - 3);
-            doc.setTextColor(darkerColor[0], darkerColor[1], darkerColor[2]);
+            doc.setTextColor(foregroundColor[0], foregroundColor[1], foregroundColor[2]);
             bqLines.forEach((line: string) => {
               doc.text(line, margin + 5, yPosition);
               yPosition += 5;
             });
             yPosition += 6;
             doc.setFont('helvetica', 'normal');
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor(foregroundColor[0], foregroundColor[1], foregroundColor[2]);
             break;
 
           case 'ul':
@@ -371,7 +369,7 @@ const Cours = () => {
                 checkPageBreak(6);
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(foregroundColor[0], foregroundColor[1], foregroundColor[2]);
                 const liLines = doc.splitTextToSize('• ' + liText, maxWidth - 8);
                 liLines.forEach((line: string, index: number) => {
                   doc.text(line, margin + (index > 0 ? 5 : 0), yPosition);
@@ -390,13 +388,13 @@ const Cours = () => {
                 checkPageBreak(6);
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(darkerColor[0], darkerColor[1], darkerColor[2]);
+                doc.setTextColor(foregroundColor[0], foregroundColor[1], foregroundColor[2]);
                 const liLines = doc.splitTextToSize(`${index + 1}. ${liText}`, maxWidth - 8);
                 liLines.forEach((line: string, lineIndex: number) => {
                   doc.text(line, margin + (lineIndex > 0 ? 5 : 0), yPosition);
                   yPosition += 5;
                 });
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(foregroundColor[0], foregroundColor[1], foregroundColor[2]);
               }
             });
             yPosition += 3;
