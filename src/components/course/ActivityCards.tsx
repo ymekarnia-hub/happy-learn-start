@@ -1,11 +1,12 @@
-import { BookOpen, FileText, Brain } from "lucide-react";
+import { ClipboardCheck, PenTool, Zap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface ActivityCard {
   id: string;
   title: string;
-  icon: typeof BookOpen;
+  icon: typeof ClipboardCheck;
+  color: string;
   available: boolean;
   locked?: boolean;
 }
@@ -19,23 +20,26 @@ export const ActivityCards = ({ onCardClick }: ActivityCardsProps) => {
     {
       id: "quiz",
       title: "Quiz",
-      icon: FileText,
+      icon: ClipboardCheck,
       available: true,
       locked: true,
+      color: "hsl(262 83% 58%)", // Violet
     },
     {
       id: "exercices",
       title: "Exercices",
-      icon: FileText,
+      icon: PenTool,
       available: true,
       locked: true,
+      color: "hsl(24 95% 53%)", // Orange
     },
     {
       id: "flashcards",
       title: "Flashcards",
-      icon: Brain,
+      icon: Zap,
       available: true,
       locked: true,
+      color: "hsl(142 71% 45%)", // Vert
     },
   ];
 
@@ -58,25 +62,16 @@ export const ActivityCards = ({ onCardClick }: ActivityCardsProps) => {
             onClick={() => !card.locked && onCardClick?.(card.id)}
           >
             <CardContent className="p-4 flex flex-col items-center justify-center space-y-2 relative">
-              <div className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
-                isActive 
-                  ? "bg-primary text-primary-foreground" 
-                  : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
-              )}>
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md"
+                style={{ backgroundColor: card.color }}
+              >
                 <Icon className="h-5 w-5" />
               </div>
               
-              <span className={cn(
-                "text-xs font-medium text-center",
-                isActive ? "text-foreground" : "text-muted-foreground"
-              )}>
+              <span className="text-xs font-medium text-center text-foreground">
                 {card.title}
               </span>
-              
-              {isActive && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
-              )}
             </CardContent>
           </Card>
         );
