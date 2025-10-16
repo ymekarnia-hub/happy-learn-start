@@ -341,6 +341,48 @@ export type Database = {
           },
         ]
       }
+      quiz_submissions: {
+        Row: {
+          id: string
+          is_correct: boolean
+          question_id: string
+          submitted_at: string | null
+          user_answer: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_correct: boolean
+          question_id: string
+          submitted_at?: string | null
+          user_answer: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          submitted_at?: string | null
+          user_answer?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_submissions_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_submissions_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subjects: {
         Row: {
           category: string
@@ -440,7 +482,47 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      quiz_questions_public: {
+        Row: {
+          created_at: string | null
+          difficulty: string | null
+          explanation: string | null
+          id: string | null
+          options: Json | null
+          question: string | null
+          school_level: Database["public"]["Enums"]["school_level"] | null
+          subject_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          difficulty?: string | null
+          explanation?: string | null
+          id?: string | null
+          options?: Json | null
+          question?: string | null
+          school_level?: Database["public"]["Enums"]["school_level"] | null
+          subject_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          difficulty?: string | null
+          explanation?: string | null
+          id?: string | null
+          options?: Json | null
+          question?: string | null
+          school_level?: Database["public"]["Enums"]["school_level"] | null
+          subject_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {
