@@ -17,12 +17,6 @@ interface ActivityCardsProps {
 export const ActivityCards = ({ onCardClick }: ActivityCardsProps) => {
   const cards: ActivityCard[] = [
     {
-      id: "cours",
-      title: "Cours",
-      icon: BookOpen,
-      available: true,
-    },
-    {
       id: "quiz",
       title: "Quiz",
       icon: FileText,
@@ -46,10 +40,10 @@ export const ActivityCards = ({ onCardClick }: ActivityCardsProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
       {cards.map((card) => {
         const Icon = card.icon;
-        const isActive = card.id === "cours";
+        const isActive = false;
         
         return (
           <Card
