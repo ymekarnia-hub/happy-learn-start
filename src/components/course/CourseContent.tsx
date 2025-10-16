@@ -44,6 +44,7 @@ export const CourseContent = ({
 }: CourseContentProps) => {
   const [sections, setSections] = useState<Section[]>([]);
   const [activeSection, setActiveSection] = useState<string>("");
+  const [processedContent, setProcessedContent] = useState<string>("");
 
   useEffect(() => {
     // Parse content to extract sections and add IDs to headings
@@ -54,7 +55,7 @@ export const CourseContent = ({
     const parsedSections: Section[] = [];
     headings.forEach((heading, index) => {
       const sectionId = `section-${index}`;
-      heading.id = sectionId; // Add ID to the heading element
+      heading.setAttribute('id', sectionId); // Add ID to the heading element
       parsedSections.push({
         id: sectionId,
         number: index + 1,
@@ -63,6 +64,8 @@ export const CourseContent = ({
       });
     });
 
+    // Get the modified HTML with IDs
+    setProcessedContent(doc.body.innerHTML);
     setSections(parsedSections);
     if (parsedSections.length > 0) {
       setActiveSection(parsedSections[0].id);
@@ -72,7 +75,12 @@ export const CourseContent = ({
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const offset = 100; // Offset for fixed headers if any
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: elementPosition - offset,
+        behavior: 'smooth'
+      });
       setActiveSection(sectionId);
     }
   };
@@ -141,7 +149,7 @@ export const CourseContent = ({
                 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2
                 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2
                 [&_p]:mb-4 [&_p]:leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: content }}
+              dangerouslySetInnerHTML={{ __html: processedContent || content }}
             />
           </div>
         </div>
