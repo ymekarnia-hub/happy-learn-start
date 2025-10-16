@@ -45,35 +45,35 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {themeChapters.map((chapter, index) => (
               <Card
                 key={chapter.id}
-                className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden border-2"
+                className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden"
                 onClick={() => onChapterSelect(chapter.id)}
               >
-                <CardContent className="p-6">
-                  <div className="flex flex-col items-center text-center gap-4">
-                    <div className="relative w-16 h-16 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/30 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                      {/* Fond décoratif avec formules mathématiques */}
-                      <div className="absolute inset-0 opacity-10 overflow-hidden rounded-full">
-                        <div className="absolute top-1 left-2 text-xs font-serif">∫</div>
-                        <div className="absolute top-3 right-2 text-xs">π</div>
-                        <div className="absolute bottom-2 left-3 text-xs">∑</div>
-                      </div>
-                      
-                      <span className="text-xl font-bold relative z-10">
-                        {chapter.order_index + 1}
-                      </span>
+                <CardContent className="p-0">
+                  <div className="relative bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-950/30 dark:to-pink-900/30 p-6 min-h-[120px] flex items-center justify-center">
+                    {/* Fond décoratif avec formules mathématiques */}
+                    <div className="absolute inset-0 opacity-10 overflow-hidden">
+                      <div className="absolute top-2 left-3 text-2xl font-serif">∫</div>
+                      <div className="absolute top-8 right-4 text-xl">π</div>
+                      <div className="absolute bottom-3 left-8 text-lg">∑</div>
+                      <div className="absolute top-1/2 right-8 text-2xl">√</div>
                     </div>
                     
-                    <h3 className="font-semibold text-lg leading-tight">
+                    <h3 className="text-base font-semibold text-center relative z-10 px-2">
                       {chapter.title}
                     </h3>
-                    
+                  </div>
+
+                  <div className="bg-card p-4 space-y-2">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                      Chapitre {chapter.order_index + 1}
+                    </p>
                     <Progress 
                       value={chapter.completed ? 100 : 0} 
-                      className="h-1.5 w-full"
+                      className="h-2"
                     />
                   </div>
                 </CardContent>
