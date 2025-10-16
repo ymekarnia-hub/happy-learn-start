@@ -45,30 +45,37 @@ export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => 
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-w-5xl">
             {themeChapters.map((chapter, index) => (
               <Card
                 key={chapter.id}
-                className="group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 overflow-hidden border-2 hover:border-primary/50"
+                className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden border-2"
                 onClick={() => onChapterSelect(chapter.id)}
               >
-                <CardContent className="p-6">
-                  <div className="flex flex-col items-center text-center gap-4">
-                    <div className="relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/30 w-16 h-16 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                      {/* Fond décoratif avec formules mathématiques */}
-                      <div className="absolute inset-0 opacity-20 overflow-hidden rounded-full">
-                        <div className="absolute top-1 left-1 text-xs font-serif">∫</div>
-                        <div className="absolute bottom-1 right-1 text-xs">π</div>
-                      </div>
-                      
-                      <span className="text-2xl font-bold relative z-10">
-                        {chapter.order_index + 1}
-                      </span>
+                <CardContent className="p-0">
+                  <div className="relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/30 p-3 min-h-[80px] flex items-center justify-center">
+                    {/* Fond décoratif avec formules mathématiques */}
+                    <div className="absolute inset-0 opacity-10 overflow-hidden">
+                      <div className="absolute top-1 left-2 text-2xl font-serif">∫</div>
+                      <div className="absolute top-6 right-3 text-xl">π</div>
+                      <div className="absolute bottom-2 left-6 text-lg">∑</div>
+                      <div className="absolute top-1/2 right-6 text-2xl">√</div>
+                      <div className="absolute bottom-6 right-8 text-sm">θ</div>
                     </div>
                     
-                    <h3 className="font-semibold text-lg leading-tight">
+                    <h3 className="text-base font-semibold text-center relative z-10 px-2">
                       {chapter.title}
                     </h3>
+                  </div>
+
+                  <div className="bg-card p-3 space-y-1.5">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                      Chapitre {chapter.order_index + 1}
+                    </p>
+                    <Progress 
+                      value={chapter.completed ? 100 : 0} 
+                      className="h-1.5"
+                    />
                   </div>
                 </CardContent>
               </Card>
