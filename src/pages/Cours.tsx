@@ -310,15 +310,6 @@ const Cours = () => {
             <h1 className="text-4xl font-bold mb-2">
               {subject?.name || subjectId?.charAt(0).toUpperCase() + subjectId?.slice(1)}
             </h1>
-            {course && (
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-muted-foreground">Progression globale</span>
-                  <span className="font-medium">{Math.round(progressPercentage)}%</span>
-                </div>
-                <Progress value={progressPercentage} className="h-2" />
-              </div>
-            )}
           </div>
 
           {viewMode === "grid" ? (
