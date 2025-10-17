@@ -539,6 +539,9 @@ export type Database = {
           amount_paid: number
           created_at: string
           id: string
+          is_family_plan: boolean | null
+          monthly_price: number
+          months_count: number
           notes: string | null
           payment_date: string
           payment_method: string | null
@@ -546,11 +549,15 @@ export type Database = {
           period_start_date: string
           status: string
           subscription_id: string
+          total_amount: number | null
         }
         Insert: {
           amount_paid: number
           created_at?: string
           id?: string
+          is_family_plan?: boolean | null
+          monthly_price?: number
+          months_count?: number
           notes?: string | null
           payment_date?: string
           payment_method?: string | null
@@ -558,11 +565,15 @@ export type Database = {
           period_start_date: string
           status?: string
           subscription_id: string
+          total_amount?: number | null
         }
         Update: {
           amount_paid?: number
           created_at?: string
           id?: string
+          is_family_plan?: boolean | null
+          monthly_price?: number
+          months_count?: number
           notes?: string | null
           payment_date?: string
           payment_method?: string | null
@@ -570,6 +581,7 @@ export type Database = {
           period_start_date?: string
           status?: string
           subscription_id?: string
+          total_amount?: number | null
         }
         Relationships: [
           {
@@ -630,6 +642,8 @@ export type Database = {
           created_at: string | null
           end_date: string | null
           id: string
+          is_family_plan: boolean | null
+          months_count: number | null
           plan_id: string
           start_date: string
           status: string
@@ -641,6 +655,8 @@ export type Database = {
           created_at?: string | null
           end_date?: string | null
           id?: string
+          is_family_plan?: boolean | null
+          months_count?: number | null
           plan_id: string
           start_date?: string
           status?: string
@@ -652,6 +668,8 @@ export type Database = {
           created_at?: string | null
           end_date?: string | null
           id?: string
+          is_family_plan?: boolean | null
+          months_count?: number | null
           plan_id?: string
           start_date?: string
           status?: string
@@ -769,6 +787,44 @@ export type Database = {
           {
             foreignKeyName: "subscriptions_user_id_fkey"
             columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_transactions: {
+        Row: {
+          amount_paid: number | null
+          billing_period: string | null
+          is_family_plan: boolean | null
+          monthly_price: number | null
+          months_count: number | null
+          payment_date: string | null
+          payment_id: string | null
+          payment_method: string | null
+          period_end_date: string | null
+          period_start_date: string | null
+          plan_id: string | null
+          plan_name: string | null
+          status: string | null
+          subscription_status: string | null
+          total_amount: number | null
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
