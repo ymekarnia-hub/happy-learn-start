@@ -158,7 +158,7 @@ export const CourseContent = ({
         {sections.length > 0 && (
           <aside className="hidden lg:block w-80 flex-shrink-0">
             {/* Table of Contents */}
-            <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
+            <div className="fixed top-6 right-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
               <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire
