@@ -745,18 +745,13 @@ export type Database = {
     Enums: {
       app_role: "student" | "parent" | "teacher" | "admin"
       school_level:
-        | "cp"
-        | "ce1"
-        | "ce2"
-        | "cm1"
-        | "cm2"
-        | "sixieme"
-        | "cinquieme"
-        | "quatrieme"
-        | "troisieme"
-        | "seconde"
-        | "premiere"
-        | "terminale"
+        | "6ème"
+        | "5ème"
+        | "4ème"
+        | "3ème"
+        | "Seconde"
+        | "1ère"
+        | "Terminale"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -886,18 +881,13 @@ export const Constants = {
     Enums: {
       app_role: ["student", "parent", "teacher", "admin"],
       school_level: [
-        "cp",
-        "ce1",
-        "ce2",
-        "cm1",
-        "cm2",
-        "sixieme",
-        "cinquieme",
-        "quatrieme",
-        "troisieme",
-        "seconde",
-        "premiere",
-        "terminale",
+        "6ème",
+        "5ème",
+        "4ème",
+        "3ème",
+        "Seconde",
+        "1ère",
+        "Terminale",
       ],
     },
   },

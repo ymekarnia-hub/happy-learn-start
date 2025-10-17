@@ -191,12 +191,7 @@ const MesInformations = () => {
 
   const getSchoolLevelName = (level: string | null) => {
     if (!level) return "Non défini";
-    const levels: { [key: string]: string } = {
-      primary: "Primaire",
-      middle: "Collège",
-      high: "Lycée",
-    };
-    return levels[level] || level;
+    return level;
   };
 
   const getRoleName = (role: string | null) => {
