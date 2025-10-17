@@ -91,6 +91,8 @@ const Factures = () => {
 
   const fetchInvoices = async (userId: string) => {
     try {
+      console.log("Fetching invoices for user:", userId);
+      
       const { data, error } = await supabase
         .from("invoices")
         .select(
@@ -104,9 +106,17 @@ const Factures = () => {
         .eq("user_id", userId)
         .order("issue_date", { ascending: false });
 
-      if (error) throw error;
+      console.log("Invoices query result:", { data, error });
+
+      if (error) {
+        console.error("Error fetching invoices:", error);
+        throw error;
+      }
+      
+      console.log("Setting invoices:", data);
       setInvoices((data || []) as Invoice[]);
     } catch (error: any) {
+      console.error("Catch error:", error);
       toast({
         title: "Erreur",
         description: error.message,
