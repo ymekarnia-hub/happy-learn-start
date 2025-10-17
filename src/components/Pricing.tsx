@@ -11,7 +11,6 @@ const Pricing = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isFamily, setIsFamily] = useState(false);
-  const [paymentPeriod, setPaymentPeriod] = useState<'monthly' | 'annual'>('annual');
   
   // Calcul de l'année suivante
   const nextYear = new Date().getFullYear() + 1;
@@ -92,27 +91,6 @@ const Pricing = () => {
           </Label>
         </div>
 
-        {/* Switch pour Mensuel vs Année scolaire */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          <Label 
-            htmlFor="period-switch" 
-            className={`text-lg font-semibold cursor-pointer transition-colors ${paymentPeriod === 'monthly' ? 'text-blue-600' : 'text-gray-500'}`}
-          >
-            Mensuel
-          </Label>
-          <Switch
-            id="period-switch"
-            checked={paymentPeriod === 'annual'}
-            onCheckedChange={(checked) => setPaymentPeriod(checked ? 'annual' : 'monthly')}
-          />
-          <Label 
-            htmlFor="period-switch" 
-            className={`text-lg font-semibold cursor-pointer transition-colors ${paymentPeriod === 'annual' ? 'text-blue-600' : 'text-gray-500'}`}
-          >
-            Année scolaire
-          </Label>
-        </div>
-
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
             <Card
@@ -125,13 +103,12 @@ const Pricing = () => {
             >
               <Button
                 onClick={() => {
-                  const basePrice = index === 0 ? regularPrice : (isFamily ? 3125 : 2500);
                   navigate("/paiement", {
                     state: {
                       planName: plan.name,
-                      price: basePrice,
+                      price: index === 0 ? regularPrice : (isFamily ? 3125 : 2500),
                       isFamily: isFamily,
-                      isMonthly: paymentPeriod === 'monthly'
+                      isMonthly: true
                     }
                   });
                 }}
@@ -152,13 +129,13 @@ const Pricing = () => {
                 <div className="flex items-baseline justify-center gap-1 relative mb-4">
                   <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                   {plan.period && <span className="text-gray-600">{plan.period}</span>}
-                  {plan.highlighted && paymentPeriod === 'annual' && (
+                  {plan.highlighted && (
                     <span className="absolute -top-5 -right-2 bg-red-500 text-white text-lg font-bold px-4 py-2 rounded-full shadow-lg animate-pulse">
                       -30%
                     </span>
                   )}
                 </div>
-                {paymentPeriod === 'annual' && plan.immediatePayment && (
+                {plan.immediatePayment && (
                   <div className="p-3 bg-blue-50 border-2 border-blue-600 rounded-lg">
                     <p className="text-sm font-semibold text-blue-900 mb-1">
                       {plan.immediatePaymentLabel}
@@ -168,13 +145,6 @@ const Pricing = () => {
                     </p>
                     <p className="text-xs text-blue-700 mt-1">
                       {plan.paymentPeriod}
-                    </p>
-                  </div>
-                )}
-                {paymentPeriod === 'monthly' && (
-                  <div className="p-3 bg-gray-50 border border-gray-300 rounded-lg">
-                    <p className="text-sm font-semibold text-gray-700">
-                      Paiement mensuel
                     </p>
                   </div>
                 )}
