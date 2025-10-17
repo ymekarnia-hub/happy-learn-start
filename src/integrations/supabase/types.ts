@@ -20,6 +20,7 @@ export type Database = {
           archived_reason: string | null
           date_of_birth: string | null
           email: string | null
+          first_name: string | null
           full_name: string | null
           id: string
           original_user_id: string
@@ -32,6 +33,7 @@ export type Database = {
           archived_reason?: string | null
           date_of_birth?: string | null
           email?: string | null
+          first_name?: string | null
           full_name?: string | null
           id?: string
           original_user_id: string
@@ -44,6 +46,7 @@ export type Database = {
           archived_reason?: string | null
           date_of_birth?: string | null
           email?: string | null
+          first_name?: string | null
           full_name?: string | null
           id?: string
           original_user_id?: string
@@ -365,6 +368,7 @@ export type Database = {
           data_processing_consent: boolean | null
           date_of_birth: string | null
           email: string | null
+          first_name: string | null
           full_name: string | null
           id: string
           parent_consent: boolean | null
@@ -380,6 +384,7 @@ export type Database = {
           data_processing_consent?: boolean | null
           date_of_birth?: string | null
           email?: string | null
+          first_name?: string | null
           full_name?: string | null
           id: string
           parent_consent?: boolean | null
@@ -395,6 +400,7 @@ export type Database = {
           data_processing_consent?: boolean | null
           date_of_birth?: string | null
           email?: string | null
+          first_name?: string | null
           full_name?: string | null
           id?: string
           parent_consent?: boolean | null
