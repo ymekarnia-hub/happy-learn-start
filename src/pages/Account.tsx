@@ -125,9 +125,9 @@ const Account = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <Button variant="ghost" onClick={() => navigate("/dashboard")} className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => navigate("/liste-cours")} className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Retour au tableau de bord
+              Retour vers liste des matières
             </Button>
           </div>
         </div>
