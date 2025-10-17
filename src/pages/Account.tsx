@@ -93,7 +93,7 @@ const Account = () => {
       description: "Consulter mes factures",
       icon: FileText,
       color: "text-green-600",
-      onClick: () => toast({ title: "Factures", description: "Section en cours de développement" }),
+      onClick: () => navigate("/factures"),
     },
     {
       title: "Activer un code prépayé",
