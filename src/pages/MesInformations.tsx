@@ -7,6 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+const profileSchema = z.object({
+  full_name: z.string().trim().min(1, "Le nom est requis").max(100, "Le nom ne peut pas dépasser 100 caractères"),
+  phone: z.string().trim().max(20, "Le téléphone ne peut pas dépasser 20 caractères").optional().nullable(),
+  date_of_birth: z.string().optional().nullable(),
+});
 
 interface Profile {
   id: string;
@@ -23,6 +30,12 @@ const MesInformations = () => {
   const { toast } = useToast();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [formData, setFormData] = useState({
+    full_name: "",
+    phone: "",
+    date_of_birth: "",
+  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -56,6 +69,11 @@ const MesInformations = () => {
 
       if (error) throw error;
       setProfile(data);
+      setFormData({
+        full_name: data.full_name || "",
+        phone: data.phone || "",
+        date_of_birth: data.date_of_birth || "",
+      });
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -64,6 +82,56 @@ const MesInformations = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      setUpdating(true);
+
+      // Validation
+      const validatedData = profileSchema.parse({
+        full_name: formData.full_name,
+        phone: formData.phone || null,
+        date_of_birth: formData.date_of_birth || null,
+      });
+
+      if (!profile?.id) return;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: validatedData.full_name,
+          phone: validatedData.phone,
+          date_of_birth: validatedData.date_of_birth,
+        })
+        .eq("id", profile.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Succès",
+        description: "Vos informations ont été mises à jour",
+      });
+
+      // Refresh profile
+      fetchProfile(profile.id);
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Erreur de validation",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erreur",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -123,9 +191,8 @@ const MesInformations = () => {
                   <Label htmlFor="full_name">Nom complet</Label>
                   <Input
                     id="full_name"
-                    value={profile?.full_name || ""}
-                    disabled
-                    className="bg-muted"
+                    value={formData.full_name}
+                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                   />
                 </div>
 
@@ -144,9 +211,9 @@ const MesInformations = () => {
                   <Label htmlFor="phone">Téléphone</Label>
                   <Input
                     id="phone"
-                    value={profile?.phone || "Non renseigné"}
-                    disabled
-                    className="bg-muted"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="Numéro de téléphone"
                   />
                 </div>
 
@@ -154,13 +221,9 @@ const MesInformations = () => {
                   <Label htmlFor="date_of_birth">Date de naissance</Label>
                   <Input
                     id="date_of_birth"
-                    value={
-                      profile?.date_of_birth
-                        ? new Date(profile.date_of_birth).toLocaleDateString("fr-FR")
-                        : "Non renseignée"
-                    }
-                    disabled
-                    className="bg-muted"
+                    type="date"
+                    value={formData.date_of_birth}
+                    onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
                   />
                 </div>
 
@@ -178,6 +241,12 @@ const MesInformations = () => {
                   <Label htmlFor="role">Rôle</Label>
                   <Input id="role" value={getRoleName(profile?.role)} disabled className="bg-muted" />
                 </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <Button onClick={handleUpdate} disabled={updating}>
+                  {updating ? "Mise à jour..." : "Mettre à jour"}
+                </Button>
               </div>
             </CardContent>
           </Card>
