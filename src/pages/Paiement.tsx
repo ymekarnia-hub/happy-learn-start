@@ -9,10 +9,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface PaymentInfo {
+  planId: string;
   planName: string;
   price: number;
   isFamily: boolean;
-  isMonthly: boolean;
+  billingPeriod: string;
 }
 
 const Paiement = () => {
@@ -31,10 +32,10 @@ const Paiement = () => {
     const today = new Date();
     const endDate = new Date(today);
     
-    if (paymentInfo.isMonthly) {
+    if (paymentInfo.billingPeriod === 'monthly') {
       endDate.setMonth(endDate.getMonth() + 1);
     } else {
-      endDate.setFullYear(endDate.getFullYear() + 1);
+      endDate.setMonth(endDate.getMonth() + 10);
     }
     
     return endDate.toLocaleDateString('fr-FR', { 
@@ -44,7 +45,7 @@ const Paiement = () => {
     });
   };
 
-  const totalAmount = paymentInfo.isMonthly 
+  const totalAmount = paymentInfo.billingPeriod === 'monthly' 
     ? paymentInfo.price 
     : paymentInfo.price * 10;
 
@@ -182,7 +183,7 @@ const Paiement = () => {
                     <span className="font-semibold">
                       {totalAmount.toLocaleString('fr-DZ')} DA
                     </span>
-                    {paymentInfo.isMonthly ? (
+                    {paymentInfo.billingPeriod === 'monthly' ? (
                       <span> pour 1 mois d'abonnement</span>
                     ) : (
                       <span> pour 10 mois d'abonnement (année scolaire complète)</span>
@@ -197,7 +198,7 @@ const Paiement = () => {
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
                     <span className="font-medium">Durée:</span>{" "}
-                    {paymentInfo.isMonthly ? "1 mois" : "10 mois (année scolaire)"}
+                    {paymentInfo.billingPeriod === 'monthly' ? "1 mois" : "10 mois (année scolaire)"}
                   </p>
                 </div>
 
