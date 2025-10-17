@@ -14,6 +14,7 @@ interface PaymentInfo {
   price: number;
   isFamily: boolean;
   billingPeriod: string;
+  monthsCount: number;
 }
 
 const Paiement = () => {
@@ -32,11 +33,7 @@ const Paiement = () => {
     const today = new Date();
     const endDate = new Date(today);
     
-    if (paymentInfo.billingPeriod === 'monthly') {
-      endDate.setMonth(endDate.getMonth() + 1);
-    } else {
-      endDate.setMonth(endDate.getMonth() + 10);
-    }
+    endDate.setMonth(endDate.getMonth() + paymentInfo.monthsCount);
     
     return endDate.toLocaleDateString('fr-FR', { 
       day: 'numeric', 
@@ -45,9 +42,7 @@ const Paiement = () => {
     });
   };
 
-  const totalAmount = paymentInfo.billingPeriod === 'monthly' 
-    ? paymentInfo.price 
-    : paymentInfo.price * 10;
+  const totalAmount = paymentInfo.price * paymentInfo.monthsCount;
 
   const generateVirementReference = () => {
     return `REF-${Date.now()}-${Math.random().toString(36).substring(7).toUpperCase()}`;
@@ -183,11 +178,7 @@ const Paiement = () => {
                     <span className="font-semibold">
                       {totalAmount.toLocaleString('fr-DZ')} DA
                     </span>
-                    {paymentInfo.billingPeriod === 'monthly' ? (
-                      <span> pour 1 mois d'abonnement</span>
-                    ) : (
-                      <span> pour 10 mois d'abonnement (année scolaire complète)</span>
-                    )}
+                    <span> pour {paymentInfo.monthsCount} mois d'abonnement</span>
                   </p>
                 </div>
 
@@ -198,7 +189,11 @@ const Paiement = () => {
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
                     <span className="font-medium">Durée:</span>{" "}
-                    {paymentInfo.billingPeriod === 'monthly' ? "1 mois" : "10 mois (année scolaire)"}
+                    {paymentInfo.monthsCount} mois
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <span className="font-medium">Prix mensuel:</span>{" "}
+                    {paymentInfo.price.toLocaleString('fr-DZ')} DA
                   </p>
                 </div>
 

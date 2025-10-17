@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,7 @@ const Pricing = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isFamily, setIsFamily] = useState(false);
+  const [monthsCount, setMonthsCount] = useState(1);
   
   const nextYear = new Date().getFullYear() + 1;
 
@@ -63,9 +65,9 @@ const Pricing = () => {
     },
     {
       name: "Formule Mensuelle",
-      price: monthlyPlan ? `${getPrice(monthlyPlan).toLocaleString('fr-FR')} DA` : '---',
+      price: monthlyPlan ? `${(getPrice(monthlyPlan) * monthsCount).toLocaleString('fr-FR')} DA` : '---',
       period: "",
-      description: "Paiement pour 1 mois",
+      description: `Paiement pour ${monthsCount} mois`,
       features: [
         "Tous les cours de votre niveau",
         "Exercices et corrigés",
@@ -76,6 +78,7 @@ const Pricing = () => {
       ],
       highlighted: false,
       planData: monthlyPlan,
+      showMonthsSelector: true,
     },
   ];
 
@@ -132,6 +135,26 @@ const Pricing = () => {
                   : "border border-gray-200"
               } bg-white relative`}
             >
+              {plan.showMonthsSelector && (
+                <div className="mb-6">
+                  <Label htmlFor="months-select" className="text-sm font-semibold text-gray-700 mb-2 block">
+                    Nombre de mois
+                  </Label>
+                  <Select value={monthsCount.toString()} onValueChange={(value) => setMonthsCount(parseInt(value))}>
+                    <SelectTrigger id="months-select" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((month) => (
+                        <SelectItem key={month} value={month.toString()}>
+                          {month} {month === 1 ? 'mois' : 'mois'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <Button
                 onClick={() => {
                   if (plan.planData) {
@@ -141,7 +164,8 @@ const Pricing = () => {
                         planName: plan.name,
                         price: getPrice(plan.planData),
                         isFamily: isFamily,
-                        billingPeriod: plan.planData.billing_period
+                        billingPeriod: plan.planData.billing_period,
+                        monthsCount: plan.showMonthsSelector ? monthsCount : (plan.planData.billing_period === 'annual' ? 10 : 1)
                       }
                     });
                   }
