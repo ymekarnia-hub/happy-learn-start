@@ -312,6 +312,13 @@ export type Database = {
             foreignKeyName: "invoices_subscription_id_fkey"
             columns: ["subscription_id"]
             isOneToOne: false
+            referencedRelation: "active_subscriptions"
+            referencedColumns: ["subscription_id"]
+          },
+          {
+            foreignKeyName: "invoices_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
             referencedRelation: "subscriptions"
             referencedColumns: ["id"]
           },
@@ -527,39 +534,93 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_payments: {
+        Row: {
+          amount_paid: number
+          created_at: string
+          id: string
+          notes: string | null
+          payment_date: string
+          payment_method: string | null
+          period_end_date: string
+          period_start_date: string
+          status: string
+          subscription_id: string
+        }
+        Insert: {
+          amount_paid: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          period_end_date: string
+          period_start_date: string
+          status?: string
+          subscription_id: string
+        }
+        Update: {
+          amount_paid?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          period_end_date?: string
+          period_start_date?: string
+          status?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "active_subscriptions"
+            referencedColumns: ["subscription_id"]
+          },
+          {
+            foreignKeyName: "subscription_payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_plans: {
         Row: {
-          created_at: string | null
-          description: string | null
+          billing_period: string
+          created_at: string
+          duration_months: number
           id: string
           is_active: boolean | null
           name: string
-          price_ht: number
-          tva_percentage: number
-          type: string
-          updated_at: string | null
+          price_family: number
+          price_single: number
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
-          description?: string | null
+          billing_period: string
+          created_at?: string
+          duration_months: number
           id?: string
           is_active?: boolean | null
           name: string
-          price_ht: number
-          tva_percentage?: number
-          type: string
-          updated_at?: string | null
+          price_family: number
+          price_single: number
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
-          description?: string | null
+          billing_period?: string
+          created_at?: string
+          duration_months?: number
           id?: string
           is_active?: boolean | null
           name?: string
-          price_ht?: number
-          tva_percentage?: number
-          type?: string
-          updated_at?: string | null
+          price_family?: number
+          price_single?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -686,6 +747,34 @@ export type Database = {
       }
     }
     Views: {
+      active_subscriptions: {
+        Row: {
+          billing_period: string | null
+          current_price: number | null
+          duration_months: number | null
+          family_member_count: number | null
+          is_active: boolean | null
+          last_payment_amount: number | null
+          parent_id: string | null
+          parent_name: string | null
+          payment_date: string | null
+          payment_status: string | null
+          period_end_date: string | null
+          period_start_date: string | null
+          plan_name: string | null
+          subscription_created_at: string | null
+          subscription_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quiz_questions_public: {
         Row: {
           created_at: string | null
@@ -729,9 +818,29 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_period_end_date: {
+        Args: { plan_id: string; start_date: string }
+        Returns: string
+      }
+      calculate_subscription_price: {
+        Args: { parent_id: string; plan_id: string }
+        Returns: number
+      }
+      create_subscription_payment: {
+        Args: {
+          p_payment_date?: string
+          p_payment_method?: string
+          p_subscription_id: string
+        }
+        Returns: string
+      }
       generate_invoice_number: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_family_member_count: {
+        Args: { parent_id: string }
+        Returns: number
       }
       has_role: {
         Args: {
@@ -742,6 +851,10 @@ export type Database = {
       }
       is_admin: {
         Args: { _user_id: string }
+        Returns: boolean
+      }
+      is_subscription_active: {
+        Args: { subscription_id: string }
         Returns: boolean
       }
     }
