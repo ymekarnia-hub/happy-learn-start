@@ -99,18 +99,16 @@ export const CourseContent = ({
     <div className="space-y-6">
       {/* Download PDF Button - Fixed on scroll */}
       {onDownloadPDF && (
-        <div className="sticky top-6 z-10 flex justify-end mb-6">
-          <div className="w-80">
-            <Button
-              onClick={onDownloadPDF}
-              variant="default"
-              size="lg"
-              className="bg-primary hover:bg-primary/90 w-full shadow-lg"
-            >
-              <Download className="h-5 w-5 mr-2" />
-              Télécharger en PDF
-            </Button>
-          </div>
+        <div className="fixed top-6 right-6 z-10 w-80">
+          <Button
+            onClick={onDownloadPDF}
+            variant="default"
+            size="lg"
+            className="bg-primary hover:bg-primary/90 w-full shadow-lg"
+          >
+            <Download className="h-5 w-5 mr-2" />
+            Télécharger en PDF
+          </Button>
         </div>
       )}
 
@@ -158,7 +156,7 @@ export const CourseContent = ({
         {sections.length > 0 && (
           <aside className="hidden lg:block w-80 flex-shrink-0">
             {/* Table of Contents */}
-            <div className="fixed top-6 right-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
+            <div className="fixed top-24 right-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-8rem)] overflow-y-auto shadow-lg">
               <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire
