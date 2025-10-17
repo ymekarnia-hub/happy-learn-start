@@ -121,7 +121,7 @@ const Paiement = () => {
                       <Input id="cardName" placeholder="Nom complet" />
                     </div>
                     <Button className="w-full mt-4">
-                      Payer
+                      Payer {totalAmount.toLocaleString('fr-DZ')} DA
                     </Button>
                   </TabsContent>
 
@@ -188,11 +188,6 @@ const Paiement = () => {
                       <span> pour 1 année scolaire (10 mois) d'abonnement</span>
                     )}
                   </p>
-                  {!paymentInfo.isMonthly && (
-                    <p className="text-sm text-gray-600 mt-2">
-                      Soit {paymentInfo.price.toLocaleString('fr-DZ')} DA/mois
-                    </p>
-                  )}
                 </div>
 
                 <div className="pt-4 border-t">

@@ -11,7 +11,7 @@ const Pricing = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isFamily, setIsFamily] = useState(false);
-  const [isMonthly, setIsMonthly] = useState(false);
+  const [paymentPeriod, setPaymentPeriod] = useState<'monthly' | 'annual'>('annual');
   
   // Calcul de l'année suivante
   const nextYear = new Date().getFullYear() + 1;
@@ -72,7 +72,7 @@ const Pricing = () => {
         </div>
 
         {/* Switch pour 1 enfant vs Famille */}
-        <div className="flex items-center justify-center gap-4 mb-8">
+        <div className="flex items-center justify-center gap-4 mb-12">
           <Label 
             htmlFor="family-switch" 
             className={`text-lg font-semibold cursor-pointer transition-colors ${!isFamily ? 'text-blue-600' : 'text-gray-500'}`}
@@ -96,20 +96,20 @@ const Pricing = () => {
         <div className="flex items-center justify-center gap-4 mb-12">
           <Label 
             htmlFor="period-switch" 
-            className={`text-lg font-semibold cursor-pointer transition-colors ${!isMonthly ? 'text-blue-600' : 'text-gray-500'}`}
+            className={`text-lg font-semibold cursor-pointer transition-colors ${paymentPeriod === 'monthly' ? 'text-blue-600' : 'text-gray-500'}`}
           >
-            Année scolaire
+            Mensuel
           </Label>
           <Switch
             id="period-switch"
-            checked={isMonthly}
-            onCheckedChange={setIsMonthly}
+            checked={paymentPeriod === 'annual'}
+            onCheckedChange={(checked) => setPaymentPeriod(checked ? 'annual' : 'monthly')}
           />
           <Label 
             htmlFor="period-switch" 
-            className={`text-lg font-semibold cursor-pointer transition-colors ${isMonthly ? 'text-blue-600' : 'text-gray-500'}`}
+            className={`text-lg font-semibold cursor-pointer transition-colors ${paymentPeriod === 'annual' ? 'text-blue-600' : 'text-gray-500'}`}
           >
-            Mensuel
+            Année scolaire
           </Label>
         </div>
 
@@ -125,12 +125,13 @@ const Pricing = () => {
             >
               <Button
                 onClick={() => {
+                  const basePrice = index === 0 ? regularPrice : (isFamily ? 3125 : 2500);
                   navigate("/paiement", {
                     state: {
                       planName: plan.name,
-                      price: index === 0 ? regularPrice : (isFamily ? 3125 : 2500),
+                      price: basePrice,
                       isFamily: isFamily,
-                      isMonthly: isMonthly
+                      isMonthly: paymentPeriod === 'monthly'
                     }
                   });
                 }}
@@ -140,7 +141,7 @@ const Pricing = () => {
                     : "bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                {isMonthly ? `${t("pricing.choose")} ${plan.name}` : `Choisir Formule Année scolaire`}
+                {t("pricing.choose")} {plan.name}
               </Button>
 
               <div className="text-center mb-6">
@@ -151,13 +152,13 @@ const Pricing = () => {
                 <div className="flex items-baseline justify-center gap-1 relative mb-4">
                   <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                   {plan.period && <span className="text-gray-600">{plan.period}</span>}
-                  {plan.highlighted && (
+                  {plan.highlighted && paymentPeriod === 'annual' && (
                     <span className="absolute -top-5 -right-2 bg-red-500 text-white text-lg font-bold px-4 py-2 rounded-full shadow-lg animate-pulse">
                       -30%
                     </span>
                   )}
                 </div>
-                {plan.immediatePayment && (
+                {paymentPeriod === 'annual' && plan.immediatePayment && (
                   <div className="p-3 bg-blue-50 border-2 border-blue-600 rounded-lg">
                     <p className="text-sm font-semibold text-blue-900 mb-1">
                       {plan.immediatePaymentLabel}
@@ -167,6 +168,13 @@ const Pricing = () => {
                     </p>
                     <p className="text-xs text-blue-700 mt-1">
                       {plan.paymentPeriod}
+                    </p>
+                  </div>
+                )}
+                {paymentPeriod === 'monthly' && (
+                  <div className="p-3 bg-gray-50 border border-gray-300 rounded-lg">
+                    <p className="text-sm font-semibold text-gray-700">
+                      Paiement mensuel
                     </p>
                   </div>
                 )}
