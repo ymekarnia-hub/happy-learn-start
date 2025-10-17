@@ -34,7 +34,7 @@ const Paiement = () => {
     if (paymentInfo.isMonthly) {
       endDate.setMonth(endDate.getMonth() + 1);
     } else {
-      endDate.setMonth(endDate.getMonth() + 10);
+      endDate.setFullYear(endDate.getFullYear() + 1);
     }
     
     return endDate.toLocaleDateString('fr-FR', { 
@@ -185,19 +185,19 @@ const Paiement = () => {
                     {paymentInfo.isMonthly ? (
                       <span> pour 1 mois d'abonnement</span>
                     ) : (
-                      <span> pour 1 année scolaire (10 mois) d'abonnement</span>
+                      <span> pour 10 mois d'abonnement (année scolaire complète)</span>
                     )}
                   </p>
                 </div>
 
                 <div className="pt-4 border-t">
                   <p className="text-sm text-gray-600">
-                    <span className="font-medium">Type de formule:</span>{" "}
-                    {paymentInfo.isMonthly ? "Mensuelle" : "Année scolaire"}
+                    <span className="font-medium">Type:</span>{" "}
+                    {paymentInfo.isFamily ? "Formule Famille" : "Formule 1 enfant"}
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
                     <span className="font-medium">Durée:</span>{" "}
-                    {paymentInfo.isMonthly ? "1 mois" : "10 mois"}
+                    {paymentInfo.isMonthly ? "1 mois" : "10 mois (année scolaire)"}
                   </p>
                 </div>
 
