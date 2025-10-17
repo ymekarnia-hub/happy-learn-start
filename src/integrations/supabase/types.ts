@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      archived_accounts: {
+        Row: {
+          archived_at: string
+          archived_reason: string | null
+          date_of_birth: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          original_user_id: string
+          phone: string | null
+          role: Database["public"]["Enums"]["app_role"] | null
+          school_level: Database["public"]["Enums"]["school_level"] | null
+        }
+        Insert: {
+          archived_at?: string
+          archived_reason?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          original_user_id: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"] | null
+          school_level?: Database["public"]["Enums"]["school_level"] | null
+        }
+        Update: {
+          archived_at?: string
+          archived_reason?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          original_user_id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"] | null
+          school_level?: Database["public"]["Enums"]["school_level"] | null
+        }
+        Relationships: []
+      }
       class_subjects: {
         Row: {
           created_at: string

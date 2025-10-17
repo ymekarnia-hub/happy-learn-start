@@ -46,6 +46,40 @@ Deno.serve(async (req) => {
 
     console.log(`Deleting account for user: ${userId}`)
 
+    // First, get the user's profile data to archive
+    const { data: profileData, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('full_name, email, phone, date_of_birth, school_level, role')
+      .eq('id', userId)
+      .single()
+
+    if (profileError) {
+      console.error('Error fetching profile:', profileError)
+    }
+
+    // Archive the account information before deletion
+    if (profileData) {
+      const { error: archiveError } = await supabaseClient
+        .from('archived_accounts')
+        .insert({
+          original_user_id: userId,
+          full_name: profileData.full_name,
+          email: profileData.email,
+          phone: profileData.phone,
+          date_of_birth: profileData.date_of_birth,
+          school_level: profileData.school_level,
+          role: profileData.role,
+          archived_reason: 'User deleted account'
+        })
+
+      if (archiveError) {
+        console.error('Error archiving account:', archiveError)
+        // Continue with deletion even if archiving fails
+      } else {
+        console.log(`Successfully archived account for user: ${userId}`)
+      }
+    }
+
     // Delete the user using admin API
     const { error: deleteError } = await supabaseClient.auth.admin.deleteUser(userId)
 
