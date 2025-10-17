@@ -99,6 +99,15 @@ const Pricing = () => {
                   : "border border-gray-200"
               } bg-white relative`}
             >
+              <Button
+                className={`w-full font-bold mb-6 ${
+                  plan.highlighted
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white"
+                    : "bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                {t("pricing.choose")} {plan.name}
+              </Button>
 
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
@@ -129,7 +138,7 @@ const Pricing = () => {
                 )}
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <Check className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
@@ -137,16 +146,6 @@ const Pricing = () => {
                   </li>
                 ))}
               </ul>
-
-              <Button
-                className={`w-full font-bold ${
-                  plan.highlighted
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white"
-                    : "bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                {t("pricing.choose")} {plan.name}
-              </Button>
             </Card>
           ))}
         </div>
