@@ -22,19 +22,6 @@ const Pricing = () => {
 
   const plans = [
     {
-      name: t("pricing.discovery.name"),
-      price: t("pricing.discovery.price"),
-      period: t("pricing.discovery.period"),
-      description: t("pricing.discovery.description"),
-      features: [
-        t("pricing.discovery.features.subjects"),
-        t("pricing.discovery.features.exercises"),
-        t("pricing.discovery.features.tracking"),
-        t("pricing.discovery.features.support"),
-      ],
-      highlighted: false,
-    },
-    {
       name: t("pricing.regular.name"),
       price: `${regularPrice.toLocaleString('fr-DZ')} DA`,
       period: "/Mois",
@@ -72,17 +59,8 @@ const Pricing = () => {
   return (
     <section id="pricing" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            {t("pricing.title")}
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {t("pricing.subtitle")}
-          </p>
-        </div>
-
         {/* Switch pour 1 enfant vs Famille */}
-        <div className="flex items-center justify-center gap-4 mb-12">
+        <div className="flex items-center justify-center gap-4 mb-8">
           <Label 
             htmlFor="family-switch" 
             className={`text-lg font-semibold cursor-pointer transition-colors ${!isFamily ? 'text-blue-600' : 'text-gray-500'}`}
@@ -102,7 +80,16 @@ const Pricing = () => {
           </Label>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            {t("pricing.title")}
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            {t("pricing.subtitle")}
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
             <Card
               key={index}
