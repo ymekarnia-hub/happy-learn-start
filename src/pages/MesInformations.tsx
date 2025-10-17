@@ -22,7 +22,7 @@ import { z } from "zod";
 
 const profileSchema = z.object({
   first_name: z.string().trim().min(1, "Le prénom est requis").max(100, "Le prénom ne peut pas dépasser 100 caractères"),
-  full_name: z.string().trim().min(1, "Le nom est requis").max(100, "Le nom ne peut pas dépasser 100 caractères"),
+  last_name: z.string().trim().min(1, "Le nom est requis").max(100, "Le nom ne peut pas dépasser 100 caractères"),
   phone: z.string().trim().max(20, "Le téléphone ne peut pas dépasser 20 caractères").optional().nullable(),
   date_of_birth: z.string().optional().nullable(),
   school_level: z.enum(["6ème", "5ème", "4ème", "3ème", "Seconde", "1ère", "Terminale"]).optional().nullable(),
@@ -31,6 +31,7 @@ const profileSchema = z.object({
 interface Profile {
   id: string;
   first_name: string | null;
+  last_name: string | null;
   full_name: string | null;
   email: string | null;
   phone: string | null;
@@ -48,7 +49,7 @@ const MesInformations = () => {
   const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     first_name: "",
-    full_name: "",
+    last_name: "",
     phone: "",
     date_of_birth: "",
     school_level: "",
@@ -80,7 +81,7 @@ const MesInformations = () => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, first_name, full_name, email, phone, date_of_birth, school_level, role")
+        .select("id, first_name, last_name, full_name, email, phone, date_of_birth, school_level, role")
         .eq("id", userId)
         .single();
 
@@ -88,7 +89,7 @@ const MesInformations = () => {
       setProfile(data);
       setFormData({
         first_name: data.first_name || "",
-        full_name: data.full_name || "",
+        last_name: data.last_name || "",
         phone: data.phone || "",
         date_of_birth: data.date_of_birth || "",
         school_level: data.school_level || "",
@@ -111,7 +112,7 @@ const MesInformations = () => {
       // Validation
       const validatedData = profileSchema.parse({
         first_name: formData.first_name,
-        full_name: formData.full_name,
+        last_name: formData.last_name,
         phone: formData.phone || null,
         date_of_birth: formData.date_of_birth || null,
         school_level: formData.school_level || null,
@@ -123,7 +124,8 @@ const MesInformations = () => {
         .from("profiles")
         .update({
           first_name: validatedData.first_name,
-          full_name: validatedData.full_name,
+          last_name: validatedData.last_name,
+          full_name: `${validatedData.first_name} ${validatedData.last_name}`,
           phone: validatedData.phone,
           date_of_birth: validatedData.date_of_birth,
           school_level: validatedData.school_level as any,
@@ -197,7 +199,7 @@ const MesInformations = () => {
   const getRoleName = (role: string | null) => {
     if (!role) return "Non défini";
     const roles: { [key: string]: string } = {
-      student: "Étudiant",
+      student: "Élève",
       parent: "Parent",
       teacher: "Enseignant",
       admin: "Administrateur",
@@ -247,12 +249,12 @@ const MesInformations = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="full_name">Nom</Label>
+                  <Label htmlFor="last_name">Nom de famille</Label>
                   <Input
-                    id="full_name"
-                    value={formData.full_name}
-                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    placeholder="Votre nom"
+                    id="last_name"
+                    value={formData.last_name}
+                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                    placeholder="Votre nom de famille"
                   />
                 </div>
 
@@ -296,9 +298,13 @@ const MesInformations = () => {
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <option value="">Sélectionnez un niveau</option>
-                    <option value="primary">Primaire</option>
-                    <option value="middle">Collège</option>
-                    <option value="high">Lycée</option>
+                    <option value="6ème">6ème</option>
+                    <option value="5ème">5ème</option>
+                    <option value="4ème">4ème</option>
+                    <option value="3ème">3ème</option>
+                    <option value="Seconde">Seconde</option>
+                    <option value="1ère">1ère</option>
+                    <option value="Terminale">Terminale</option>
                   </select>
                 </div>
 

@@ -371,6 +371,7 @@ export type Database = {
           first_name: string | null
           full_name: string | null
           id: string
+          last_name: string | null
           parent_consent: boolean | null
           phone: string | null
           role: Database["public"]["Enums"]["app_role"] | null
@@ -387,6 +388,7 @@ export type Database = {
           first_name?: string | null
           full_name?: string | null
           id: string
+          last_name?: string | null
           parent_consent?: boolean | null
           phone?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
@@ -403,6 +405,7 @@ export type Database = {
           first_name?: string | null
           full_name?: string | null
           id?: string
+          last_name?: string | null
           parent_consent?: boolean | null
           phone?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
