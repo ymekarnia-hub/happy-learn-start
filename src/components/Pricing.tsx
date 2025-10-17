@@ -64,8 +64,8 @@ const Pricing = () => {
     {
       name: "Formule Mensuelle",
       price: monthlyPlan ? `${getPrice(monthlyPlan).toLocaleString('fr-FR')} DA` : '---',
-      period: "/mois",
-      description: "Paiement mensuel",
+      period: "",
+      description: "Paiement pour 1 mois",
       features: [
         "Tous les cours de votre niveau",
         "Exercices et corrigés",
