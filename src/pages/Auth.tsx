@@ -23,6 +23,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [profileType, setProfileType] = useState("");
   const [classLevel, setClassLevel] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -36,7 +37,8 @@ const Auth = () => {
     email: false,
     password: false,
     profileType: false,
-    classLevel: false
+    classLevel: false,
+    dateOfBirth: false
   });
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -104,6 +106,11 @@ const Auth = () => {
           full_name: `${firstName} ${lastName}`,
           role: profileType === 'enfant' ? 'student' : 'parent',
         };
+        
+        // Ajouter la date de naissance si fournie
+        if (dateOfBirth) {
+          userData.date_of_birth = format(dateOfBirth, 'yyyy-MM-dd');
+        }
         
         // N'inclure school_level que pour les élèves
         if (profileType === 'enfant' && classLevel) {
@@ -360,6 +367,38 @@ const Auth = () => {
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-foreground">Date de naissance</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal bg-secondary/20",
+                            !dateOfBirth && "text-muted-foreground",
+                            (submitted || touched.dateOfBirth) && !dateOfBirth ? "border-red-500 border-2" : "border-border"
+                          )}
+                        >
+                          {dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : "Sélectionnez votre date de naissance"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={dateOfBirth}
+                          onSelect={(date) => {
+                            setDateOfBirth(date);
+                            setTouched(prev => ({ ...prev, dateOfBirth: true }));
+                          }}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div className="space-y-2">
