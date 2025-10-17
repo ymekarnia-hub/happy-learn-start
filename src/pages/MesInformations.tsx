@@ -25,7 +25,7 @@ const profileSchema = z.object({
   full_name: z.string().trim().min(1, "Le nom est requis").max(100, "Le nom ne peut pas dépasser 100 caractères"),
   phone: z.string().trim().max(20, "Le téléphone ne peut pas dépasser 20 caractères").optional().nullable(),
   date_of_birth: z.string().optional().nullable(),
-  school_level: z.string().optional().nullable(),
+  school_level: z.enum(["primary", "middle", "high", "cp", "ce1", "ce2", "cm1", "cm2", "sixieme", "cinquieme", "quatrieme", "troisieme", "seconde", "premiere", "terminale"]).optional().nullable(),
 });
 
 interface Profile {
@@ -126,7 +126,7 @@ const MesInformations = () => {
           full_name: validatedData.full_name,
           phone: validatedData.phone,
           date_of_birth: validatedData.date_of_birth,
-          school_level: validatedData.school_level,
+          school_level: validatedData.school_level as any,
         })
         .eq("id", profile.id);
 
