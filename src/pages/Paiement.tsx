@@ -165,9 +165,12 @@ const Paiement = () => {
 
             {/* Deuxième bloc - Récapitulatif du tarif */}
             <Card className="p-8 h-fit sticky top-24">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                {totalAmount.toLocaleString('fr-DZ')} DA
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold text-gray-900">Tarif</h2>
+                <p className="text-3xl font-bold text-gray-900">
+                  {totalAmount.toLocaleString('fr-DZ')} DA
+                </p>
+              </div>
 
               <div className="space-y-4 mb-6">
                 <div>
