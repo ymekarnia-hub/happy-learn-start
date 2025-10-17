@@ -24,15 +24,17 @@ interface Profile {
 interface Invoice {
   id: string;
   invoice_number: string;
+  issue_date: string;
   amount_ht: number;
   tva_percentage: number;
   tva_amount: number;
   amount_ttc: number;
-  issue_date: string;
   status: string;
+  subscription_id: string | null;
   subscriptions?: {
     subscription_plans?: {
       type: string;
+      name: string;
     };
   };
 }
@@ -71,31 +73,13 @@ const Factures = () => {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
 
-      if (profileError) throw profileError;
-      setProfile(profileData);
-
+      if (error) throw error;
+      setProfile(data);
+      
       // Récupérer les factures de l'utilisateur
-      const { data: invoicesData, error: invoicesError } = await supabase
-        .from("invoices")
-        .select(`
-          *,
-          subscriptions (
-            subscription_plans (
-              type
-            )
-          )
-        `)
-        .eq("user_id", userId)
-        .order("issue_date", { ascending: false });
-
-      if (invoicesError) throw invoicesError;
-      setInvoices(invoicesData || []);
+      await fetchInvoices(userId);
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -107,9 +91,38 @@ const Factures = () => {
     }
   };
 
+  const fetchInvoices = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("invoices")
+        .select(`
+          *,
+          subscriptions (
+            subscription_plans (
+              type,
+              name
+            )
+          )
+        `)
+        .eq("user_id", userId)
+        .order("issue_date", { ascending: false });
+
+      if (error) throw error;
+      setInvoices(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de récupérer les factures",
+        variant: "destructive",
+      });
+    }
+  };
+
   const generatePDF = (invoice: Invoice) => {
     const doc = new jsPDF();
-    const subscriptionType = invoice.subscriptions?.subscription_plans?.type || "Standard";
+    
+    const subscriptionType = invoice.subscriptions?.subscription_plans?.type || 'N/A';
+    const subscriptionName = invoice.subscriptions?.subscription_plans?.name || 'Abonnement';
 
     // En-tête de la facture
     doc.setFontSize(20);
@@ -145,7 +158,7 @@ const Factures = () => {
     doc.text("Montant", 150, 125, { align: "right" });
 
     // Détails
-    doc.text(`Abonnement ${subscriptionType}`, 20, 135);
+    doc.text(`${subscriptionName} (${subscriptionType})`, 20, 135);
     doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, 135, { align: "right" });
 
     // Ligne de séparation
@@ -216,7 +229,7 @@ const Factures = () => {
                   <TableHead>Date</TableHead>
                   <TableHead>Type d'abonnement</TableHead>
                   <TableHead className="text-right">Montant HT (DA)</TableHead>
-                  <TableHead className="text-right">TVA (20%)</TableHead>
+                  <TableHead className="text-right">TVA</TableHead>
                   <TableHead className="text-right">Total TTC (DA)</TableHead>
                   <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
@@ -224,13 +237,13 @@ const Factures = () => {
               <TableBody>
                 {invoices.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                       Aucune facture disponible
                     </TableCell>
                   </TableRow>
                 ) : (
                   invoices.map((invoice) => {
-                    const subscriptionType = invoice.subscriptions?.subscription_plans?.type || "Standard";
+                    const subscriptionType = invoice.subscriptions?.subscription_plans?.type || 'N/A';
                     return (
                       <TableRow key={invoice.id}>
                         <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
