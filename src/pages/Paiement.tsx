@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,7 @@ const Paiement = () => {
   const { t } = useTranslation();
   const paymentInfo = location.state as PaymentInfo;
   const [paymentMethod, setPaymentMethod] = useState("card");
+  const [monthsCount, setMonthsCount] = useState(paymentInfo?.monthsCount || 1);
 
   if (!paymentInfo) {
     navigate("/abonnements");
@@ -33,7 +35,7 @@ const Paiement = () => {
     const today = new Date();
     const endDate = new Date(today);
     
-    endDate.setMonth(endDate.getMonth() + paymentInfo.monthsCount);
+    endDate.setMonth(endDate.getMonth() + monthsCount);
     
     return endDate.toLocaleDateString('fr-FR', { 
       day: 'numeric', 
@@ -42,7 +44,7 @@ const Paiement = () => {
     });
   };
 
-  const totalAmount = paymentInfo.price * paymentInfo.monthsCount;
+  const totalAmount = paymentInfo.price * monthsCount;
 
   const generateVirementReference = () => {
     return `REF-${Date.now()}-${Math.random().toString(36).substring(7).toUpperCase()}`;
@@ -75,6 +77,30 @@ const Paiement = () => {
                   {paymentInfo.planName}
                 </p>
               </div>
+
+              {/* Sélecteur de mois pour formule mensuelle */}
+              {paymentInfo.billingPeriod === 'monthly' && (
+                <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+                  <Label htmlFor="months-select" className="text-sm font-semibold text-gray-700 mb-2 block">
+                    Nombre de mois
+                  </Label>
+                  <Select value={monthsCount.toString()} onValueChange={(value) => setMonthsCount(parseInt(value))}>
+                    <SelectTrigger id="months-select" className="w-full bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((month) => (
+                        <SelectItem key={month} value={month.toString()}>
+                          {month} {month === 1 ? 'mois' : 'mois'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-600 mt-2">
+                    Prix mensuel: {paymentInfo.price.toLocaleString('fr-DZ')} DA × {monthsCount} = {totalAmount.toLocaleString('fr-DZ')} DA
+                  </p>
+                </div>
+              )}
 
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">
@@ -178,7 +204,7 @@ const Paiement = () => {
                     <span className="font-semibold">
                       {totalAmount.toLocaleString('fr-DZ')} DA
                     </span>
-                    <span> pour {paymentInfo.monthsCount} mois d'abonnement</span>
+                    <span> pour {monthsCount} mois d'abonnement</span>
                   </p>
                 </div>
 
@@ -189,12 +215,14 @@ const Paiement = () => {
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
                     <span className="font-medium">Durée:</span>{" "}
-                    {paymentInfo.monthsCount} mois
+                    {monthsCount} mois
                   </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    <span className="font-medium">Prix mensuel:</span>{" "}
-                    {paymentInfo.price.toLocaleString('fr-DZ')} DA
-                  </p>
+                  {paymentInfo.billingPeriod === 'monthly' && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      <span className="font-medium">Prix mensuel:</span>{" "}
+                      {paymentInfo.price.toLocaleString('fr-DZ')} DA
+                    </p>
+                  )}
                 </div>
 
                 <div className="pt-4 border-t">
