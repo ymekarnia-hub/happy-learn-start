@@ -33,7 +33,8 @@ interface Invoice {
   status: "paid" | "pending" | "overdue" | "cancelled";
   subscription?: {
     plan: {
-      type: string;
+      name: string;
+      billing_period: string;
     };
   };
 }
@@ -99,7 +100,7 @@ const Factures = () => {
           `
           *,
           subscription:subscriptions(
-            plan:subscription_plans(type)
+            plan:subscription_plans(name, billing_period)
           )
         `
         )
@@ -166,7 +167,7 @@ const Factures = () => {
     doc.text("Montant", 150, 125, { align: "right" });
 
     // Détails
-    const subscriptionType = invoice.subscription?.plan?.type || "Standard";
+    const subscriptionType = invoice.subscription?.plan?.name || "Standard";
     doc.text(`Abonnement ${subscriptionType}`, 20, 135);
     doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, 135, { align: "right" });
 
@@ -248,7 +249,7 @@ const Factures = () => {
                 </TableHeader>
                 <TableBody>
                   {invoices.map((invoice) => {
-                    const subscriptionType = invoice.subscription?.plan?.type || "Standard";
+                    const subscriptionType = invoice.subscription?.plan?.name || "Standard";
                     return (
                       <TableRow key={invoice.id}>
                         <TableCell className="font-medium">{invoice.invoice_number}</TableCell>

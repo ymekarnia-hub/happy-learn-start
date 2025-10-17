@@ -24,62 +24,58 @@ const Pricing = () => {
         .from('subscription_plans')
         .select('*')
         .eq('is_active', true)
-        .order('price_ht', { ascending: true });
+        .order('duration_months', { ascending: true });
       
       if (error) throw error;
       return data;
     }
   });
 
-  // Trouver les plans réguliers et intensifs
-  const regularPlan = isFamily 
-    ? subscriptionPlans?.find(p => p.type === 'mensuel_regulier_famille')
-    : subscriptionPlans?.find(p => p.type === 'mensuel_regulier');
-  
-  const intensivePlan = isFamily
-    ? subscriptionPlans?.find(p => p.type === 'mensuel_intensif_famille')
-    : subscriptionPlans?.find(p => p.type === 'mensuel_intensif');
+  // Trouver les plans mensuel et annuel
+  const monthlyPlan = subscriptionPlans?.find(p => p.billing_period === 'monthly');
+  const annualPlan = subscriptionPlans?.find(p => p.billing_period === 'annual');
 
-  // Calculer le prix TTC
-  const calculateTTC = (priceHT: number, tva: number) => {
-    return priceHT * (1 + tva / 100);
+  // Obtenir le prix en fonction du switch famille
+  const getPrice = (plan: any) => {
+    if (!plan) return 0;
+    return isFamily ? plan.price_family : plan.price_single;
   };
 
   const plans = [
     {
-      name: t("pricing.regular.name"),
-      price: regularPlan ? `${calculateTTC(regularPlan.price_ht, regularPlan.tva_percentage).toLocaleString('fr-DZ', { maximumFractionDigits: 2 })} DA` : '---',
-      period: "/Mois",
-      description: t("pricing.regular.description"),
-      immediatePayment: regularPlan ? `${(calculateTTC(regularPlan.price_ht, regularPlan.tva_percentage) * 10).toLocaleString('fr-DZ', { maximumFractionDigits: 2 })} DA` : '---',
-      immediatePaymentLabel: t("pricing.regular.immediatePayment"),
-      paymentPeriod: `${t("pricing.regular.paymentPeriod")} ${nextYear}`,
+      name: "Formule Annuelle",
+      price: annualPlan ? `${getPrice(annualPlan).toLocaleString('fr-FR')} DA` : '---',
+      period: "/mois",
+      description: "Paiement étalé sur 10 mois",
+      immediatePayment: annualPlan ? `${(getPrice(annualPlan) * 10).toLocaleString('fr-FR')} DA` : '---',
+      immediatePaymentLabel: "Montant total annuel",
+      paymentPeriod: `Paiement unique pour ${nextYear}`,
       features: [
-        t("pricing.regular.features.allSubjects"),
-        t("pricing.regular.features.exercises"),
-        t("pricing.regular.features.videos"),
-        t("pricing.regular.features.tracking"),
-        t("pricing.regular.features.priority"),
-        t("pricing.regular.features.exams"),
+        "Tous les cours de votre niveau",
+        "Exercices et corrigés",
+        "Vidéos explicatives",
+        "Suivi de progression",
+        "Support prioritaire",
+        "Examens blancs",
       ],
       highlighted: true,
-      planData: regularPlan,
+      planData: annualPlan,
     },
     {
-      name: t("pricing.intensive.name"),
-      price: intensivePlan ? `${calculateTTC(intensivePlan.price_ht, intensivePlan.tva_percentage).toLocaleString('fr-DZ', { maximumFractionDigits: 2 })} DA` : '---',
-      period: "/Mois",
-      description: t("pricing.intensive.description"),
+      name: "Formule Mensuelle",
+      price: monthlyPlan ? `${getPrice(monthlyPlan).toLocaleString('fr-FR')} DA` : '---',
+      period: "/mois",
+      description: "Paiement mensuel",
       features: [
-        t("pricing.intensive.features.everything"),
-        t("pricing.intensive.features.liveCourses"),
-        t("pricing.intensive.features.correction"),
-        t("pricing.intensive.features.revision"),
-        t("pricing.intensive.features.unlimited"),
-        t("pricing.intensive.features.guarantee"),
+        "Tous les cours de votre niveau",
+        "Exercices et corrigés",
+        "Vidéos explicatives",
+        "Suivi de progression",
+        "Support prioritaire",
+        "Examens blancs",
       ],
       highlighted: false,
-      planData: intensivePlan,
+      planData: monthlyPlan,
     },
   ];
 
@@ -141,10 +137,11 @@ const Pricing = () => {
                   if (plan.planData) {
                     navigate("/paiement", {
                       state: {
+                        planId: plan.planData.id,
                         planName: plan.name,
-                        price: calculateTTC(plan.planData.price_ht, plan.planData.tva_percentage),
+                        price: getPrice(plan.planData),
                         isFamily: isFamily,
-                        isMonthly: true
+                        billingPeriod: plan.planData.billing_period
                       }
                     });
                   }
@@ -156,7 +153,7 @@ const Pricing = () => {
                     : "bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                {t("pricing.choose")} {plan.name}
+                Choisir {plan.name}
               </Button>
 
               <div className="text-center mb-6">
