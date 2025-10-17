@@ -242,9 +242,7 @@ const Factures = () => {
                     <TableHead>Numéro</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Type d'abonnement</TableHead>
-                    <TableHead className="text-right">Montant HT</TableHead>
-                    <TableHead className="text-right">TVA</TableHead>
-                    <TableHead className="text-right">Total TTC</TableHead>
+                    <TableHead className="text-right">Montant</TableHead>
                     <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -256,8 +254,6 @@ const Factures = () => {
                         <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
                         <TableCell>{new Date(invoice.issue_date).toLocaleDateString("fr-FR")}</TableCell>
                         <TableCell className="capitalize">{subscriptionType}</TableCell>
-                        <TableCell className="text-right">{Number(invoice.amount_ht).toFixed(2)} DA</TableCell>
-                        <TableCell className="text-right">{Number(invoice.tva_amount).toFixed(2)} DA</TableCell>
                         <TableCell className="text-right font-semibold">{Number(invoice.amount_ttc).toFixed(2)} DA</TableCell>
                         <TableCell className="text-center">
                           <Button
