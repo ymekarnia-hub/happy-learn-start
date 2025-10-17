@@ -25,16 +25,15 @@ interface Invoice {
   id: string;
   invoice_number: string;
   issue_date: string;
+  subscription_id: string | null;
   amount_ht: number;
   tva_percentage: number;
   tva_amount: number;
   amount_ttc: number;
-  status: string;
-  subscription_id: string | null;
-  subscriptions?: {
-    subscription_plans?: {
+  status: "paid" | "pending" | "overdue" | "cancelled";
+  subscription?: {
+    plan: {
       type: string;
-      name: string;
     };
   };
 }
@@ -55,6 +54,7 @@ const Factures = () => {
       }
       setUser(session.user);
       fetchProfile(session.user.id);
+      fetchInvoices(session.user.id);
     });
 
     const {
@@ -66,6 +66,7 @@ const Factures = () => {
       }
       setUser(session.user);
       fetchProfile(session.user.id);
+      fetchInvoices(session.user.id);
     });
 
     return () => subscription.unsubscribe();
@@ -77,9 +78,6 @@ const Factures = () => {
 
       if (error) throw error;
       setProfile(data);
-      
-      // Récupérer les factures de l'utilisateur
-      await fetchInvoices(userId);
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -95,24 +93,23 @@ const Factures = () => {
     try {
       const { data, error } = await supabase
         .from("invoices")
-        .select(`
+        .select(
+          `
           *,
-          subscriptions (
-            subscription_plans (
-              type,
-              name
-            )
+          subscription:subscriptions(
+            plan:subscription_plans(type)
           )
-        `)
+        `
+        )
         .eq("user_id", userId)
         .order("issue_date", { ascending: false });
 
       if (error) throw error;
-      setInvoices(data || []);
+      setInvoices((data || []) as Invoice[]);
     } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Impossible de récupérer les factures",
+        description: error.message,
         variant: "destructive",
       });
     }
@@ -120,9 +117,10 @@ const Factures = () => {
 
   const generatePDF = (invoice: Invoice) => {
     const doc = new jsPDF();
-    
-    const subscriptionType = invoice.subscriptions?.subscription_plans?.type || 'N/A';
-    const subscriptionName = invoice.subscriptions?.subscription_plans?.name || 'Abonnement';
+
+    // Utiliser les valeurs déjà calculées de la base de données
+    const tva = invoice.tva_amount;
+    const total_ttc = invoice.amount_ttc;
 
     // En-tête de la facture
     doc.setFontSize(20);
@@ -158,7 +156,8 @@ const Factures = () => {
     doc.text("Montant", 150, 125, { align: "right" });
 
     // Détails
-    doc.text(`${subscriptionName} (${subscriptionType})`, 20, 135);
+    const subscriptionType = invoice.subscription?.plan?.type || "Standard";
+    doc.text(`Abonnement ${subscriptionType}`, 20, 135);
     doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, 135, { align: "right" });
 
     // Ligne de séparation
@@ -170,7 +169,7 @@ const Factures = () => {
 
     // TVA
     doc.text(`TVA (${invoice.tva_percentage}%):`, 120, 157);
-    doc.text(`${invoice.tva_amount.toFixed(2)} DA`, 150, 157, { align: "right" });
+    doc.text(`${tva.toFixed(2)} DA`, 150, 157, { align: "right" });
 
     // Ligne de séparation
     doc.line(120, 162, 190, 162);
@@ -179,7 +178,7 @@ const Factures = () => {
     doc.setFontSize(12);
     doc.setFont(undefined, "bold");
     doc.text("Total TTC:", 120, 170);
-    doc.text(`${invoice.amount_ttc.toFixed(2)} DA`, 150, 170, { align: "right" });
+    doc.text(`${total_ttc.toFixed(2)} DA`, 150, 170, { align: "right" });
 
     // Pied de page
     doc.setFontSize(9);
@@ -221,29 +220,27 @@ const Factures = () => {
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">Mes Factures</h1>
 
-          <div className="bg-card rounded-lg shadow-sm border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Numéro</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Type d'abonnement</TableHead>
-                  <TableHead className="text-right">Montant HT (DA)</TableHead>
-                  <TableHead className="text-right">TVA</TableHead>
-                  <TableHead className="text-right">Total TTC (DA)</TableHead>
-                  <TableHead className="text-center">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.length === 0 ? (
+          {invoices.length === 0 ? (
+            <div className="bg-card rounded-lg shadow-sm border p-8 text-center">
+              <p className="text-muted-foreground">Aucune facture pour le moment.</p>
+            </div>
+          ) : (
+            <div className="bg-card rounded-lg shadow-sm border">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                      Aucune facture disponible
-                    </TableCell>
+                    <TableHead>Numéro</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Type d'abonnement</TableHead>
+                    <TableHead className="text-right">Montant HT (DA)</TableHead>
+                    <TableHead className="text-right">TVA (DA)</TableHead>
+                    <TableHead className="text-right">Total TTC (DA)</TableHead>
+                    <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
-                ) : (
-                  invoices.map((invoice) => {
-                    const subscriptionType = invoice.subscriptions?.subscription_plans?.type || 'N/A';
+                </TableHeader>
+                <TableBody>
+                  {invoices.map((invoice) => {
+                    const subscriptionType = invoice.subscription?.plan?.type || "Standard";
                     return (
                       <TableRow key={invoice.id}>
                         <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
@@ -264,11 +261,11 @@ const Factures = () => {
                         </TableCell>
                       </TableRow>
                     );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </div>
       </main>
     </div>
