@@ -86,7 +86,7 @@ const Account = () => {
       description: "Gérer mes abonnements et plans",
       icon: CreditCard,
       color: "text-purple-600",
-      onClick: () => toast({ title: "Les abonnements", description: "Section en cours de développement" }),
+      onClick: () => navigate("/abonnements"),
     },
     {
       title: "Factures",
