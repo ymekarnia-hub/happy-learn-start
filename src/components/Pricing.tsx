@@ -5,9 +5,11 @@ import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Pricing = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [isFamily, setIsFamily] = useState(false);
   
   // Calcul de l'année suivante
@@ -100,6 +102,16 @@ const Pricing = () => {
               } bg-white relative`}
             >
               <Button
+                onClick={() => {
+                  navigate("/paiement", {
+                    state: {
+                      planName: plan.name,
+                      price: index === 0 ? regularPrice : (isFamily ? 3125 : 2500),
+                      isFamily: isFamily,
+                      isMonthly: true
+                    }
+                  });
+                }}
                 className={`w-full font-bold mb-6 ${
                   plan.highlighted
                     ? "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white"

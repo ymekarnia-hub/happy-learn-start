@@ -21,6 +21,7 @@ import Factures from "./pages/Factures";
 import MesInformations from "./pages/MesInformations";
 import UpdateSuccess from "./pages/UpdateSuccess";
 import Abonnements from "./pages/Abonnements";
+import Paiement from "./pages/Paiement";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/mes-informations" element={<MesInformations />} />
             <Route path="/update-success" element={<UpdateSuccess />} />
             <Route path="/abonnements" element={<Abonnements />} />
+            <Route path="/paiement" element={<Paiement />} />
             <Route path="/liste-cours" element={<ListeCours />} />
             <Route path="/cours/:subjectId" element={<Cours />} />
             <Route path="/revision/:subjectId" element={<Revision />} />
