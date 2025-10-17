@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     // First, get the user's profile data to archive
     const { data: profileData, error: profileError } = await supabaseClient
       .from('profiles')
-      .select('full_name, email, phone, date_of_birth, school_level, role')
+      .select('first_name, full_name, email, phone, date_of_birth, school_level, role')
       .eq('id', userId)
       .single()
 
@@ -63,6 +63,7 @@ Deno.serve(async (req) => {
         .from('archived_accounts')
         .insert({
           original_user_id: userId,
+          first_name: profileData.first_name,
           full_name: profileData.full_name,
           email: profileData.email,
           phone: profileData.phone,

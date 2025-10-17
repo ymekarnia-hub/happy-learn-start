@@ -21,13 +21,16 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 const profileSchema = z.object({
+  first_name: z.string().trim().min(1, "Le prénom est requis").max(100, "Le prénom ne peut pas dépasser 100 caractères"),
   full_name: z.string().trim().min(1, "Le nom est requis").max(100, "Le nom ne peut pas dépasser 100 caractères"),
   phone: z.string().trim().max(20, "Le téléphone ne peut pas dépasser 20 caractères").optional().nullable(),
   date_of_birth: z.string().optional().nullable(),
+  school_level: z.string().optional().nullable(),
 });
 
 interface Profile {
   id: string;
+  first_name: string | null;
   full_name: string | null;
   email: string | null;
   phone: string | null;
@@ -44,9 +47,11 @@ const MesInformations = () => {
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
+    first_name: "",
     full_name: "",
     phone: "",
     date_of_birth: "",
+    school_level: "",
   });
 
   useEffect(() => {
@@ -75,16 +80,18 @@ const MesInformations = () => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, email, phone, date_of_birth, school_level, role")
+        .select("id, first_name, full_name, email, phone, date_of_birth, school_level, role")
         .eq("id", userId)
         .single();
 
       if (error) throw error;
       setProfile(data);
       setFormData({
+        first_name: data.first_name || "",
         full_name: data.full_name || "",
         phone: data.phone || "",
         date_of_birth: data.date_of_birth || "",
+        school_level: data.school_level || "",
       });
     } catch (error: any) {
       toast({
@@ -103,9 +110,11 @@ const MesInformations = () => {
 
       // Validation
       const validatedData = profileSchema.parse({
+        first_name: formData.first_name,
         full_name: formData.full_name,
         phone: formData.phone || null,
         date_of_birth: formData.date_of_birth || null,
+        school_level: formData.school_level || null,
       });
 
       if (!profile?.id) return;
@@ -113,9 +122,11 @@ const MesInformations = () => {
       const { error } = await supabase
         .from("profiles")
         .update({
+          first_name: validatedData.first_name,
           full_name: validatedData.full_name,
           phone: validatedData.phone,
           date_of_birth: validatedData.date_of_birth,
+          school_level: validatedData.school_level,
         })
         .eq("id", profile.id);
 
@@ -231,11 +242,22 @@ const MesInformations = () => {
             <CardContent className="space-y-6">
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="full_name">Nom complet</Label>
+                  <Label htmlFor="first_name">Prénom</Label>
+                  <Input
+                    id="first_name"
+                    value={formData.first_name}
+                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                    placeholder="Votre prénom"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="full_name">Nom</Label>
                   <Input
                     id="full_name"
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                    placeholder="Votre nom"
                   />
                 </div>
 
@@ -272,12 +294,17 @@ const MesInformations = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="school_level">Niveau scolaire</Label>
-                  <Input
+                  <select
                     id="school_level"
-                    value={getSchoolLevelName(profile?.school_level)}
-                    disabled
-                    className="bg-muted"
-                  />
+                    value={formData.school_level}
+                    onChange={(e) => setFormData({ ...formData, school_level: e.target.value })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <option value="">Sélectionnez un niveau</option>
+                    <option value="primary">Primaire</option>
+                    <option value="middle">Collège</option>
+                    <option value="high">Lycée</option>
+                  </select>
                 </div>
 
                 <div className="space-y-2">
