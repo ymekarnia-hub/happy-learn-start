@@ -97,7 +97,7 @@ const Pricing = () => {
               key={index}
               className={`p-8 ${
                 plan.highlighted
-                  ? "border-2 border-blue-600 shadow-xl scale-105"
+                  ? "border-2 border-blue-600 shadow-xl"
                   : "border border-gray-200"
               } bg-white relative`}
             >
