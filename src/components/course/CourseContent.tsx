@@ -97,36 +97,36 @@ export const CourseContent = ({
 
   return (
     <div className="space-y-6">
-      {/* Download PDF Button - Fixed on scroll */}
-      {onDownloadPDF && (
-        <div className="sticky top-6 z-10 flex justify-end mb-6">
-          <div className="w-80">
-            <Button
-              onClick={onDownloadPDF}
-              variant="default"
-              size="lg"
-              className="bg-primary hover:bg-primary/90 w-full shadow-lg"
-            >
-              <Download className="h-5 w-5 mr-2" />
-              Télécharger en PDF
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Video Section */}
-      {videos.length > 0 && (
-        <div className="space-y-4">
-          {videos.map(video => (
-            <VideoPlayer key={video.id} url={video.url} title={video.title} />
-          ))}
-        </div>
-      )}
-
       {/* Main content with sidebar */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 items-start relative">
         {/* Content Section - Scrollable */}
         <div className="flex-1 w-full lg:w-auto space-y-6">
+          {/* Download PDF Button - Sticky */}
+          {onDownloadPDF && (
+            <div className="sticky top-20 z-20 bg-background/95 backdrop-blur-sm pb-4 -mx-6 px-6 lg:mx-0 lg:px-0 lg:bg-transparent lg:backdrop-blur-none">
+              <div className="lg:w-full">
+                <Button
+                  onClick={onDownloadPDF}
+                  variant="default"
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 w-full shadow-lg"
+                >
+                  <Download className="h-5 w-5 mr-2" />
+                  Télécharger en PDF
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Video Section */}
+          {videos.length > 0 && (
+            <div className="space-y-4">
+              {videos.map(video => (
+                <VideoPlayer key={video.id} url={video.url} title={video.title} />
+              ))}
+            </div>
+          )}
+
           <div className="bg-card rounded-lg p-6 border-2">
             <div 
               className="prose prose-slate dark:prose-invert max-w-none
@@ -154,11 +154,10 @@ export const CourseContent = ({
           </div>
         </div>
 
-        {/* Sidebar - Table of Contents */}
+        {/* Sidebar - Table of Contents - Sticky */}
         {sections.length > 0 && (
           <aside className="hidden lg:block w-80 flex-shrink-0">
-            {/* Table of Contents */}
-            <div className="sticky top-6 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-3rem)] overflow-y-auto shadow-lg">
+            <div className="sticky top-20 w-80 bg-card rounded-lg p-4 border-2 max-h-[calc(100vh-6rem)] overflow-y-auto shadow-lg">
               <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
                 <BookmarkIcon className="h-5 w-5" />
                 Sommaire
