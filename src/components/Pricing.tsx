@@ -11,6 +11,7 @@ const Pricing = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isFamily, setIsFamily] = useState(false);
+  const [isMonthly, setIsMonthly] = useState(false);
   
   // Calcul de l'année suivante
   const nextYear = new Date().getFullYear() + 1;
@@ -71,7 +72,7 @@ const Pricing = () => {
         </div>
 
         {/* Switch pour 1 enfant vs Famille */}
-        <div className="flex items-center justify-center gap-4 mb-12">
+        <div className="flex items-center justify-center gap-4 mb-8">
           <Label 
             htmlFor="family-switch" 
             className={`text-lg font-semibold cursor-pointer transition-colors ${!isFamily ? 'text-blue-600' : 'text-gray-500'}`}
@@ -88,6 +89,27 @@ const Pricing = () => {
             className={`text-lg font-semibold cursor-pointer transition-colors ${isFamily ? 'text-blue-600' : 'text-gray-500'}`}
           >
             {t("pricing.switchFamily")}
+          </Label>
+        </div>
+
+        {/* Switch pour Mensuel vs Année scolaire */}
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <Label 
+            htmlFor="period-switch" 
+            className={`text-lg font-semibold cursor-pointer transition-colors ${!isMonthly ? 'text-blue-600' : 'text-gray-500'}`}
+          >
+            Année scolaire
+          </Label>
+          <Switch
+            id="period-switch"
+            checked={isMonthly}
+            onCheckedChange={setIsMonthly}
+          />
+          <Label 
+            htmlFor="period-switch" 
+            className={`text-lg font-semibold cursor-pointer transition-colors ${isMonthly ? 'text-blue-600' : 'text-gray-500'}`}
+          >
+            Mensuel
           </Label>
         </div>
 
@@ -108,7 +130,7 @@ const Pricing = () => {
                       planName: plan.name,
                       price: index === 0 ? regularPrice : (isFamily ? 3125 : 2500),
                       isFamily: isFamily,
-                      isMonthly: true
+                      isMonthly: isMonthly
                     }
                   });
                 }}
@@ -118,7 +140,7 @@ const Pricing = () => {
                     : "bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                {t("pricing.choose")} {plan.name}
+                {isMonthly ? `${t("pricing.choose")} ${plan.name}` : `Choisir Formule Année scolaire`}
               </Button>
 
               <div className="text-center mb-6">
