@@ -134,13 +134,8 @@ const MesInformations = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Succès",
-        description: "Vos informations ont été mises à jour",
-      });
-
-      // Refresh profile
-      fetchProfile(profile.id);
+      // Redirect to success page
+      navigate("/update-success");
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast({
