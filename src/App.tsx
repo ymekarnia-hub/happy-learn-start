@@ -18,6 +18,7 @@ import Revision from "./pages/Revision";
 import Simulation from "./pages/Simulation";
 import Account from "./pages/Account";
 import Factures from "./pages/Factures";
+import MesInformations from "./pages/MesInformations";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/account" element={<Account />} />
             <Route path="/factures" element={<Factures />} />
+            <Route path="/mes-informations" element={<MesInformations />} />
             <Route path="/liste-cours" element={<ListeCours />} />
             <Route path="/cours/:subjectId" element={<Cours />} />
             <Route path="/revision/:subjectId" element={<Revision />} />

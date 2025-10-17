@@ -79,7 +79,7 @@ const Account = () => {
       description: "Gérer mes informations personnelles",
       icon: UserCircle,
       color: "text-blue-600",
-      onClick: () => toast({ title: "Mes Informations", description: "Section en cours de développement" }),
+      onClick: () => navigate("/mes-informations"),
     },
     {
       title: "Les abonnements",
