@@ -6,29 +6,52 @@ import { Label } from "./ui/label";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Pricing = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isFamily, setIsFamily] = useState(false);
   
-  // Calcul de l'année suivante
   const nextYear = new Date().getFullYear() + 1;
+
+  // Récupérer les plans depuis la base de données
+  const { data: subscriptionPlans, isLoading } = useQuery({
+    queryKey: ['subscription-plans'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscription_plans')
+        .select('*')
+        .eq('is_active', true)
+        .order('price_ht', { ascending: true });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Trouver les plans réguliers et intensifs
+  const regularPlan = isFamily 
+    ? subscriptionPlans?.find(p => p.type === 'mensuel_regulier_famille')
+    : subscriptionPlans?.find(p => p.type === 'mensuel_regulier');
   
-  // Calcul du prix pour le plan Régulier
-  const basePrice = 2500;
-  const discountedPrice = basePrice * 0.7; // 30% de réduction = 1750 DA
-  const familyBasePrice = basePrice * 1.25; // +25% = 3125 DA
-  const familyDiscountedPrice = familyBasePrice * 0.7; // 30% de réduction = 2187.5 DA
-  const regularPrice = isFamily ? familyDiscountedPrice : discountedPrice;
+  const intensivePlan = isFamily
+    ? subscriptionPlans?.find(p => p.type === 'mensuel_intensif_famille')
+    : subscriptionPlans?.find(p => p.type === 'mensuel_intensif');
+
+  // Calculer le prix TTC
+  const calculateTTC = (priceHT: number, tva: number) => {
+    return priceHT * (1 + tva / 100);
+  };
 
   const plans = [
     {
       name: t("pricing.regular.name"),
-      price: `${regularPrice.toLocaleString('fr-DZ')} DA`,
+      price: regularPlan ? `${calculateTTC(regularPlan.price_ht, regularPlan.tva_percentage).toLocaleString('fr-DZ', { maximumFractionDigits: 2 })} DA` : '---',
       period: "/Mois",
       description: t("pricing.regular.description"),
-      immediatePayment: `${(regularPrice * 10).toLocaleString('fr-DZ')} DA`,
+      immediatePayment: regularPlan ? `${(calculateTTC(regularPlan.price_ht, regularPlan.tva_percentage) * 10).toLocaleString('fr-DZ', { maximumFractionDigits: 2 })} DA` : '---',
       immediatePaymentLabel: t("pricing.regular.immediatePayment"),
       paymentPeriod: `${t("pricing.regular.paymentPeriod")} ${nextYear}`,
       features: [
@@ -40,10 +63,11 @@ const Pricing = () => {
         t("pricing.regular.features.exams"),
       ],
       highlighted: true,
+      planData: regularPlan,
     },
     {
       name: t("pricing.intensive.name"),
-      price: `${(isFamily ? 3125 : 2500).toLocaleString('fr-DZ')} DA`,
+      price: intensivePlan ? `${calculateTTC(intensivePlan.price_ht, intensivePlan.tva_percentage).toLocaleString('fr-DZ', { maximumFractionDigits: 2 })} DA` : '---',
       period: "/Mois",
       description: t("pricing.intensive.description"),
       features: [
@@ -55,8 +79,19 @@ const Pricing = () => {
         t("pricing.intensive.features.guarantee"),
       ],
       highlighted: false,
+      planData: intensivePlan,
     },
   ];
+
+  if (isLoading) {
+    return (
+      <section id="pricing" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-lg text-gray-600">{t("common.loading") || "Chargement..."}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="pricing" className="py-20 bg-gray-50">
@@ -103,15 +138,18 @@ const Pricing = () => {
             >
               <Button
                 onClick={() => {
-                  navigate("/paiement", {
-                    state: {
-                      planName: plan.name,
-                      price: index === 0 ? regularPrice : (isFamily ? 3125 : 2500),
-                      isFamily: isFamily,
-                      isMonthly: true
-                    }
-                  });
+                  if (plan.planData) {
+                    navigate("/paiement", {
+                      state: {
+                        planName: plan.name,
+                        price: calculateTTC(plan.planData.price_ht, plan.planData.tva_percentage),
+                        isFamily: isFamily,
+                        isMonthly: true
+                      }
+                    });
+                  }
                 }}
+                disabled={!plan.planData}
                 className={`w-full font-bold mb-6 ${
                   plan.highlighted
                     ? "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white"
