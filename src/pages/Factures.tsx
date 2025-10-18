@@ -172,7 +172,6 @@ const Factures = () => {
     // Extraire les informations de réduction depuis les notes
     const notes = invoice.notes || "";
     let originalAmount = basePrice || invoice.amount_ttc;
-    let discountAmount = 0;
     
     // Parser les notes pour extraire le prix de base et la réduction
     const priceBaseMatch = notes.match(/Prix de base:\s*([\d.]+)\s*DA/);
@@ -182,12 +181,16 @@ const Factures = () => {
       originalAmount = parseFloat(priceBaseMatch[1]);
     }
     
+    // Calculer la réduction: différence entre prix de base et montant payé
+    const amountTTC = invoice.amount_ttc;
+    let discountAmount = originalAmount - amountTTC;
+    
+    // Si on trouve une réduction dans les notes, l'utiliser
     if (reductionMatch) {
       discountAmount = parseFloat(reductionMatch[1]);
     }
     
     const hasDiscount = discountAmount > 0;
-    const amountTTC = invoice.amount_ttc;
     
     // Calculer HT et TVA basés sur le montant final
     const amountHT = invoice.amount_ht;
