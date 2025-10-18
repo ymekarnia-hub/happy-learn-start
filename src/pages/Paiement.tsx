@@ -106,19 +106,18 @@ const Paiement = () => {
 
   const checkReferralDiscount = async (userId: string) => {
     try {
-      // Vérifier si l'utilisateur est un filleul
-      const { data: referralData, error: referralError } = await supabase
-        .from('referrals')
-        .select('*')
-        .eq('referee_id', userId)
-        .eq('status', 'active')
-        .maybeSingle();
+      // Vérifier si l'utilisateur a un code de parrainage en attente
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('pending_referral_code')
+        .eq('id', userId)
+        .single();
 
-      if (referralError) throw referralError;
+      if (profileError) throw profileError;
 
-      // Si c'est un filleul et que c'est un abonnement annuel
-      if (referralData && paymentInfo?.billingPeriod === 'annual') {
-        // Vérifier si c'est le premier paiement en vérifiant tous les paiements de l'utilisateur
+      // Si l'utilisateur a un code de parrainage en attente et que c'est un abonnement annuel
+      if (profileData?.pending_referral_code && paymentInfo?.billingPeriod === 'annual') {
+        // Vérifier si c'est le premier paiement
         const { data: userSubscriptions, error: subsError } = await supabase
           .from('subscriptions')
           .select('id')
