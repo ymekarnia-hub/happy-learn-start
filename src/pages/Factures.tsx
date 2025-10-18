@@ -57,7 +57,9 @@ interface Invoice {
     };
     subscription_payments?: Array<{
       amount_paid: number;
+      is_family_plan?: boolean;
     }>;
+    is_family_plan?: boolean;
   };
 }
 
@@ -123,7 +125,8 @@ const Factures = () => {
           *,
           subscription:subscriptions(
             plan:subscription_plans(name, billing_period),
-            subscription_payments(amount_paid)
+            subscription_payments(amount_paid, is_family_plan),
+            is_family_plan
           )
         `
         )
@@ -152,12 +155,24 @@ const Factures = () => {
   const generatePDF = (invoice: Invoice) => {
     const doc = new jsPDF();
 
-    // Utiliser le montant TTC de la facture (montant total de la formule)
-    const amountTTC = invoice.amount_ttc;
+    // Récupérer les informations de paiement
+    const payment = invoice.subscription?.subscription_payments?.[0];
+    const isFamilyPlan = payment?.is_family_plan || invoice.subscription?.is_family_plan || false;
+    const amountPaid = payment?.amount_paid || invoice.amount_ttc;
     
-    // Utiliser directement les montants HT et TVA de la facture
+    // Calculer le montant original et la réduction
+    const amountTTC = invoice.amount_ttc;
+    const originalAmountTTC = amountPaid > amountTTC ? amountPaid : amountTTC;
+    const discountAmount = originalAmountTTC - amountTTC;
+    const hasDiscount = discountAmount > 0;
+    
+    // Calculer HT et TVA basés sur le montant final
     const amountHT = invoice.amount_ht;
     const tvaAmount = invoice.tva_amount;
+    
+    // Calculer HT original si réduction
+    const originalAmountHT = hasDiscount ? originalAmountTTC / (1 + invoice.tva_percentage / 100) : amountHT;
+    const discountHT = hasDiscount ? discountAmount / (1 + invoice.tva_percentage / 100) : 0;
 
     // En-tête de la facture
     doc.setFontSize(22);
@@ -210,9 +225,19 @@ const Factures = () => {
     // Détails
     let currentY = 138;
     
+    const formulaType = isFamilyPlan ? "Formule scolaire (famille)" : "Formule scolaire (1 enfant)";
     doc.setFont(undefined, "normal");
-    doc.text("Abonnement Formule Scolaire (10 mois)", 25, currentY);
-    doc.text(`${amountTTC.toFixed(2)} DA`, 180, currentY, { align: "right" });
+    doc.text(`${formulaType} - 10 mois`, 25, currentY);
+    doc.text(`${originalAmountTTC.toFixed(2)} DA`, 180, currentY, { align: "right" });
+
+    // Afficher la réduction si elle existe
+    if (hasDiscount) {
+      currentY += 8;
+      doc.setTextColor(0, 128, 0); // Vert pour la réduction
+      doc.text("Réduction appliquée", 25, currentY);
+      doc.text(`-${discountAmount.toFixed(2)} DA`, 180, currentY, { align: "right" });
+      doc.setTextColor(0, 0, 0); // Retour au noir
+    }
 
     // Ligne de séparation
     currentY += 10;
