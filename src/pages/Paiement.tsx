@@ -330,9 +330,9 @@ const Paiement = () => {
                   <Label htmlFor="months-select" className="text-sm font-semibold text-gray-700 mb-2 block">
                     Nombre de mois
                   </Label>
-                  <Select value={monthsCount.toString()} onValueChange={(value) => setMonthsCount(parseInt(value))}>
+                  <Select defaultValue="1" value={monthsCount.toString()} onValueChange={(value) => setMonthsCount(parseInt(value))}>
                     <SelectTrigger id="months-select" className="w-full bg-white">
-                      <SelectValue placeholder="1 mois" />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((month) => (
