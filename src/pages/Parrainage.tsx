@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Copy, Check, User as UserIcon, LogOut, GraduationCap, Users, Gift, TrendingUp, Mail, MessageCircle, Facebook, Twitter, Wallet, Clock, TrendingDown, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
@@ -29,11 +30,17 @@ interface Referral {
   referee_id: string;
   created_at: string;
   status: string;
+  first_payment_date?: string;
+  referee_discount_applied?: number;
   profiles?: {
     first_name: string;
     last_name: string;
     full_name: string;
     email: string;
+  };
+  payment_info?: {
+    amount_paid: number;
+    original_amount: number;
   };
 }
 
@@ -116,12 +123,43 @@ const Parrainage = () => {
           .select("id, first_name, last_name, full_name, email")
           .in("id", refereeIds);
 
-        const referralsWithProfiles = referralsData.map((referral) => ({
-          ...referral,
-          profiles: profilesData?.find((p) => p.id === referral.referee_id),
-        }));
+        // Récupérer les informations de paiement pour chaque filleul
+        const referralsWithInfo = await Promise.all(
+          referralsData.map(async (referral) => {
+            let paymentInfo = null;
+            
+            // Si le filleul a un premier paiement
+            if (referral.first_subscription_id) {
+              const { data: paymentData } = await supabase
+                .from("subscription_payments")
+                .select("amount_paid")
+                .eq("subscription_id", referral.first_subscription_id)
+                .order("payment_date", { ascending: true })
+                .limit(1)
+                .maybeSingle();
 
-        setReferrals(referralsWithProfiles as any);
+              if (paymentData) {
+                // Calculer le montant original avant réduction (si réduction appliquée)
+                const originalAmount = referral.referee_discount_applied 
+                  ? paymentData.amount_paid + referral.referee_discount_applied
+                  : paymentData.amount_paid;
+
+                paymentInfo = {
+                  amount_paid: paymentData.amount_paid,
+                  original_amount: originalAmount,
+                };
+              }
+            }
+
+            return {
+              ...referral,
+              profiles: profilesData?.find((p) => p.id === referral.referee_id),
+              payment_info: paymentInfo,
+            };
+          })
+        );
+
+        setReferrals(referralsWithInfo as any);
       } else {
         setReferrals([]);
       }
@@ -524,46 +562,75 @@ const Parrainage = () => {
               <p className="text-sm mt-2">Partagez votre lien de parrainage pour commencer !</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {referrals.map((referral) => (
-                <div
-                  key={referral.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                >
-                  <div className="flex items-center gap-4">
-                    <Avatar>
-                      <AvatarFallback>
-                        <UserIcon className="h-5 w-5" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {referral.profiles?.first_name && referral.profiles?.last_name
-                          ? `${referral.profiles.first_name} ${referral.profiles.last_name}`
-                          : referral.profiles?.full_name || "Utilisateur"}
-                      </p>
-                      <p className="text-sm text-gray-500">{referral.profiles?.email}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        referral.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : referral.status === "cancelled"
-                          ? "bg-gray-100 text-gray-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {referral.status === "active" ? "Actif" : referral.status === "cancelled" ? "Annulé" : "Fraude"}
-                    </span>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Depuis le {new Date(referral.created_at).toLocaleDateString("fr-FR")}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Filleul</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Montant Payé</TableHead>
+                  <TableHead className="text-right">Réduction</TableHead>
+                  <TableHead className="text-right">Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {referrals.map((referral) => (
+                  <TableRow key={referral.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback>
+                            <UserIcon className="h-4 w-4" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium text-gray-900">
+                          {referral.profiles?.first_name && referral.profiles?.last_name
+                            ? `${referral.profiles.first_name} ${referral.profiles.last_name}`
+                            : referral.profiles?.full_name || "Utilisateur"}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {referral.profiles?.email}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          referral.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : referral.status === "cancelled"
+                            ? "bg-gray-100 text-gray-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {referral.status === "active" ? "Actif" : referral.status === "cancelled" ? "Annulé" : "Fraude"}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      {referral.payment_info ? (
+                        <span className="text-gray-900">
+                          {referral.payment_info.amount_paid.toFixed(2)} DA
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 text-sm">En attente</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {referral.referee_discount_applied ? (
+                        <span className="font-medium text-green-600">
+                          -{referral.referee_discount_applied.toFixed(2)} DA
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right text-sm text-gray-500">
+                      {new Date(referral.created_at).toLocaleDateString("fr-FR")}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </Card>
       </div>
