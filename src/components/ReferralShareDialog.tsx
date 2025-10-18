@@ -26,12 +26,36 @@ export const ReferralShareDialog = ({
 
   const shareMessage = `Rejoins-moi sur AcadémiePlus de soutien scolaire ! Utilise mon code de parrainage : ${referralCode} et nous recevrons tous les deux 5% de réduction ! ${referralUrl}`;
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(referralUrl);
-    toast({
-      title: "Lien copié !",
-      description: "Le lien de parrainage a été copié dans le presse-papier.",
-    });
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(referralUrl);
+      toast({
+        title: "Lien copié !",
+        description: "Le lien de parrainage a été copié dans le presse-papier.",
+      });
+    } catch (error) {
+      // Fallback pour les navigateurs qui ne supportent pas l'API clipboard
+      const textArea = document.createElement("textarea");
+      textArea.value = referralUrl;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        toast({
+          title: "Lien copié !",
+          description: "Le lien de parrainage a été copié dans le presse-papier.",
+        });
+      } catch (err) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de copier le lien. Veuillez le copier manuellement.",
+          variant: "destructive",
+        });
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   const handleShareWhatsApp = () => {
