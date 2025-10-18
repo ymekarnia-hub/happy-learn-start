@@ -14,6 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+} from "@/components/ui/breadcrumb";
 
 interface Profile {
   id: string;
@@ -202,6 +208,18 @@ const Account = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 mt-20">
+        {/* Breadcrumb */}
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink onClick={() => navigate("/liste-cours")} className="cursor-pointer flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Retour vers liste des matières
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="max-w-6xl mx-auto">
           {/* Profile Photo and Title */}
           <div className="text-center mb-12">
@@ -237,14 +255,6 @@ const Account = () => {
                 </CardContent>
               </Card>
             ))}
-          </div>
-
-          {/* Back Link at Bottom */}
-          <div className="flex justify-center pb-8">
-            <Button variant="ghost" onClick={() => navigate("/liste-cours")} className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Retour vers liste des matières
-            </Button>
           </div>
         </div>
       </main>
