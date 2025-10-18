@@ -293,7 +293,16 @@ const Paiement = () => {
                       <Label htmlFor="cardName">Nom sur la carte</Label>
                       <Input id="cardName" placeholder="Nom complet" />
                     </div>
-                    <Button className="w-full mt-4">
+                    <Button 
+                      className="w-full mt-4"
+                      onClick={() => {
+                        toast({
+                          title: "Paiement réussi !",
+                          description: "Votre abonnement a été activé avec succès.",
+                        });
+                        setTimeout(() => navigate("/liste-cours"), 1500);
+                      }}
+                    >
                       Payer {totalAmount.toLocaleString('fr-DZ')} DA
                     </Button>
                   </TabsContent>
@@ -306,7 +315,16 @@ const Paiement = () => {
                     <p className="text-sm text-gray-600">
                       Entrez le code prépayé que vous avez acheté pour activer votre abonnement.
                     </p>
-                    <Button className="w-full mt-4">
+                    <Button 
+                      className="w-full mt-4"
+                      onClick={() => {
+                        toast({
+                          title: "Code validé !",
+                          description: "Votre abonnement a été activé avec succès.",
+                        });
+                        setTimeout(() => navigate("/liste-cours"), 1500);
+                      }}
+                    >
                       Valider le code
                     </Button>
                   </TabsContent>
