@@ -117,47 +117,35 @@ const Parrainage = () => {
 
       // Récupérer les profils séparément
       if (referralsData && referralsData.length > 0) {
-        const refereeIds = referralsData.map((r) => r.referee_id);
+        const refereeIds = referralsData.map((r: any) => r.referee_id);
         const { data: profilesData } = await supabase
           .from("profiles")
           .select("id, first_name, last_name, full_name, email")
           .in("id", refereeIds);
 
-        // Récupérer les informations de paiement pour chaque filleul
-        const referralsWithInfo = await Promise.all(
-          referralsData.map(async (referral) => {
-            let paymentInfo = null;
-            
-            // Si le filleul a un premier paiement
-            if (referral.first_subscription_id) {
-              const { data: paymentData } = await supabase
-                .from("subscription_payments")
-                .select("amount_paid")
-                .eq("subscription_id", referral.first_subscription_id)
-                .order("payment_date", { ascending: true })
-                .limit(1)
-                .maybeSingle();
+        // Récupérer l'historique des réductions pour obtenir les montants
+        const { data: discountHistory } = await supabase
+          .from("referral_discount_history")
+          .select("*")
+          .eq("referrer_id", session.user.id);
 
-              if (paymentData) {
-                // Calculer le montant original avant réduction (si réduction appliquée)
-                const originalAmount = referral.referee_discount_applied 
-                  ? paymentData.amount_paid + referral.referee_discount_applied
-                  : paymentData.amount_paid;
-
-                paymentInfo = {
-                  amount_paid: paymentData.amount_paid,
-                  original_amount: originalAmount,
-                };
-              }
-            }
-
-            return {
-              ...referral,
-              profiles: profilesData?.find((p) => p.id === referral.referee_id),
-              payment_info: paymentInfo,
+        const referralsWithInfo = referralsData.map((referral: any) => {
+          const discount = discountHistory?.find((d: any) => d.referee_id === referral.referee_id);
+          
+          let paymentInfo = null;
+          if (discount) {
+            paymentInfo = {
+              amount_paid: discount.final_price,
+              original_amount: discount.original_price,
             };
-          })
-        );
+          }
+
+          return {
+            ...referral,
+            profiles: profilesData?.find((p: any) => p.id === referral.referee_id),
+            payment_info: paymentInfo,
+          };
+        });
 
         setReferrals(referralsWithInfo as any);
       } else {
