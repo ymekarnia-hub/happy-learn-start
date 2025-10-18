@@ -137,9 +137,9 @@ const Paiement = () => {
 
         // Si aucun paiement précédent, appliquer automatiquement la réduction de 5%
         if (!previousPayments || previousPayments.length === 0) {
-          // Calcul sur le montant total annuel (10 mois)
-          const totalAnnualAmount = paymentInfo.price * 10;
-          const discountAmount = Math.round(totalAnnualAmount * 0.05);
+          // Calcul sur le montant total de l'abonnement
+          const totalAmount = paymentInfo.price * monthsCount;
+          const discountAmount = Math.round(totalAmount * 0.05);
           setReferralDiscount(discountAmount);
           setIsReferee(true);
         }
