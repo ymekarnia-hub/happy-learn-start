@@ -413,16 +413,7 @@ const Parrainage = () => {
             vous recevez tous les deux 5% de réduction sur votre prochain abonnement annuel (jusqu'à 50% maximum).
           </p>
           
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Label htmlFor="referral-link" className="sr-only">Lien de parrainage</Label>
-              <Input
-                id="referral-link"
-                value={referralUrl}
-                readOnly
-                className="font-mono text-sm"
-              />
-            </div>
+          <div className="flex gap-2 justify-center">
             <Button onClick={handleCopyCode} className="flex items-center gap-2">
               {copied ? (
                 <>
@@ -432,7 +423,7 @@ const Parrainage = () => {
               ) : (
                 <>
                   <Copy className="h-4 w-4" />
-                  Copier
+                  Copier le lien
                 </>
               )}
             </Button>
