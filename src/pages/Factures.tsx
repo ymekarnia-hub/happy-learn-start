@@ -215,7 +215,7 @@ const Factures = () => {
     let currentY = 138;
     
     doc.setFont(undefined, "normal");
-    doc.text("Abonnement Formule scolaire (10 mois)", 25, currentY);
+    doc.text("Abonnement Formule Scolaire (10 mois)", 25, currentY);
     doc.text(`${amountPaid.toFixed(2)} DA`, 180, currentY, { align: "right" });
 
     // Ligne de séparation
