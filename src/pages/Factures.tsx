@@ -49,6 +49,7 @@ interface Invoice {
   tva_amount: number;
   amount_ttc: number;
   status: "paid" | "pending" | "overdue" | "cancelled";
+  notes: string | null;
   subscription?: {
     plan: {
       name: string;
@@ -150,6 +151,12 @@ const Factures = () => {
     // Utiliser les valeurs déjà calculées de la base de données
     const tva = invoice.tva_amount;
     const total_ttc = invoice.amount_ttc;
+    
+    // Extraire les informations de réduction depuis les notes
+    const hasDiscount = invoice.notes?.includes("Réduction") || invoice.notes?.includes("Montant payé:");
+    const discountMatch = invoice.notes?.match(/Montant payé: ([\d.]+) DA/);
+    const amountPaid = discountMatch ? parseFloat(discountMatch[1]) : total_ttc;
+    const discountAmount = hasDiscount ? total_ttc - amountPaid : 0;
 
     // En-tête de la facture
     doc.setFontSize(20);
@@ -186,28 +193,53 @@ const Factures = () => {
 
     // Détails
     const subscriptionType = invoice.subscription?.plan?.name || "Standard";
-    doc.text(`Abonnement ${subscriptionType}`, 20, 135);
-    doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, 135, { align: "right" });
+    let currentY = 135;
+    
+    doc.text(`Abonnement ${subscriptionType}`, 20, currentY);
+    doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, currentY, { align: "right" });
 
     // Ligne de séparation
-    doc.line(20, 140, 190, 140);
+    currentY += 5;
+    doc.line(20, currentY, 190, currentY);
 
     // Sous-total HT
-    doc.text("Montant HT:", 120, 150);
-    doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, 150, { align: "right" });
+    currentY += 10;
+    doc.text("Montant HT:", 120, currentY);
+    doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, currentY, { align: "right" });
 
     // TVA
-    doc.text(`TVA (${invoice.tva_percentage}%):`, 120, 157);
-    doc.text(`${tva.toFixed(2)} DA`, 150, 157, { align: "right" });
+    currentY += 7;
+    doc.text(`TVA (${invoice.tva_percentage}%):`, 120, currentY);
+    doc.text(`${tva.toFixed(2)} DA`, 150, currentY, { align: "right" });
 
     // Ligne de séparation
-    doc.line(120, 162, 190, 162);
+    currentY += 5;
+    doc.line(120, currentY, 190, currentY);
 
-    // Total TTC
+    // Total TTC (montant original)
+    currentY += 8;
     doc.setFontSize(12);
     doc.setFont(undefined, "bold");
-    doc.text("Total TTC:", 120, 170);
-    doc.text(`${total_ttc.toFixed(2)} DA`, 150, 170, { align: "right" });
+    doc.text("Total TTC:", 120, currentY);
+    doc.text(`${total_ttc.toFixed(2)} DA`, 150, currentY, { align: "right" });
+
+    // Si réduction, afficher le détail
+    if (hasDiscount && discountAmount > 0) {
+      currentY += 10;
+      doc.setFontSize(10);
+      doc.setFont(undefined, "normal");
+      doc.text("Réduction parrainage:", 120, currentY);
+      doc.text(`-${discountAmount.toFixed(2)} DA`, 150, currentY, { align: "right" });
+      
+      currentY += 5;
+      doc.line(120, currentY, 190, currentY);
+      
+      currentY += 8;
+      doc.setFontSize(12);
+      doc.setFont(undefined, "bold");
+      doc.text("Montant payé:", 120, currentY);
+      doc.text(`${amountPaid.toFixed(2)} DA`, 150, currentY, { align: "right" });
+    }
 
     // Pied de page
     doc.setFontSize(9);
