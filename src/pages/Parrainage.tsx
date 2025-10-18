@@ -29,6 +29,8 @@ interface Referral {
   created_at: string;
   status: string;
   profiles?: {
+    first_name: string;
+    last_name: string;
     full_name: string;
     email: string;
   };
@@ -106,7 +108,7 @@ const Parrainage = () => {
         const refereeIds = referralsData.map((r) => r.referee_id);
         const { data: profilesData } = await supabase
           .from("profiles")
-          .select("id, full_name, email")
+          .select("id, first_name, last_name, full_name, email")
           .in("id", refereeIds);
 
         const referralsWithProfiles = referralsData.map((referral) => ({
@@ -508,7 +510,9 @@ const Parrainage = () => {
                     </Avatar>
                     <div>
                       <p className="font-medium text-gray-900">
-                        {referral.profiles?.full_name || "Utilisateur"}
+                        {referral.profiles?.first_name && referral.profiles?.last_name
+                          ? `${referral.profiles.first_name} ${referral.profiles.last_name}`
+                          : referral.profiles?.full_name || "Utilisateur"}
                       </p>
                       <p className="text-sm text-gray-500">{referral.profiles?.email}</p>
                     </div>
