@@ -193,7 +193,10 @@ const Paiement = () => {
     });
   };
 
-  const totalAmount = paymentInfo.price * monthsCount;
+  // Calculer le montant total de base en fonction du type de formule (single ou famille)
+  // Pour une formule mensuelle, paymentInfo.price est déjà le prix mensuel correct
+  const baseMonthlyPrice = paymentInfo.price; // Prix mensuel: 1500 DA (single) ou 2000 DA (famille)
+  const totalAmount = baseMonthlyPrice * monthsCount;
   const finalAmount = totalAmount - discount - referralDiscount;
 
   const applyPromoCode = async () => {
