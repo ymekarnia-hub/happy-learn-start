@@ -55,6 +55,8 @@ const Paiement = () => {
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [discount, setDiscount] = useState(0);
+  const [referralDiscount, setReferralDiscount] = useState(0);
+  const [isReferee, setIsReferee] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -88,6 +90,9 @@ const Paiement = () => {
 
       if (error) throw error;
       setProfile(data);
+      
+      // Vérifier si l'utilisateur est un filleul et si c'est son premier paiement
+      await checkReferralDiscount(userId);
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -96,6 +101,41 @@ const Paiement = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkReferralDiscount = async (userId: string) => {
+    try {
+      // Vérifier si l'utilisateur est un filleul
+      const { data: referralData, error: referralError } = await supabase
+        .from('referrals')
+        .select('*')
+        .eq('referee_id', userId)
+        .eq('status', 'active')
+        .maybeSingle();
+
+      if (referralError) throw referralError;
+
+      // Si c'est un filleul et que c'est un abonnement annuel
+      if (referralData && paymentInfo?.billingPeriod === 'annual') {
+        // Vérifier si c'est le premier paiement (pas de paiement précédent)
+        const { data: previousPayments, error: paymentsError } = await supabase
+          .from('subscription_payments')
+          .select('id')
+          .eq('subscription_id', referralData.first_subscription_id || '00000000-0000-0000-0000-000000000000')
+          .eq('status', 'paid');
+
+        if (paymentsError) throw paymentsError;
+
+        // Si aucun paiement précédent, appliquer la réduction de 5%
+        if (!previousPayments || previousPayments.length === 0) {
+          const discountAmount = Math.round(paymentInfo.price * 0.05);
+          setReferralDiscount(discountAmount);
+          setIsReferee(true);
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la vérification du parrainage:', error);
     }
   };
 
@@ -144,7 +184,7 @@ const Paiement = () => {
   };
 
   const totalAmount = paymentInfo.price * monthsCount;
-  const finalAmount = totalAmount - discount;
+  const finalAmount = totalAmount - discount - referralDiscount;
 
   const applyPromoCode = async () => {
     try {
@@ -454,9 +494,19 @@ const Paiement = () => {
                     </span>
                     <span> pour {monthsCount} mois d'abonnement</span>
                   </p>
+                  {isReferee && referralDiscount > 0 && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-3">
+                      <p className="text-sm font-semibold text-green-800">
+                        🎉 Réduction parrainage appliquée
+                      </p>
+                      <p className="text-sm text-green-700 mt-1">
+                        -5% sur votre premier abonnement annuel : {referralDiscount.toLocaleString('fr-DZ')} DA
+                      </p>
+                    </div>
+                  )}
                   {promoApplied && (
                     <p className="text-sm text-green-600 mt-2">
-                      Réduction de {discount.toLocaleString('fr-DZ')} DA appliquée
+                      Réduction code promo : {discount.toLocaleString('fr-DZ')} DA
                     </p>
                   )}
                 </div>
