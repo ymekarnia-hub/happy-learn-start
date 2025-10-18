@@ -146,19 +146,42 @@ const Paiement = () => {
   const totalAmount = paymentInfo.price * monthsCount;
   const finalAmount = totalAmount - discount;
 
-  const applyPromoCode = () => {
-    if (promoCode.toLowerCase() === "promo") {
-      const discountAmount = totalAmount * 0.1; // 10% de réduction
+  const applyPromoCode = async () => {
+    try {
+      // Vérifier si le code promo existe et appartient à l'utilisateur
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: promoData, error } = await supabase
+        .from('promo_codes')
+        .select('*')
+        .eq('code', promoCode)
+        .eq('user_id', session.user.id)
+        .eq('used', false)
+        .maybeSingle();
+
+      if (error || !promoData) {
+        toast({
+          title: "Code promo invalide",
+          description: "Ce code n'existe pas ou a déjà été utilisé.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Appliquer la réduction
+      const discountAmount = Math.min(promoData.discount_euros, totalAmount);
       setDiscount(discountAmount);
       setPromoApplied(true);
       toast({
         title: "Code promo appliqué !",
-        description: `Vous bénéficiez de 10% de réduction (${discountAmount.toLocaleString('fr-DZ')} DA)`,
+        description: `Vous bénéficiez d'une réduction de ${discountAmount.toLocaleString('fr-DZ')} DA`,
       });
-    } else {
+    } catch (error) {
+      console.error('Erreur lors de l\'application du code promo:', error);
       toast({
-        title: "Code promo invalide",
-        description: "Le code promo n'est pas valide.",
+        title: "Erreur",
+        description: "Une erreur s'est produite lors de l'application du code promo.",
         variant: "destructive",
       });
     }

@@ -31,6 +31,7 @@ const Auth = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
   const [touched, setTouched] = useState({
     firstName: false,
     lastName: false,
@@ -44,13 +45,28 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Capturer le code de parrainage depuis l'URL
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      setReferralCode(refCode);
+      // Stocker dans sessionStorage pour le conserver
+      sessionStorage.setItem('referralCode', refCode);
+    } else {
+      // Vérifier si on a un code en sessionStorage
+      const storedCode = sessionStorage.getItem('referralCode');
+      if (storedCode) {
+        setReferralCode(storedCode);
+      }
+    }
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         
         if (session) {
-        setTimeout(() => {
+          setTimeout(() => {
             navigate("/liste-cours");
           }, 0);
         }
@@ -127,6 +143,45 @@ const Auth = () => {
         });
 
         if (error) throw error;
+
+        // Si un code de parrainage existe, créer la relation de parrainage
+        if (referralCode) {
+          setTimeout(async () => {
+            try {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (!session) return;
+
+              // Récupérer l'ID du parrain via le code
+              const { data: referralCodeData } = await supabase
+                .from('referral_codes')
+                .select('user_id')
+                .eq('code', referralCode)
+                .eq('is_active', true)
+                .single();
+
+              if (referralCodeData) {
+                // Créer la relation de parrainage
+                await supabase.from('referrals').insert({
+                  referrer_id: referralCodeData.user_id,
+                  referee_id: session.user.id,
+                  code_used: referralCode,
+                  status: 'active',
+                  pending_validation: true
+                });
+
+                // Nettoyer le sessionStorage
+                sessionStorage.removeItem('referralCode');
+                
+                toast.success("Code de parrainage appliqué ! Vous bénéficierez d'une réduction de 5% lors de votre premier paiement.", {
+                  duration: 6000,
+                });
+              }
+            } catch (error) {
+              console.error('Erreur lors de la création du parrainage:', error);
+            }
+          }, 2000);
+        }
+
         toast.success("Compte créé avec succès ! Veuillez vérifier votre boîte email et cliquer sur le lien de confirmation pour activer votre compte.", {
           duration: 8000,
         });
