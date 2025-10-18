@@ -212,12 +212,12 @@ const Factures = () => {
     doc.text("Montant", 180, 126, { align: "right" });
 
     // Détails
-    const subscriptionType = invoice.subscription?.plan?.name || "Standard";
-    const billingPeriod = invoice.subscription?.plan?.billing_period === "annual" ? "Annuel" : "Mensuel";
+    const subscriptionType = invoice.subscription?.plan?.name || "Formule scolaire";
+    const billingPeriod = invoice.subscription?.plan?.billing_period === "annual" ? "10 mois" : "Mensuel";
     let currentY = 138;
     
     doc.setFont(undefined, "normal");
-    doc.text(`Abonnement ${subscriptionType} (${billingPeriod})`, 25, currentY);
+    doc.text(`Abonnement ${subscriptionType} (${billingPeriod}) HT`, 25, currentY);
     doc.text(`${amountHT.toFixed(2)} DA`, 180, currentY, { align: "right" });
 
     // Ligne de séparation
