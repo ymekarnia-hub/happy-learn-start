@@ -16,7 +16,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, GraduationCap, LogOut, User as UserIcon } from "lucide-react";
+import { ArrowLeft, GraduationCap, LogOut, User as UserIcon, CalendarIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -69,6 +73,7 @@ const MesInformations = () => {
     date_of_birth: "",
     school_level: "",
   });
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -109,6 +114,11 @@ const MesInformations = () => {
         date_of_birth: data.date_of_birth || "",
         school_level: data.school_level || "",
       });
+      
+      // Set the Date object for the calendar
+      if (data.date_of_birth) {
+        setDateOfBirth(new Date(data.date_of_birth));
+      }
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -359,12 +369,37 @@ const MesInformations = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="date_of_birth">Date de naissance</Label>
-                  <Input
-                    id="date_of_birth"
-                    type="date"
-                    value={formData.date_of_birth}
-                    onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal bg-background",
+                          !dateOfBirth && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : "Sélectionnez votre date de naissance"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateOfBirth}
+                        onSelect={(date) => {
+                          setDateOfBirth(date);
+                          if (date) {
+                            setFormData({ ...formData, date_of_birth: format(date, "yyyy-MM-dd") });
+                          }
+                        }}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 <div className="space-y-2">
