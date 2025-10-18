@@ -152,16 +152,12 @@ const Factures = () => {
   const generatePDF = (invoice: Invoice) => {
     const doc = new jsPDF();
 
-    // Récupérer le montant réellement payé
-    const amountPaid = invoice.subscription?.subscription_payments?.[0]?.amount_paid || invoice.amount_ttc;
+    // Utiliser le montant TTC de la facture (montant total de la formule)
+    const amountTTC = invoice.amount_ttc;
     
-    // Calculer la réduction si le montant payé est différent du montant TTC de base
-    const baseAmountTTC = invoice.amount_ttc;
-    const discountAmount = baseAmountTTC > amountPaid ? baseAmountTTC - amountPaid : 0;
-    
-    // Calculer HT et TVA à partir du montant payé
-    const amountHT = amountPaid / 1.20;
-    const tvaAmount = amountPaid - amountHT;
+    // Utiliser directement les montants HT et TVA de la facture
+    const amountHT = invoice.amount_ht;
+    const tvaAmount = invoice.tva_amount;
 
     // En-tête de la facture
     doc.setFontSize(22);
@@ -216,7 +212,7 @@ const Factures = () => {
     
     doc.setFont(undefined, "normal");
     doc.text("Abonnement Formule Scolaire (10 mois)", 25, currentY);
-    doc.text(`${amountPaid.toFixed(2)} DA`, 180, currentY, { align: "right" });
+    doc.text(`${amountTTC.toFixed(2)} DA`, 180, currentY, { align: "right" });
 
     // Ligne de séparation
     currentY += 10;
@@ -236,32 +232,22 @@ const Factures = () => {
     doc.setFont(undefined, "normal");
     doc.text(`${tvaAmount.toFixed(2)} DA`, 180, currentY, { align: "right" });
 
-    // Réduction (si applicable)
-    if (discountAmount > 0) {
-      currentY += 8;
-      doc.setFont(undefined, "bold");
-      doc.setTextColor(220, 38, 38); // Rouge
-      doc.text("Réduction appliquée:", 110, currentY);
-      doc.text(`-${discountAmount.toFixed(2)} DA`, 180, currentY, { align: "right" });
-      doc.setTextColor(0, 0, 0); // Retour au noir
-    }
-
     // Ligne de séparation avant total
     currentY += 8;
     doc.setLineWidth(0.5);
     doc.line(110, currentY, 190, currentY);
 
-    // Total TTC (montant payé) - en gros et en gras
+    // Total TTC - en gros et en gras
     currentY += 12;
     doc.setFillColor(240, 248, 255);
     doc.rect(110, currentY - 7, 80, 12, 'F');
     doc.setFontSize(14);
     doc.setFont(undefined, "bold");
     doc.text("TOTAL TTC:", 115, currentY);
-    doc.text(`${amountPaid.toFixed(2)} DA`, 180, currentY, { align: "right" });
+    doc.text(`${amountTTC.toFixed(2)} DA`, 180, currentY, { align: "right" });
 
-    // Informations complémentaires si réduction
-    if (discountAmount > 0 && invoice.notes) {
+    // Informations complémentaires
+    if (invoice.notes) {
       currentY += 15;
       doc.setFontSize(8);
       doc.setFont(undefined, "italic");
@@ -412,7 +398,7 @@ const Factures = () => {
                         <TableCell>{new Date(invoice.issue_date).toLocaleDateString("fr-FR")}</TableCell>
                         <TableCell className="capitalize">{subscriptionType}</TableCell>
                         <TableCell className="text-right font-semibold">
-                          {(invoice.subscription?.subscription_payments?.[0]?.amount_paid || invoice.amount_ttc).toFixed(2)} DA
+                          {invoice.amount_ttc.toFixed(2)} DA
                         </TableCell>
                         <TableCell className="text-center">
                           <Button
