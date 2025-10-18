@@ -52,9 +52,6 @@ const Paiement = () => {
   const [monthsCount, setMonthsCount] = useState(paymentInfo?.monthsCount || 1);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [promoCode, setPromoCode] = useState("");
-  const [promoApplied, setPromoApplied] = useState(false);
-  const [discount, setDiscount] = useState(0);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -144,25 +141,6 @@ const Paiement = () => {
   };
 
   const totalAmount = paymentInfo.price * monthsCount;
-  const finalAmount = totalAmount - discount;
-
-  const applyPromoCode = () => {
-    if (promoCode.toLowerCase() === "promo") {
-      const discountAmount = totalAmount * 0.1; // 10% de réduction
-      setDiscount(discountAmount);
-      setPromoApplied(true);
-      toast({
-        title: "Code promo appliqué !",
-        description: `Vous bénéficiez de 10% de réduction (${discountAmount.toLocaleString('fr-DZ')} DA)`,
-      });
-    } else {
-      toast({
-        title: "Code promo invalide",
-        description: "Le code promo n'est pas valide.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const generateVirementReference = () => {
     return `REF-${Date.now()}-${Math.random().toString(36).substring(7).toUpperCase()}`;
@@ -325,7 +303,7 @@ const Paiement = () => {
                         setTimeout(() => navigate("/liste-cours"), 1500);
                       }}
                     >
-                      Payer {finalAmount.toLocaleString('fr-DZ')} DA
+                      Payer {totalAmount.toLocaleString('fr-DZ')} DA
                     </Button>
                   </TabsContent>
 
@@ -378,46 +356,11 @@ const Paiement = () => {
 
             {/* Deuxième bloc - Récapitulatif du tarif */}
             <Card className="p-8 h-fit sticky top-24">
-              {/* Code Promo Section */}
-              <div className="mb-6 pb-6 border-b">
-                <Label htmlFor="promo-code" className="text-sm font-semibold text-gray-700 mb-2 block">
-                  Code promo
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="promo-code"
-                    placeholder="Entrez votre code"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    disabled={promoApplied}
-                  />
-                  <Button
-                    onClick={applyPromoCode}
-                    disabled={promoApplied || !promoCode}
-                    variant="outline"
-                  >
-                    {promoApplied ? "Appliqué" : "Appliquer"}
-                  </Button>
-                </div>
-                {promoApplied && (
-                  <p className="text-sm text-green-600 mt-2">
-                    ✓ Code promo appliqué: -10%
-                  </p>
-                )}
-              </div>
-
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-bold text-gray-900">Tarif</h2>
-                <div className="text-right">
-                  {promoApplied && (
-                    <p className="text-lg text-gray-500 line-through">
-                      {totalAmount.toLocaleString('fr-DZ')} DA
-                    </p>
-                  )}
-                  <p className="text-3xl font-bold text-gray-900">
-                    {finalAmount.toLocaleString('fr-DZ')} DA
-                  </p>
-                </div>
+                <p className="text-3xl font-bold text-gray-900">
+                  {totalAmount.toLocaleString('fr-DZ')} DA
+                </p>
               </div>
 
               <div className="space-y-4 mb-6">
@@ -428,15 +371,10 @@ const Paiement = () => {
                   <p className="text-gray-700">
                     Paiement immédiat de{" "}
                     <span className="font-semibold">
-                      {finalAmount.toLocaleString('fr-DZ')} DA
+                      {totalAmount.toLocaleString('fr-DZ')} DA
                     </span>
                     <span> pour {monthsCount} mois d'abonnement</span>
                   </p>
-                  {promoApplied && (
-                    <p className="text-sm text-green-600 mt-2">
-                      Réduction de {discount.toLocaleString('fr-DZ')} DA appliquée
-                    </p>
-                  )}
                 </div>
 
                 <div className="pt-4 border-t">
