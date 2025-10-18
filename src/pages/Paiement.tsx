@@ -342,9 +342,6 @@ const Paiement = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-gray-600 mt-2">
-                    Prix mensuel: {paymentInfo.price.toLocaleString('fr-DZ')} DA × {monthsCount} = {totalAmount.toLocaleString('fr-DZ')} DA
-                  </p>
                 </div>
               )}
 
