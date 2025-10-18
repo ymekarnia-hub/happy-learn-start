@@ -158,20 +158,34 @@ const Factures = () => {
     // Récupérer les informations de paiement
     const payment = invoice.subscription?.subscription_payments?.[0];
     const isFamilyPlan = payment?.is_family_plan || invoice.subscription?.is_family_plan || false;
-    const amountPaid = payment?.amount_paid || invoice.amount_ttc;
     
-    // Calculer le montant original et la réduction
-    const amountTTC = invoice.amount_ttc;
-    const originalAmountTTC = amountPaid > amountTTC ? amountPaid : amountTTC;
-    const discountAmount = originalAmountTTC - amountTTC;
+    // Extraire les informations de réduction depuis les notes
+    const notes = invoice.notes || "";
+    let originalAmount = invoice.amount_ttc;
+    let discountAmount = 0;
+    
+    // Parser les notes pour extraire le prix de base et la réduction
+    const priceBaseMatch = notes.match(/Prix de base:\s*([\d.]+)\s*DA/);
+    const reductionMatch = notes.match(/Réduction.*?-([\d.]+)\s*DA/);
+    const montantPayeMatch = notes.match(/Montant payé:\s*([\d.]+)\s*DA/);
+    
+    if (priceBaseMatch) {
+      originalAmount = parseFloat(priceBaseMatch[1]);
+    }
+    
+    if (reductionMatch) {
+      discountAmount = parseFloat(reductionMatch[1]);
+    }
+    
     const hasDiscount = discountAmount > 0;
+    const amountTTC = invoice.amount_ttc;
     
     // Calculer HT et TVA basés sur le montant final
     const amountHT = invoice.amount_ht;
     const tvaAmount = invoice.tva_amount;
     
     // Calculer HT original si réduction
-    const originalAmountHT = hasDiscount ? originalAmountTTC / (1 + invoice.tva_percentage / 100) : amountHT;
+    const originalAmountHT = hasDiscount ? originalAmount / (1 + invoice.tva_percentage / 100) : amountHT;
     const discountHT = hasDiscount ? discountAmount / (1 + invoice.tva_percentage / 100) : 0;
 
     // En-tête de la facture
@@ -228,7 +242,7 @@ const Factures = () => {
     const formulaType = isFamilyPlan ? "Formule scolaire (famille)" : "Formule scolaire (1 enfant)";
     doc.setFont(undefined, "normal");
     doc.text(`${formulaType} - 10 mois`, 25, currentY);
-    doc.text(`${originalAmountTTC.toFixed(2)} DA`, 180, currentY, { align: "right" });
+    doc.text(`${originalAmount.toFixed(2)} DA`, 180, currentY, { align: "right" });
 
     // Afficher la réduction si elle existe
     if (hasDiscount) {
