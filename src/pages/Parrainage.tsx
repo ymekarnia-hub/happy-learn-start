@@ -408,16 +408,6 @@ const Parrainage = () => {
             </p>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
-            <div className="flex items-center gap-3 mb-2">
-              <Gift className="h-8 w-8 text-orange-600" />
-              <h3 className="text-sm font-semibold text-gray-900">Codes Promo</h3>
-            </div>
-            <p className="text-3xl font-bold text-orange-600">
-              {creditDashboard?.available_promo_codes || 0}
-            </p>
-          </Card>
-
           <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
             <div className="flex items-center gap-3 mb-2">
               <TrendingUp className="h-8 w-8 text-purple-600" />
