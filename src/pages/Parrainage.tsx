@@ -188,6 +188,33 @@ const Parrainage = () => {
         return;
       }
 
+      // Vérifier si le profil existe, sinon le créer
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        // Créer le profil si nécessaire
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: session.user.id,
+            email: session.user.email,
+            full_name: session.user.user_metadata?.full_name || session.user.email,
+            first_name: session.user.user_metadata?.first_name,
+            last_name: session.user.user_metadata?.last_name,
+            role: session.user.user_metadata?.role || 'student',
+            school_level: session.user.user_metadata?.school_level,
+          });
+
+        if (profileError) {
+          console.error("Error creating profile:", profileError);
+          throw new Error("Impossible de créer le profil utilisateur");
+        }
+      }
+
       // Générer un nouveau code de parrainage
       const { data: newCode, error } = await supabase.rpc('generate_referral_code');
 
@@ -218,7 +245,7 @@ const Parrainage = () => {
       console.error("Error generating link:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur s'est produite lors de la génération du lien.",
+        description: error.message || "Une erreur s'est produite lors de la génération du lien.",
         variant: "destructive",
       });
     } finally {
