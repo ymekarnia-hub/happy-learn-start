@@ -22,6 +22,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface Profile {
   id: string;
@@ -300,6 +308,21 @@ const Factures = () => {
 
       <main className="container mx-auto px-4 py-8 mt-20">
         <div className="max-w-6xl mx-auto">
+          {/* Breadcrumb */}
+          <Breadcrumb className="mb-6">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink onClick={() => navigate("/account")} className="cursor-pointer">
+                  Mon compte
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Mes Factures</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+
           <h1 className="text-4xl font-bold mb-8">Mes Factures</h1>
 
           {invoices.length === 0 ? (
@@ -344,14 +367,6 @@ const Factures = () => {
               </Table>
             </div>
           )}
-
-          {/* Back Link at Bottom */}
-          <div className="flex justify-center mt-8 pb-8">
-            <Button variant="ghost" onClick={() => navigate("/account")} className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Retour vers mon compte
-            </Button>
-          </div>
         </div>
       </main>
     </div>
