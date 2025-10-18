@@ -4,7 +4,7 @@ import { Card } from "./ui/card";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +12,17 @@ import { supabase } from "@/integrations/supabase/client";
 const Pricing = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [isFamily, setIsFamily] = useState(false);
+  
+  // Récupérer l'état du switch depuis localStorage, par défaut false (1 enfant)
+  const [isFamily, setIsFamily] = useState(() => {
+    const saved = localStorage.getItem('pricingIsFamily');
+    return saved === 'true' ? true : false;
+  });
+
+  // Sauvegarder l'état dans localStorage quand il change
+  useEffect(() => {
+    localStorage.setItem('pricingIsFamily', isFamily.toString());
+  }, [isFamily]);
   
   const nextYear = new Date().getFullYear() + 1;
 
