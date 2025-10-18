@@ -220,48 +220,33 @@ const Parrainage = () => {
         }
       }
 
-      // Vérifier si l'utilisateur a déjà un code de parrainage
-      const { data: existingCode } = await supabase
+      // Générer un nouveau code de parrainage unique
+      const { data: newCode, error } = await supabase.rpc('generate_referral_code');
+
+      if (error) throw error;
+
+      // Créer le nouveau code dans la table referral_codes
+      // Les anciens codes seront automatiquement désactivés par le trigger
+      const { error: insertError } = await supabase
         .from('referral_codes')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
-
-      if (existingCode) {
-        // Si un code existe déjà, ouvrir directement la popup de partage
-        setShareDialogOpen(true);
-        toast({
-          title: "Lien existant",
-          description: "Votre lien de parrainage est prêt à être partagé.",
-        });
-      } else {
-        // Générer un nouveau code de parrainage
-        const { data: newCode, error } = await supabase.rpc('generate_referral_code');
-
-        if (error) throw error;
-
-        // Créer le nouveau code dans la table referral_codes
-        const { error: insertError } = await supabase
-          .from('referral_codes')
-          .insert({
-            user_id: session.user.id,
-            code: newCode,
-            is_active: true,
-          });
-
-        if (insertError) throw insertError;
-
-        // Rafraîchir les données
-        await fetchData();
-
-        toast({
-          title: "Nouveau lien créé !",
-          description: "Votre nouveau lien de parrainage a été généré avec succès.",
+        .insert({
+          user_id: session.user.id,
+          code: newCode,
+          is_active: true,
         });
 
-        // Ouvrir la popup de partage
-        setShareDialogOpen(true);
-      }
+      if (insertError) throw insertError;
+
+      // Rafraîchir les données
+      await fetchData();
+
+      toast({
+        title: "Nouveau lien créé !",
+        description: "Votre nouveau lien de parrainage a été généré avec succès.",
+      });
+
+      // Ouvrir la popup de partage
+      setShareDialogOpen(true);
     } catch (error: any) {
       console.error("Error generating link:", error);
       toast({
