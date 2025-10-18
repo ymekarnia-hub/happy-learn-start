@@ -125,10 +125,22 @@ const Account = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <Button variant="ghost" onClick={() => navigate("/liste-cours")} className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Retour vers liste des matières
-            </Button>
+            <div className="flex items-center gap-2">
+              <img 
+                src="/lovable-uploads/logo.png" 
+                alt="Logo" 
+                className="h-10 w-auto cursor-pointer"
+                onClick={() => navigate("/")}
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <Avatar className="h-10 w-10 border-2 border-primary cursor-pointer" onClick={() => navigate("/account")}>
+                <AvatarImage src={profile?.avatar_url || undefined} />
+                <AvatarFallback>
+                  {profile?.full_name?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+            </div>
           </div>
         </div>
       </header>
@@ -147,10 +159,11 @@ const Account = () => {
             </div>
             <h1 className="text-4xl font-bold mb-2">Gérer mon compte</h1>
             <p className="text-muted-foreground text-lg">{profile?.full_name || "Utilisateur"}</p>
+            <p className="text-muted-foreground text-sm">{profile?.email}</p>
           </div>
 
           {/* Account Management Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {accountCards.map((card, index) => (
               <Card
                 key={index}
@@ -168,6 +181,14 @@ const Account = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+
+          {/* Back Link at Bottom */}
+          <div className="flex justify-center pb-8">
+            <Button variant="ghost" onClick={() => navigate("/liste-cours")} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Retour vers liste des matières
+            </Button>
           </div>
         </div>
       </main>
