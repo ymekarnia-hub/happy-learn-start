@@ -13,9 +13,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
-import { Copy, Check, User as UserIcon, LogOut, GraduationCap, Users, Gift, TrendingUp, Mail, MessageCircle, Facebook, Twitter, Instagram, Wallet, Clock, TrendingDown } from "lucide-react";
+import { Copy, Check, User as UserIcon, LogOut, GraduationCap, Users, Gift, TrendingUp, Mail, MessageCircle, Facebook, Twitter, Wallet, Clock, TrendingDown, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { ReferralShareDialog } from "@/components/ReferralShareDialog";
 
 interface ReferralStats {
   code: string;
@@ -64,6 +65,8 @@ const Parrainage = () => {
   const [copied, setCopied] = useState(false);
   const [creditDashboard, setCreditDashboard] = useState<CreditDashboard | null>(null);
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [generatingLink, setGeneratingLink] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -171,30 +174,56 @@ const Parrainage = () => {
     }
   };
 
-  const handleShareWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, "_blank");
-  };
+  const handleGenerateNewLink = async () => {
+    setGeneratingLink(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour générer un lien.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-  const handleShareSMS = () => {
-    window.open(`sms:?body=${encodeURIComponent(shareMessage)}`, "_blank");
-  };
+      // Générer un nouveau code de parrainage
+      const { data: newCode, error } = await supabase.rpc('generate_referral_code');
 
-  const handleShareEmail = () => {
-    window.open(
-      `mailto:?subject=${encodeURIComponent("Rejoins-moi sur AcadémiePlus")}&body=${encodeURIComponent(shareMessage)}`,
-      "_blank"
-    );
-  };
+      if (error) throw error;
 
-  const handleShareFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralUrl)}`, "_blank");
-  };
+      // Créer le nouveau code dans la table referral_codes
+      const { error: insertError } = await supabase
+        .from('referral_codes')
+        .insert({
+          user_id: session.user.id,
+          code: newCode,
+          is_active: true,
+        });
 
-  const handleShareTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`,
-      "_blank"
-    );
+      if (insertError) throw insertError;
+
+      // Rafraîchir les données
+      await fetchData();
+
+      toast({
+        title: "Nouveau lien créé !",
+        description: "Votre nouveau lien de parrainage a été généré avec succès.",
+      });
+
+      // Ouvrir la popup de partage
+      setShareDialogOpen(true);
+    } catch (error: any) {
+      console.error("Error generating link:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite lors de la génération du lien.",
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingLink(false);
+    }
   };
 
   const handleCopyPromoCode = (code: string) => {
@@ -336,7 +365,17 @@ const Parrainage = () => {
         </div>
 
         <Card className="p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Votre Lien de Parrainage</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">Votre Lien de Parrainage</h2>
+            <Button 
+              onClick={handleGenerateNewLink}
+              disabled={generatingLink}
+              className="flex items-center gap-2"
+            >
+              <LinkIcon className="h-4 w-4" />
+              {generatingLink ? "Génération..." : "Créer un nouveau lien"}
+            </Button>
+          </div>
           <p className="text-gray-600 mb-6">
             Partagez ce lien avec vos amis. Chaque fois qu'un ami s'inscrit avec votre lien,
             vous recevez tous les deux 5% de réduction sur votre prochain abonnement annuel (jusqu'à 50% maximum).
@@ -365,34 +404,14 @@ const Parrainage = () => {
                 </>
               )}
             </Button>
-          </div>
-
-          <Separator className="my-6" />
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900 text-lg">Partager mon lien</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <Button onClick={handleShareWhatsApp} variant="outline" className="flex items-center gap-2">
-                <MessageCircle className="h-4 w-4 text-green-600" />
-                WhatsApp
-              </Button>
-              <Button onClick={handleShareSMS} variant="outline" className="flex items-center gap-2">
-                <MessageCircle className="h-4 w-4 text-blue-600" />
-                SMS
-              </Button>
-              <Button onClick={handleShareEmail} variant="outline" className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-red-600" />
-                Email
-              </Button>
-              <Button onClick={handleShareFacebook} variant="outline" className="flex items-center gap-2">
-                <Facebook className="h-4 w-4 text-blue-700" />
-                Facebook
-              </Button>
-              <Button onClick={handleShareTwitter} variant="outline" className="flex items-center gap-2">
-                <Twitter className="h-4 w-4 text-sky-500" />
-                Twitter
-              </Button>
-            </div>
+            <Button 
+              onClick={() => setShareDialogOpen(true)}
+              variant="default"
+              className="flex items-center gap-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Partager
+            </Button>
           </div>
 
           <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-600 rounded">
@@ -406,6 +425,13 @@ const Parrainage = () => {
             </ul>
           </div>
         </Card>
+
+        <ReferralShareDialog
+          open={shareDialogOpen}
+          onOpenChange={setShareDialogOpen}
+          referralUrl={referralUrl}
+          referralCode={referralStats?.code || ""}
+        />
 
         {/* Codes Promo Section */}
         {promoCodes.length > 0 && (
