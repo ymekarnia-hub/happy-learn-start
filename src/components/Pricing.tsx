@@ -45,21 +45,25 @@ const Pricing = () => {
   const monthlyPlan = subscriptionPlans?.find(p => p.billing_period === 'monthly');
   const annualPlan = subscriptionPlans?.find(p => p.billing_period === 'annual');
 
-  // Obtenir le prix en fonction du switch famille
-  const getPrice = (plan: any) => {
+  // Obtenir le prix total en fonction du switch famille
+  const getTotalPrice = (plan: any) => {
     if (!plan) return 0;
-    return isFamily ? plan.price_family : plan.price_single;
+    return isFamily ? plan.total_family : plan.total_single;
+  };
+
+  // Calculer la date de fin (aujourd'hui + 10 mois)
+  const getEndDate = () => {
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 10);
+    return endDate.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' });
   };
 
   const plans = [
     {
       name: "Formule Annuelle",
-      price: annualPlan ? `${getPrice(annualPlan).toLocaleString('fr-FR')} DA` : '---',
-      period: "/mois",
-      description: "Paiement étalé sur 10 mois",
-      immediatePayment: annualPlan ? `${(getPrice(annualPlan) * 10).toLocaleString('fr-FR')} DA` : '---',
-      immediatePaymentLabel: "Montant total annuel",
-      paymentPeriod: `Paiement unique pour ${nextYear}`,
+      price: annualPlan ? `${getTotalPrice(annualPlan).toLocaleString('fr-FR')} DA` : '---',
+      period: "",
+      description: `Paiement unique pour 10 mois jusqu'au ${getEndDate()}`,
       features: [
         "Tous les cours de votre niveau",
         "Exercices et corrigés",
@@ -73,8 +77,8 @@ const Pricing = () => {
     },
     {
       name: "Formule Mensuelle",
-      price: monthlyPlan ? `${getPrice(monthlyPlan).toLocaleString('fr-FR')} DA` : '---',
-      period: "/mois",
+      price: monthlyPlan ? `${getTotalPrice(monthlyPlan).toLocaleString('fr-FR')} DA` : '---',
+      period: "",
       description: "Paiement mensuel",
       features: [
         "Tous les cours de votre niveau",
@@ -149,10 +153,10 @@ const Pricing = () => {
                       state: {
                         planId: plan.planData.id,
                         planName: plan.name,
-                        price: getPrice(plan.planData),
+                        price: getTotalPrice(plan.planData),
                         isFamily: isFamily,
                         billingPeriod: plan.planData.billing_period,
-                        monthsCount: plan.planData.billing_period === 'annual' ? 10 : 1
+                        monthsCount: 10
                       }
                     });
                   }
@@ -181,19 +185,6 @@ const Pricing = () => {
                     </span>
                   )}
                 </div>
-                {plan.immediatePayment && (
-                  <div className="p-3 bg-blue-50 border-2 border-blue-600 rounded-lg">
-                    <p className="text-sm font-semibold text-blue-900 mb-1">
-                      {plan.immediatePaymentLabel}
-                    </p>
-                    <p className="text-2xl font-bold text-blue-600">
-                      {plan.immediatePayment}
-                    </p>
-                    <p className="text-xs text-blue-700 mt-1">
-                      {plan.paymentPeriod}
-                    </p>
-                  </div>
-                )}
               </div>
 
               <ul className="space-y-3">
