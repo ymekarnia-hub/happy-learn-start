@@ -287,6 +287,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       exam_attempts: {
@@ -327,13 +334,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "subjects"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "exam_attempts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "referral_stats"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -471,6 +471,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "invoices_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       parent_children: {
@@ -501,11 +508,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "parent_children_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "parent_children_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_children_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -561,15 +582,7 @@ export type Database = {
           school_level?: Database["public"]["Enums"]["school_level"] | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "referral_stats"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       promo_codes: {
         Row: {
@@ -629,6 +642,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promo_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -716,13 +736,6 @@ export type Database = {
             referencedRelation: "quiz_questions_public"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "quiz_submissions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "referral_stats"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       referral_codes: {
@@ -754,6 +767,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -789,6 +809,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -841,11 +868,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "referral_discount_history_referee_id_fkey"
+            columns: ["referee_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "referral_discount_history_referrer_id_fkey"
             columns: ["referrer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_discount_history_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "referral_discount_history_subscription_payment_id_fkey"
@@ -929,20 +970,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "subscriptions"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "referrals_referee_id_fkey"
-            columns: ["referee_id"]
-            isOneToOne: true
-            referencedRelation: "referral_stats"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "referrals_referrer_id_fkey"
-            columns: ["referrer_id"]
-            isOneToOne: false
-            referencedRelation: "referral_stats"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1130,6 +1157,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       user_progress: {
@@ -1171,13 +1205,6 @@ export type Database = {
             referencedRelation: "course_chapters"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "user_progress_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "referral_stats"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       user_roles: {
@@ -1206,6 +1233,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1236,6 +1270,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1274,6 +1315,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1351,22 +1399,7 @@ export type Database = {
           referrer_name: string | null
           status: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "referrals_referee_id_fkey"
-            columns: ["referee_id"]
-            isOneToOne: true
-            referencedRelation: "referral_stats"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "referrals_referrer_id_fkey"
-            columns: ["referrer_id"]
-            isOneToOne: false
-            referencedRelation: "referral_stats"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       user_credit_dashboard: {
         Row: {
@@ -1385,6 +1418,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
