@@ -412,17 +412,6 @@ const Parrainage = () => {
             Partagez ce lien avec vos amis. Chaque fois qu'un ami s'inscrit avec votre lien,
             vous recevez tous les deux 5% de réduction sur votre prochain abonnement annuel (jusqu'à 50% maximum).
           </p>
-          
-          <div className="flex justify-center">
-            <Button 
-              onClick={() => setShareDialogOpen(true)}
-              variant="default"
-              className="flex items-center gap-2"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Partager
-            </Button>
-          </div>
 
           <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-600 rounded">
             <h3 className="font-semibold text-blue-900 mb-2">Comment ça marche ?</h3>
