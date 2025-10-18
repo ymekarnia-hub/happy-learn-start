@@ -479,49 +479,54 @@ const Paiement = () => {
 
             {/* Deuxième bloc - Récapitulatif du tarif */}
             <Card className="p-8 h-fit sticky top-24">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold text-gray-900">Tarif</h2>
-                <div className="text-right">
-                  {promoApplied && (
-                    <p className="text-lg text-gray-500 line-through">
-                      {totalAmount.toLocaleString('fr-DZ')} DA
-                    </p>
-                  )}
-                  <p className="text-3xl font-bold text-gray-900">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Tarif</h2>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">Prix de base:</span>
+                  <span className="font-semibold text-gray-900">
+                    {totalAmount.toLocaleString('fr-DZ')} DA
+                  </span>
+                </div>
+
+                {isReferee && referralDiscount > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-700">Réduction parrainage (-5%):</span>
+                    <span className="font-semibold text-green-700">
+                      -{referralDiscount.toLocaleString('fr-DZ')} DA
+                    </span>
+                  </div>
+                )}
+
+                {promoApplied && discount > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-700">Réduction code promo:</span>
+                    <span className="font-semibold text-green-700">
+                      -{discount.toLocaleString('fr-DZ')} DA
+                    </span>
+                  </div>
+                )}
+
+                <div className="border-t pt-3 flex justify-between items-center">
+                  <span className="text-lg font-semibold text-gray-900">Total à payer:</span>
+                  <span className="text-3xl font-bold text-blue-600">
                     {finalAmount.toLocaleString('fr-DZ')} DA
-                  </p>
+                  </span>
                 </div>
               </div>
 
-              <div className="space-y-4 mb-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Paiement :
-                  </h3>
-                  <p className="text-gray-700">
-                    Paiement immédiat de{" "}
-                    <span className="font-semibold">
-                      {finalAmount.toLocaleString('fr-DZ')} DA
-                    </span>
-                    <span> pour {monthsCount} mois d'abonnement</span>
+              {isReferee && referralDiscount > 0 && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <p className="text-sm font-semibold text-green-800">
+                    🎉 Réduction parrainage appliquée
                   </p>
-                  {isReferee && referralDiscount > 0 && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-3">
-                      <p className="text-sm font-semibold text-green-800">
-                        🎉 Réduction parrainage appliquée
-                      </p>
-                      <p className="text-sm text-green-700 mt-1">
-                        -5% sur votre premier abonnement annuel : {referralDiscount.toLocaleString('fr-DZ')} DA
-                      </p>
-                    </div>
-                  )}
-                  {promoApplied && (
-                    <p className="text-sm text-green-600 mt-2">
-                      Réduction code promo : {discount.toLocaleString('fr-DZ')} DA
-                    </p>
-                  )}
+                  <p className="text-sm text-green-700 mt-1">
+                    -5% sur votre premier abonnement annuel scolaire (10 mois)
+                  </p>
                 </div>
+              )}
 
+              <div className="space-y-4 mb-6">
                 <div className="pt-4 border-t">
                   <p className="text-sm text-gray-600">
                     <span className="font-medium">Type:</span>{" "}
