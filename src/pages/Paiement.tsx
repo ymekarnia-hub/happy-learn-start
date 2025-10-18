@@ -332,7 +332,7 @@ const Paiement = () => {
                   </Label>
                   <Select value={monthsCount.toString()} onValueChange={(value) => setMonthsCount(parseInt(value))}>
                     <SelectTrigger id="months-select" className="w-full bg-white">
-                      <SelectValue />
+                      <SelectValue placeholder="1 mois" />
                     </SelectTrigger>
                     <SelectContent>
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((month) => (
