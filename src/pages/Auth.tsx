@@ -169,6 +169,12 @@ const Auth = () => {
                   pending_validation: true
                 });
 
+                // Désactiver le code de parrainage car il a été utilisé
+                await supabase
+                  .from('referral_codes')
+                  .update({ is_active: false })
+                  .eq('code', referralCode);
+
                 // Nettoyer le sessionStorage
                 sessionStorage.removeItem('referralCode');
                 
