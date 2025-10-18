@@ -49,7 +49,7 @@ const Paiement = () => {
   const { t } = useTranslation();
   const paymentInfo = location.state as PaymentInfo;
   const [paymentMethod, setPaymentMethod] = useState("card");
-  const [monthsCount, setMonthsCount] = useState(paymentInfo?.monthsCount || 1);
+  const [monthsCount, setMonthsCount] = useState(1);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [promoCode, setPromoCode] = useState("");
