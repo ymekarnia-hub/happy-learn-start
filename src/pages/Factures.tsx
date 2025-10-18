@@ -180,11 +180,11 @@ const Factures = () => {
     doc.setFont(undefined, "bold");
     doc.text("Facture N°:", 135, 48);
     doc.setFont(undefined, "normal");
-    doc.text(invoice.invoice_number, 135, 54);
+    doc.text(invoice.invoice_number, 162, 48);
     doc.setFont(undefined, "bold");
-    doc.text("Date:", 135, 60);
+    doc.text("Date:", 135, 54);
     doc.setFont(undefined, "normal");
-    doc.text(new Date(invoice.issue_date).toLocaleDateString("fr-FR"), 135, 66);
+    doc.text(new Date(invoice.issue_date).toLocaleDateString("fr-FR"), 162, 54);
 
     // Informations du bénéficiaire
     doc.setFontSize(11);
