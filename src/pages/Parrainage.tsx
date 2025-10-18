@@ -413,20 +413,7 @@ const Parrainage = () => {
             vous recevez tous les deux 5% de réduction sur votre prochain abonnement annuel (jusqu'à 50% maximum).
           </p>
           
-          <div className="flex gap-2 justify-center">
-            <Button onClick={handleCopyCode} className="flex items-center gap-2">
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  Copié !
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4" />
-                  Copier le lien
-                </>
-              )}
-            </Button>
+          <div className="flex justify-center">
             <Button 
               onClick={() => setShareDialogOpen(true)}
               variant="default"
