@@ -672,11 +672,14 @@ const Paiement = () => {
                 <div className="pt-4 border-t">
                   <p className="text-sm text-gray-600">
                     <span className="font-medium">Type:</span>{" "}
-                    {paymentInfo.isFamily ? "Formule Famille" : "Formule 1 enfant"}
+                    {paymentInfo.billingPeriod === 'annual' 
+                      ? (paymentInfo.isFamily ? "Formule scolaire (famille)" : "Formule scolaire (1 enfant)")
+                      : (paymentInfo.isFamily ? "Formule Famille" : "Formule 1 enfant")
+                    }
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
                     <span className="font-medium">Durée:</span>{" "}
-                    {monthsCount} {monthsCount === 1 ? 'mois' : 'mois'}
+                    {paymentInfo.billingPeriod === 'annual' ? '10 mois' : `${monthsCount} ${monthsCount === 1 ? 'mois' : 'mois'}`}
                   </p>
                   {paymentInfo.billingPeriod === 'monthly' && (
                     <p className="text-sm text-gray-600 mt-1">
