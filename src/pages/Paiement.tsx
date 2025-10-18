@@ -129,7 +129,9 @@ const Paiement = () => {
 
         // Si aucun paiement précédent, appliquer la réduction de 5%
         if (!previousPayments || previousPayments.length === 0) {
-          const discountAmount = Math.round(paymentInfo.price * 0.05);
+          // Calcul sur le montant total annuel (10 mois)
+          const totalAnnualAmount = paymentInfo.price * 10;
+          const discountAmount = Math.round(totalAnnualAmount * 0.05);
           setReferralDiscount(discountAmount);
           setIsReferee(true);
         }
