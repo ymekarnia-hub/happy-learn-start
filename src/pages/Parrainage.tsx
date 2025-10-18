@@ -86,7 +86,7 @@ const Parrainage = () => {
         .from("profiles")
         .select("*")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
 
       setProfile(profileData);
 
@@ -95,7 +95,7 @@ const Parrainage = () => {
         .from("referral_stats")
         .select("*")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       setReferralStats(statsData);
 
