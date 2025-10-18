@@ -296,19 +296,19 @@ const MesInformations = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 mt-20">
-        <div className="max-w-3xl mx-auto">
-          {/* Breadcrumb */}
-          <Breadcrumb className="mb-6">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink onClick={() => navigate("/account")} className="cursor-pointer flex items-center gap-2">
-                  <ArrowLeft className="h-4 w-4" />
-                  Retour vers Gérer mon compte
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+        {/* Breadcrumb */}
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink onClick={() => navigate("/account")} className="cursor-pointer flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Retour vers Gérer mon compte
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
+        <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader>
               <CardTitle className="text-3xl">Mes Informations</CardTitle>
