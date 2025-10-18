@@ -144,46 +144,38 @@ const Auth = () => {
 
         if (error) throw error;
 
-        // Si un code de parrainage existe, créer la relation de parrainage
+        // Si un code de parrainage existe, le stocker dans le profil
+        // La relation de parrainage sera créée lors du premier paiement
         if (referralCode) {
           setTimeout(async () => {
             try {
               const { data: { session } } = await supabase.auth.getSession();
               if (!session) return;
 
-              // Récupérer l'ID du parrain via le code
+              // Vérifier que le code est valide
               const { data: referralCodeData } = await supabase
                 .from('referral_codes')
-                .select('user_id')
+                .select('user_id, code')
                 .eq('code', referralCode)
                 .eq('is_active', true)
                 .single();
 
               if (referralCodeData) {
-                // Créer la relation de parrainage
-                await supabase.from('referrals').insert({
-                  referrer_id: referralCodeData.user_id,
-                  referee_id: session.user.id,
-                  code_used: referralCode,
-                  status: 'active',
-                  pending_validation: true
-                });
-
-                // Désactiver le code de parrainage car il a été utilisé
+                // Stocker le code dans le profil pour activation lors du paiement
                 await supabase
-                  .from('referral_codes')
-                  .update({ is_active: false })
-                  .eq('code', referralCode);
+                  .from('profiles')
+                  .update({ pending_referral_code: referralCode })
+                  .eq('id', session.user.id);
 
                 // Nettoyer le sessionStorage
                 sessionStorage.removeItem('referralCode');
                 
-                toast.success("Code de parrainage appliqué ! Vous bénéficierez d'une réduction de 5% lors de votre premier paiement.", {
+                toast.success("Code de parrainage enregistré ! Vous bénéficierez d'une réduction de 5% lors de votre premier paiement d'un abonnement annuel.", {
                   duration: 6000,
                 });
               }
             } catch (error) {
-              console.error('Erreur lors de la création du parrainage:', error);
+              console.error('Erreur lors de l\'enregistrement du code de parrainage:', error);
             }
           }, 2000);
         }
