@@ -155,80 +155,131 @@ const Factures = () => {
     // Récupérer le montant réellement payé
     const amountPaid = invoice.subscription?.subscription_payments?.[0]?.amount_paid || invoice.amount_ttc;
     
+    // Calculer la réduction si le montant payé est différent du montant TTC de base
+    const baseAmountTTC = invoice.amount_ttc;
+    const discountAmount = baseAmountTTC > amountPaid ? baseAmountTTC - amountPaid : 0;
+    
     // Calculer HT et TVA à partir du montant payé
     const amountHT = amountPaid / 1.20;
     const tvaAmount = amountPaid - amountHT;
 
     // En-tête de la facture
-    doc.setFontSize(20);
-    doc.text("FACTURE", 105, 20, { align: "center" });
+    doc.setFontSize(22);
+    doc.setFont(undefined, "bold");
+    doc.text("FACTURE", 105, 25, { align: "center" });
 
     // Informations de l'entreprise
-    doc.setFontSize(10);
-    doc.text("Votre Société", 20, 40);
-    doc.text("9 chemin doudou mokhtar ben aknoun", 20, 45);
-    doc.text("Alger, Algérie", 20, 50);
+    doc.setFontSize(11);
+    doc.setFont(undefined, "bold");
+    doc.text("AcadémiePlus", 20, 45);
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(9);
+    doc.text("9 chemin doudou mokhtar ben aknoun", 20, 51);
+    doc.text("Ben Aknoun, Alger, Algérie", 20, 56);
 
-    // Numéro de facture et date
-    doc.setFontSize(12);
-    doc.text(`Facture N°: ${invoice.invoice_number}`, 20, 65);
-    doc.text(`Date: ${new Date(invoice.issue_date).toLocaleDateString("fr-FR")}`, 20, 72);
+    // Numéro de facture et date dans un encadré
+    doc.setFillColor(240, 240, 240);
+    doc.rect(130, 40, 60, 20, 'F');
+    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
+    doc.text("Facture N°:", 135, 48);
+    doc.setFont(undefined, "normal");
+    doc.text(invoice.invoice_number, 135, 54);
+    doc.setFont(undefined, "bold");
+    doc.text("Date:", 135, 60);
+    doc.setFont(undefined, "normal");
+    doc.text(new Date(invoice.issue_date).toLocaleDateString("fr-FR"), 135, 66);
 
     // Informations du bénéficiaire
+    doc.setFontSize(11);
+    doc.setFont(undefined, "bold");
+    doc.text("FACTURÉ À:", 20, 80);
+    doc.setFont(undefined, "normal");
     doc.setFontSize(10);
-    doc.text("Bénéficiaire:", 20, 85);
-    doc.text(profile?.full_name || "Nom non disponible", 20, 90);
-    doc.text(profile?.email || "", 20, 95);
+    doc.text(profile?.full_name || "Nom non disponible", 20, 87);
+    doc.text(profile?.email || "", 20, 93);
 
     // Tableau des détails
     doc.setFontSize(12);
-    doc.text("Détails de la facturation", 20, 110);
+    doc.setFont(undefined, "bold");
+    doc.text("DÉTAILS DE LA FACTURATION", 20, 115);
 
-    // Ligne de séparation
-    doc.line(20, 115, 190, 115);
-
-    // En-têtes du tableau
+    // En-tête du tableau avec fond gris
+    doc.setFillColor(230, 230, 230);
+    doc.rect(20, 120, 170, 8, 'F');
     doc.setFontSize(10);
-    doc.text("Description", 20, 125);
-    doc.text("Montant", 150, 125, { align: "right" });
+    doc.text("Description", 25, 126);
+    doc.text("Montant", 180, 126, { align: "right" });
 
     // Détails
     const subscriptionType = invoice.subscription?.plan?.name || "Standard";
     const billingPeriod = invoice.subscription?.plan?.billing_period === "annual" ? "Annuel" : "Mensuel";
-    let currentY = 135;
+    let currentY = 138;
     
-    doc.text(`Abonnement ${subscriptionType} (${billingPeriod})`, 20, currentY);
-    doc.text(`${amountHT.toFixed(2)} DA`, 150, currentY, { align: "right" });
+    doc.setFont(undefined, "normal");
+    doc.text(`Abonnement ${subscriptionType} (${billingPeriod})`, 25, currentY);
+    doc.text(`${amountHT.toFixed(2)} DA`, 180, currentY, { align: "right" });
 
     // Ligne de séparation
-    currentY += 5;
+    currentY += 10;
     doc.line(20, currentY, 190, currentY);
 
     // Sous-total HT
     currentY += 10;
-    doc.text("Montant HT:", 120, currentY);
-    doc.text(`${amountHT.toFixed(2)} DA`, 150, currentY, { align: "right" });
+    doc.setFont(undefined, "bold");
+    doc.text("Montant HT:", 110, currentY);
+    doc.setFont(undefined, "normal");
+    doc.text(`${amountHT.toFixed(2)} DA`, 180, currentY, { align: "right" });
 
     // TVA
-    currentY += 7;
-    doc.text(`TVA (${invoice.tva_percentage}%):`, 120, currentY);
-    doc.text(`${tvaAmount.toFixed(2)} DA`, 150, currentY, { align: "right" });
-
-    // Ligne de séparation
-    currentY += 5;
-    doc.line(120, currentY, 190, currentY);
-
-    // Total TTC (montant payé)
     currentY += 8;
-    doc.setFontSize(12);
     doc.setFont(undefined, "bold");
-    doc.text("Total TTC:", 120, currentY);
-    doc.text(`${amountPaid.toFixed(2)} DA`, 150, currentY, { align: "right" });
+    doc.text(`TVA (${invoice.tva_percentage.toFixed(0)}%):`, 110, currentY);
+    doc.setFont(undefined, "normal");
+    doc.text(`${tvaAmount.toFixed(2)} DA`, 180, currentY, { align: "right" });
+
+    // Réduction (si applicable)
+    if (discountAmount > 0) {
+      currentY += 8;
+      doc.setFont(undefined, "bold");
+      doc.setTextColor(220, 38, 38); // Rouge
+      doc.text("Réduction appliquée:", 110, currentY);
+      doc.text(`-${discountAmount.toFixed(2)} DA`, 180, currentY, { align: "right" });
+      doc.setTextColor(0, 0, 0); // Retour au noir
+    }
+
+    // Ligne de séparation avant total
+    currentY += 8;
+    doc.setLineWidth(0.5);
+    doc.line(110, currentY, 190, currentY);
+
+    // Total TTC (montant payé) - en gros et en gras
+    currentY += 12;
+    doc.setFillColor(240, 248, 255);
+    doc.rect(110, currentY - 7, 80, 12, 'F');
+    doc.setFontSize(14);
+    doc.setFont(undefined, "bold");
+    doc.text("TOTAL TTC:", 115, currentY);
+    doc.text(`${amountPaid.toFixed(2)} DA`, 180, currentY, { align: "right" });
+
+    // Informations complémentaires si réduction
+    if (discountAmount > 0 && invoice.notes) {
+      currentY += 15;
+      doc.setFontSize(8);
+      doc.setFont(undefined, "italic");
+      doc.setTextColor(100, 100, 100);
+      const noteLines = doc.splitTextToSize(invoice.notes, 170);
+      doc.text(noteLines, 20, currentY);
+      doc.setTextColor(0, 0, 0);
+    }
 
     // Pied de page
     doc.setFontSize(9);
     doc.setFont(undefined, "normal");
-    doc.text("Merci pour votre confiance", 105, 280, { align: "center" });
+    doc.text("Merci pour votre confiance", 105, 275, { align: "center" });
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text("AcadémiePlus - Plateforme éducative en ligne", 105, 282, { align: "center" });
 
     // Téléchargement du PDF
     doc.save(`Facture-${invoice.invoice_number}.pdf`);
