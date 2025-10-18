@@ -417,12 +417,74 @@ const Paiement = () => {
                     </div>
                     <Button 
                       className="w-full mt-4"
-                      onClick={() => {
-                        toast({
-                          title: "Paiement réussi !",
-                          description: "Votre abonnement a été activé avec succès.",
-                        });
-                        setTimeout(() => navigate("/liste-cours"), 1500);
+                      onClick={async () => {
+                        try {
+                          const { data: { session } } = await supabase.auth.getSession();
+                          if (!session) {
+                            toast({
+                              title: "Erreur",
+                              description: "Vous devez être connecté pour effectuer un paiement.",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+
+                          // Créer l'abonnement
+                          const { data: subscription, error: subError } = await supabase
+                            .from('subscriptions')
+                            .insert({
+                              user_id: session.user.id,
+                              plan_id: paymentInfo.planId,
+                              is_family_plan: paymentInfo.isFamily,
+                              status: 'pending',
+                              start_date: new Date().toISOString(),
+                              months_count: monthsCount
+                            })
+                            .select()
+                            .single();
+
+                          if (subError) throw subError;
+
+                          // Créer le paiement
+                          const { error: paymentError } = await supabase
+                            .from('subscription_payments')
+                            .insert({
+                              subscription_id: subscription.id,
+                              amount_paid: finalAmount,
+                              payment_method: 'carte',
+                              status: 'paid',
+                              payment_date: new Date().toISOString(),
+                              period_start_date: new Date().toISOString(),
+                              period_end_date: new Date(Date.now() + monthsCount * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                              monthly_price: paymentInfo.price,
+                              months_count: monthsCount,
+                              is_family_plan: paymentInfo.isFamily
+                            });
+
+                          if (paymentError) throw paymentError;
+
+                          // Marquer le code promo comme utilisé si appliqué
+                          if (promoApplied && promoCode) {
+                            await supabase
+                              .from('promo_codes')
+                              .update({ used: true, used_at: new Date().toISOString() })
+                              .eq('code', promoCode)
+                              .eq('user_id', session.user.id);
+                          }
+
+                          toast({
+                            title: "Paiement réussi !",
+                            description: "Votre abonnement a été activé avec succès.",
+                          });
+                          setTimeout(() => navigate("/liste-cours"), 1500);
+                        } catch (error: any) {
+                          console.error('Erreur lors du paiement:', error);
+                          toast({
+                            title: "Erreur de paiement",
+                            description: error.message || "Une erreur s'est produite lors du paiement.",
+                            variant: "destructive",
+                          });
+                        }
                       }}
                     >
                       Payer {finalAmount.toLocaleString('fr-DZ')} DA
@@ -439,12 +501,65 @@ const Paiement = () => {
                     </p>
                     <Button 
                       className="w-full mt-4"
-                      onClick={() => {
-                        toast({
-                          title: "Code validé !",
-                          description: "Votre abonnement a été activé avec succès.",
-                        });
-                        setTimeout(() => navigate("/liste-cours"), 1500);
+                      onClick={async () => {
+                        try {
+                          const { data: { session } } = await supabase.auth.getSession();
+                          if (!session) {
+                            toast({
+                              title: "Erreur",
+                              description: "Vous devez être connecté pour effectuer un paiement.",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+
+                          // Créer l'abonnement
+                          const { data: subscription, error: subError } = await supabase
+                            .from('subscriptions')
+                            .insert({
+                              user_id: session.user.id,
+                              plan_id: paymentInfo.planId,
+                              is_family_plan: paymentInfo.isFamily,
+                              status: 'pending',
+                              start_date: new Date().toISOString(),
+                              months_count: monthsCount
+                            })
+                            .select()
+                            .single();
+
+                          if (subError) throw subError;
+
+                          // Créer le paiement
+                          const { error: paymentError } = await supabase
+                            .from('subscription_payments')
+                            .insert({
+                              subscription_id: subscription.id,
+                              amount_paid: finalAmount,
+                              payment_method: 'code_prepaye',
+                              status: 'paid',
+                              payment_date: new Date().toISOString(),
+                              period_start_date: new Date().toISOString(),
+                              period_end_date: new Date(Date.now() + monthsCount * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                              monthly_price: paymentInfo.price,
+                              months_count: monthsCount,
+                              is_family_plan: paymentInfo.isFamily
+                            });
+
+                          if (paymentError) throw paymentError;
+
+                          toast({
+                            title: "Code validé !",
+                            description: "Votre abonnement a été activé avec succès.",
+                          });
+                          setTimeout(() => navigate("/liste-cours"), 1500);
+                        } catch (error: any) {
+                          console.error('Erreur lors de la validation:', error);
+                          toast({
+                            title: "Erreur",
+                            description: error.message || "Une erreur s'est produite lors de la validation du code.",
+                            variant: "destructive",
+                          });
+                        }
                       }}
                     >
                       Valider le code
