@@ -1079,6 +1079,8 @@ export type Database = {
           name: string
           price_family: number
           price_single: number
+          total_family: number | null
+          total_single: number | null
           updated_at: string
         }
         Insert: {
@@ -1090,6 +1092,8 @@ export type Database = {
           name: string
           price_family: number
           price_single: number
+          total_family?: number | null
+          total_single?: number | null
           updated_at?: string
         }
         Update: {
@@ -1101,6 +1105,8 @@ export type Database = {
           name?: string
           price_family?: number
           price_single?: number
+          total_family?: number | null
+          total_single?: number | null
           updated_at?: string
         }
         Relationships: []
