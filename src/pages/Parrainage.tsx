@@ -124,9 +124,16 @@ const Parrainage = () => {
         .from("user_credit_dashboard")
         .select("*")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
-      setCreditDashboard(creditData);
+      setCreditDashboard(creditData || {
+        balance_euros: 0,
+        balance_percentage: 0,
+        last_updated: new Date().toISOString(),
+        active_referrals_count: 0,
+        available_promo_codes: 0,
+        recent_transactions: []
+      });
 
       // Récupérer les codes promo disponibles
       const { data: promoData } = await supabase
