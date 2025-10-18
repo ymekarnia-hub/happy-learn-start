@@ -168,15 +168,17 @@ const Parrainage = () => {
         recent_transactions: []
       });
 
-      // Récupérer les codes promo disponibles
+      // Récupérer le code promo unique non utilisé
       const { data: promoData } = await supabase
         .from("promo_codes")
         .select("*")
         .eq("user_id", session.user.id)
         .eq("used", false)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      setPromoCodes(promoData || []);
+      setPromoCodes(promoData ? [promoData] : []);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -461,37 +463,42 @@ const Parrainage = () => {
           referralCode={referralStats?.code || ""}
         />
 
-        {/* Codes Promo Section */}
+        {/* Code Promo Unique Section */}
         {promoCodes.length > 0 && (
           <Card className="p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Mes Codes Promo Disponibles</h2>
-            <div className="space-y-3">
-              {promoCodes.map((promo) => (
-                <div
-                  key={promo.id}
-                  className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200"
-                >
-                  <div>
-                    <p className="font-mono text-lg font-bold text-green-700">{promo.code}</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Mon Code Promo de Parrainage</h2>
+            <p className="text-gray-600 mb-6">
+              Ce code promo cumule tous vos crédits de parrainage et est valable pour votre prochain renouvellement d'abonnement.
+            </p>
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border-2 border-green-300 p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Gift className="h-6 w-6 text-green-600" />
+                    <p className="font-mono text-2xl font-bold text-green-700">{promoCodes[0].code}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-lg font-semibold text-gray-900">
+                      Valeur totale: {promoCodes[0].discount_euros.toFixed(2)} DA
+                    </p>
                     <p className="text-sm text-gray-600">
-                      Valeur: {promo.discount_euros.toFixed(2)} DA ({promo.discount_percentage}%)
+                      Créé le {new Date(promoCodes[0].created_at).toLocaleDateString('fr-FR')}
+                    </p>
+                    <p className="text-sm text-green-700 font-medium mt-2">
+                      ✓ Utilisable au prochain renouvellement
                     </p>
                   </div>
-                  <Button
-                    onClick={() => handleCopyPromoCode(promo.code)}
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2"
-                  >
-                    <Copy className="h-4 w-4" />
-                    Copier
-                  </Button>
                 </div>
-              ))}
+                <Button
+                  onClick={() => handleCopyPromoCode(promoCodes[0].code)}
+                  variant="outline"
+                  className="flex items-center gap-2 border-green-600 text-green-700 hover:bg-green-100"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copier
+                </Button>
+              </div>
             </div>
-            <p className="text-sm text-gray-600 mt-4">
-              💡 Utilisez ces codes lors de votre prochain paiement pour bénéficier de votre réduction !
-            </p>
           </Card>
         )}
 
