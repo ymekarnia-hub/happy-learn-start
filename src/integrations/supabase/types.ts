@@ -214,6 +214,81 @@ export type Database = {
           },
         ]
       }
+      credit_transactions: {
+        Row: {
+          amount_euros: number
+          amount_percentage: number
+          created_at: string
+          description: string | null
+          id: string
+          promo_code: string | null
+          referral_id: string | null
+          subscription_payment_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount_euros: number
+          amount_percentage: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          promo_code?: string | null
+          referral_id?: string | null
+          subscription_payment_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount_euros?: number
+          amount_percentage?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          promo_code?: string | null
+          referral_id?: string | null
+          subscription_payment_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referral_tracking"
+            referencedColumns: ["referral_id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_subscription_payment_id_fkey"
+            columns: ["subscription_payment_id"]
+            isOneToOne: false
+            referencedRelation: "financial_transactions"
+            referencedColumns: ["payment_id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_subscription_payment_id_fkey"
+            columns: ["subscription_payment_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exam_attempts: {
         Row: {
           answers: Json
@@ -436,6 +511,67 @@ export type Database = {
           },
         ]
       }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string
+          discount_euros: number
+          discount_percentage: number
+          expires_at: string | null
+          id: string
+          used: boolean
+          used_at: string | null
+          used_for_payment_id: string | null
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_euros: number
+          discount_percentage: number
+          expires_at?: string | null
+          id?: string
+          used?: boolean
+          used_at?: string | null
+          used_for_payment_id?: string | null
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_euros?: number
+          discount_percentage?: number
+          expires_at?: string | null
+          id?: string
+          used?: boolean
+          used_at?: string | null
+          used_for_payment_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_codes_used_for_payment_id_fkey"
+            columns: ["used_for_payment_id"]
+            isOneToOne: false
+            referencedRelation: "financial_transactions"
+            referencedColumns: ["payment_id"]
+          },
+          {
+            foreignKeyName: "promo_codes_used_for_payment_id_fkey"
+            columns: ["used_for_payment_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promo_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quiz_questions: {
         Row: {
           correct_answer: string
@@ -558,6 +694,41 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "referral_stats"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      referral_credits: {
+        Row: {
+          balance_euros: number
+          balance_percentage: number
+          created_at: string
+          id: string
+          last_updated: string
+          user_id: string
+        }
+        Insert: {
+          balance_euros?: number
+          balance_percentage?: number
+          created_at?: string
+          id?: string
+          last_updated?: string
+          user_id: string
+        }
+        Update: {
+          balance_euros?: number
+          balance_percentage?: number
+          created_at?: string
+          id?: string
+          last_updated?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1128,6 +1299,26 @@ export type Database = {
           },
         ]
       }
+      user_credit_dashboard: {
+        Row: {
+          active_referrals_count: number | null
+          available_promo_codes: number | null
+          balance_euros: number | null
+          balance_percentage: number | null
+          last_updated: string | null
+          recent_transactions: Json | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       apply_referral_discount: {
@@ -1163,6 +1354,10 @@ export type Database = {
         Returns: string
       }
       generate_invoice_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_promo_code: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

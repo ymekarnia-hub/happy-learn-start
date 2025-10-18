@@ -13,8 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
-import { Copy, Check, User as UserIcon, LogOut, GraduationCap, Users, Gift, TrendingUp } from "lucide-react";
+import { Copy, Check, User as UserIcon, LogOut, GraduationCap, Users, Gift, TrendingUp, Mail, MessageCircle, Facebook, Twitter, Instagram, Wallet, Clock, TrendingDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 interface ReferralStats {
   code: string;
@@ -33,6 +34,24 @@ interface Referral {
   };
 }
 
+interface CreditDashboard {
+  balance_euros: number;
+  balance_percentage: number;
+  last_updated: string;
+  active_referrals_count: number;
+  available_promo_codes: number;
+  recent_transactions: any;
+}
+
+interface PromoCode {
+  id: string;
+  code: string;
+  discount_euros: number;
+  discount_percentage: number;
+  used: boolean;
+  created_at: string;
+}
+
 const Parrainage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -41,6 +60,8 @@ const Parrainage = () => {
   const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [copied, setCopied] = useState(false);
+  const [creditDashboard, setCreditDashboard] = useState<CreditDashboard | null>(null);
+  const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -97,6 +118,25 @@ const Parrainage = () => {
       } else {
         setReferrals([]);
       }
+
+      // Récupérer le tableau de bord des crédits
+      const { data: creditData } = await supabase
+        .from("user_credit_dashboard")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .single();
+
+      setCreditDashboard(creditData);
+
+      // Récupérer les codes promo disponibles
+      const { data: promoData } = await supabase
+        .from("promo_codes")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .eq("used", false)
+        .order("created_at", { ascending: false });
+
+      setPromoCodes(promoData || []);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -104,10 +144,15 @@ const Parrainage = () => {
     }
   };
 
+  const referralUrl = referralStats?.code 
+    ? `${window.location.origin}/auth?ref=${referralStats.code}`
+    : "";
+
+  const shareMessage = `Rejoins-moi sur AcadémiePlus de soutien scolaire ! Utilise mon code de parrainage : ${referralStats?.code} et nous recevrons tous les deux 5% de réduction ! ${referralUrl}`;
+
   const handleCopyCode = () => {
     if (referralStats?.code) {
-      const referralLink = `${window.location.origin}/auth?ref=${referralStats.code}`;
-      navigator.clipboard.writeText(referralLink);
+      navigator.clipboard.writeText(referralUrl);
       setCopied(true);
       toast({
         title: "Lien copié !",
@@ -115,6 +160,40 @@ const Parrainage = () => {
       });
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleShareWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, "_blank");
+  };
+
+  const handleShareSMS = () => {
+    window.open(`sms:?body=${encodeURIComponent(shareMessage)}`, "_blank");
+  };
+
+  const handleShareEmail = () => {
+    window.open(
+      `mailto:?subject=${encodeURIComponent("Rejoins-moi sur AcadémiePlus")}&body=${encodeURIComponent(shareMessage)}`,
+      "_blank"
+    );
+  };
+
+  const handleShareFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralUrl)}`, "_blank");
+  };
+
+  const handleShareTwitter = () => {
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`,
+      "_blank"
+    );
+  };
+
+  const handleCopyPromoCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast({
+      title: "Code promo copié !",
+      description: "Le code promo a été copié dans le presse-papier.",
+    });
   };
 
   const handleLogout = async () => {
@@ -142,10 +221,6 @@ const Parrainage = () => {
       </div>
     );
   }
-
-  const referralUrl = referralStats?.code 
-    ? `${window.location.origin}/auth?ref=${referralStats.code}`
-    : "";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -211,33 +286,43 @@ const Parrainage = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-4 gap-6 mb-8">
           <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
             <div className="flex items-center gap-3 mb-2">
               <Users className="h-8 w-8 text-blue-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Filleuls Actifs</h3>
+              <h3 className="text-sm font-semibold text-gray-900">Filleuls Actifs</h3>
             </div>
-            <p className="text-4xl font-bold text-blue-600">
+            <p className="text-3xl font-bold text-blue-600">
               {referralStats?.active_referrals || 0}
             </p>
           </Card>
 
           <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
             <div className="flex items-center gap-3 mb-2">
-              <TrendingUp className="h-8 w-8 text-green-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Réduction Actuelle</h3>
+              <Wallet className="h-8 w-8 text-green-600" />
+              <h3 className="text-sm font-semibold text-gray-900">Solde Crédit</h3>
             </div>
-            <p className="text-4xl font-bold text-green-600">
-              {referralStats?.current_discount_percentage || 0}%
+            <p className="text-3xl font-bold text-green-600">
+              {creditDashboard?.balance_euros.toFixed(2) || 0} DA
+            </p>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+            <div className="flex items-center gap-3 mb-2">
+              <Gift className="h-8 w-8 text-orange-600" />
+              <h3 className="text-sm font-semibold text-gray-900">Codes Promo</h3>
+            </div>
+            <p className="text-3xl font-bold text-orange-600">
+              {creditDashboard?.available_promo_codes || 0}
             </p>
           </Card>
 
           <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
             <div className="flex items-center gap-3 mb-2">
-              <Gift className="h-8 w-8 text-purple-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Réduction Maximum</h3>
+              <TrendingUp className="h-8 w-8 text-purple-600" />
+              <h3 className="text-sm font-semibold text-gray-900">Max Réduction</h3>
             </div>
-            <p className="text-4xl font-bold text-purple-600">50%</p>
+            <p className="text-3xl font-bold text-purple-600">50%</p>
           </Card>
         </div>
 
@@ -273,17 +358,124 @@ const Parrainage = () => {
             </Button>
           </div>
 
+          <Separator className="my-6" />
+
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 text-lg">Partager mon lien</h3>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              <Button onClick={handleShareWhatsApp} variant="outline" className="flex items-center gap-2">
+                <MessageCircle className="h-4 w-4 text-green-600" />
+                WhatsApp
+              </Button>
+              <Button onClick={handleShareSMS} variant="outline" className="flex items-center gap-2">
+                <MessageCircle className="h-4 w-4 text-blue-600" />
+                SMS
+              </Button>
+              <Button onClick={handleShareEmail} variant="outline" className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-red-600" />
+                Email
+              </Button>
+              <Button onClick={handleShareFacebook} variant="outline" className="flex items-center gap-2">
+                <Facebook className="h-4 w-4 text-blue-700" />
+                Facebook
+              </Button>
+              <Button onClick={handleShareTwitter} variant="outline" className="flex items-center gap-2">
+                <Twitter className="h-4 w-4 text-sky-500" />
+                Twitter
+              </Button>
+            </div>
+          </div>
+
           <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-600 rounded">
             <h3 className="font-semibold text-blue-900 mb-2">Comment ça marche ?</h3>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>5% de réduction</strong> par filleul pour vous et votre filleul</li>
-              <li>• <strong>Réduction maximale : 50%</strong> (10 filleuls actifs)</li>
-              <li>• Applicable <strong>uniquement aux abonnements annuels</strong></li>
-              <li>• Application automatique au prochain renouvellement</li>
-              <li>• Réductions cumulables avec plusieurs filleuls</li>
+              <li>• <strong>5% de crédit</strong> par filleul basé sur son abonnement annuel</li>
+              <li>• <strong>Maximum 10 filleuls</strong> par parrain</li>
+              <li>• <strong>Code promo généré automatiquement</strong> après chaque paiement</li>
+              <li>• Crédits <strong>sans limite de durée</strong></li>
+              <li>• Utilisable comme <strong>moyen de paiement</strong> sur vos abonnements</li>
             </ul>
           </div>
         </Card>
+
+        {/* Codes Promo Section */}
+        {promoCodes.length > 0 && (
+          <Card className="p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Mes Codes Promo Disponibles</h2>
+            <div className="space-y-3">
+              {promoCodes.map((promo) => (
+                <div
+                  key={promo.id}
+                  className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200"
+                >
+                  <div>
+                    <p className="font-mono text-lg font-bold text-green-700">{promo.code}</p>
+                    <p className="text-sm text-gray-600">
+                      Valeur: {promo.discount_euros.toFixed(2)} DA ({promo.discount_percentage}%)
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => handleCopyPromoCode(promo.code)}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Copy className="h-4 w-4" />
+                    Copier
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 mt-4">
+              💡 Utilisez ces codes lors de votre prochain paiement pour bénéficier de votre réduction !
+            </p>
+          </Card>
+        )}
+
+        {/* Historique des Transactions */}
+        {creditDashboard?.recent_transactions && creditDashboard.recent_transactions.length > 0 && (
+          <Card className="p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Historique des Crédits</h2>
+            <div className="space-y-3">
+              {creditDashboard.recent_transactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
+                >
+                  <div className="flex items-center gap-3">
+                    {transaction.transaction_type === "earned" ? (
+                      <TrendingUp className="h-5 w-5 text-green-600" />
+                    ) : transaction.transaction_type === "used" ? (
+                      <TrendingDown className="h-5 w-5 text-red-600" />
+                    ) : (
+                      <Clock className="h-5 w-5 text-gray-600" />
+                    )}
+                    <div>
+                      <p className="font-medium text-gray-900">{transaction.description}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(transaction.created_at).toLocaleDateString("fr-FR", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p
+                      className={`font-bold ${
+                        transaction.transaction_type === "earned" ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {transaction.transaction_type === "earned" ? "+" : "-"}
+                      {transaction.amount_euros.toFixed(2)} DA
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
 
         <Card className="p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Mes Filleuls ({referrals.length})</h2>
