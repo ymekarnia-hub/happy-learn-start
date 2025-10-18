@@ -10,7 +10,7 @@ import Contact from "./pages/Contact";
 import MentionsLegales from "./pages/MentionsLegales";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
-import Parcourir from "./pages/Parcourir";
+
 import Dashboard from "./pages/Dashboard";
 import ListeCours from "./pages/ListeCours";
 import Cours from "./pages/Cours";
@@ -49,7 +49,7 @@ const App = () => (
             <Route path="/revision/:subjectId" element={<Revision />} />
             <Route path="/simulation/:subjectId" element={<Simulation />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/parcourir" element={<Parcourir />} />
+            
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
