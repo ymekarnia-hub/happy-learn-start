@@ -645,7 +645,7 @@ const Paiement = () => {
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
                     <span className="font-medium">Durée:</span>{" "}
-                    {monthsCount} mois
+                    {monthsCount} {monthsCount === 1 ? 'mois' : 'mois'}
                   </p>
                   {paymentInfo.billingPeriod === 'monthly' && (
                     <p className="text-sm text-gray-600 mt-1">
