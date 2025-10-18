@@ -54,6 +54,8 @@ interface Invoice {
     plan: {
       name: string;
       billing_period: string;
+      price_single: number;
+      price_family: number;
     };
     subscription_payments?: Array<{
       amount_paid: number;
@@ -124,7 +126,7 @@ const Factures = () => {
           `
           *,
           subscription:subscriptions(
-            plan:subscription_plans(name, billing_period),
+            plan:subscription_plans(name, billing_period, price_single, price_family),
             subscription_payments(amount_paid, is_family_plan),
             is_family_plan
           )
@@ -155,19 +157,26 @@ const Factures = () => {
   const generatePDF = (invoice: Invoice) => {
     const doc = new jsPDF();
 
-    // Récupérer les informations de paiement
+    // Récupérer les informations de paiement et du plan
     const payment = invoice.subscription?.subscription_payments?.[0];
     const isFamilyPlan = payment?.is_family_plan || invoice.subscription?.is_family_plan || false;
+    const plan = invoice.subscription?.plan;
+    
+    // Calculer le prix de base de la formule (prix mensuel × 10 mois)
+    let basePrice = 0;
+    if (plan) {
+      const monthlyPrice = isFamilyPlan ? plan.price_family : plan.price_single;
+      basePrice = monthlyPrice * 10; // Formule scolaire = 10 mois
+    }
     
     // Extraire les informations de réduction depuis les notes
     const notes = invoice.notes || "";
-    let originalAmount = invoice.amount_ttc;
+    let originalAmount = basePrice || invoice.amount_ttc;
     let discountAmount = 0;
     
     // Parser les notes pour extraire le prix de base et la réduction
     const priceBaseMatch = notes.match(/Prix de base:\s*([\d.]+)\s*DA/);
     const reductionMatch = notes.match(/Réduction.*?-([\d.]+)\s*DA/);
-    const montantPayeMatch = notes.match(/Montant payé:\s*([\d.]+)\s*DA/);
     
     if (priceBaseMatch) {
       originalAmount = parseFloat(priceBaseMatch[1]);
