@@ -561,12 +561,85 @@ export type Database = {
           },
         ]
       }
+      referral_discount_history: {
+        Row: {
+          applied_at: string
+          created_at: string
+          discount_amount: number
+          discount_percentage: number
+          final_price: number
+          id: string
+          notes: string | null
+          original_price: number
+          referee_id: string
+          referrer_id: string
+          subscription_payment_id: string
+        }
+        Insert: {
+          applied_at?: string
+          created_at?: string
+          discount_amount: number
+          discount_percentage: number
+          final_price: number
+          id?: string
+          notes?: string | null
+          original_price: number
+          referee_id: string
+          referrer_id: string
+          subscription_payment_id: string
+        }
+        Update: {
+          applied_at?: string
+          created_at?: string
+          discount_amount?: number
+          discount_percentage?: number
+          final_price?: number
+          id?: string
+          notes?: string | null
+          original_price?: number
+          referee_id?: string
+          referrer_id?: string
+          subscription_payment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_discount_history_referee_id_fkey"
+            columns: ["referee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_discount_history_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_discount_history_subscription_payment_id_fkey"
+            columns: ["subscription_payment_id"]
+            isOneToOne: false
+            referencedRelation: "financial_transactions"
+            referencedColumns: ["payment_id"]
+          },
+          {
+            foreignKeyName: "referral_discount_history_subscription_payment_id_fkey"
+            columns: ["subscription_payment_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           code_used: string
           created_at: string
+          discount_activation_date: string | null
           discount_applied_referee: boolean | null
           discount_applied_referrer: boolean | null
+          first_payment_date: string | null
           first_subscription_id: string | null
           id: string
           notes: string | null
@@ -577,8 +650,10 @@ export type Database = {
         Insert: {
           code_used: string
           created_at?: string
+          discount_activation_date?: string | null
           discount_applied_referee?: boolean | null
           discount_applied_referrer?: boolean | null
+          first_payment_date?: string | null
           first_subscription_id?: string | null
           id?: string
           notes?: string | null
@@ -589,8 +664,10 @@ export type Database = {
         Update: {
           code_used?: string
           created_at?: string
+          discount_activation_date?: string | null
           discount_applied_referee?: boolean | null
           discount_applied_referrer?: boolean | null
+          first_payment_date?: string | null
           first_subscription_id?: string | null
           id?: string
           notes?: string | null
@@ -1013,11 +1090,57 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_tracking: {
+        Row: {
+          code_created_at: string | null
+          discount_activation_date: string | null
+          discount_amount: number | null
+          discount_applied_at: string | null
+          discount_history_id: string | null
+          discount_percentage: number | null
+          final_price: number | null
+          first_payment_date: string | null
+          original_price: number | null
+          payment_date: string | null
+          referee_id: string | null
+          referee_name: string | null
+          referral_code: string | null
+          referral_created_at: string | null
+          referral_id: string | null
+          referrer_id: string | null
+          referrer_name: string | null
+          status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referee_id_fkey"
+            columns: ["referee_id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Functions: {
       apply_referral_discount: {
         Args: { p_base_price: number; p_user_id: string }
         Returns: number
+      }
+      apply_referral_discount_with_tracking: {
+        Args: { p_base_price: number; p_payment_id?: string; p_user_id: string }
+        Returns: {
+          discount_amount: number
+          discount_percentage: number
+          final_price: number
+        }[]
       }
       calculate_period_end_date: {
         Args: { plan_id: string; start_date: string }
