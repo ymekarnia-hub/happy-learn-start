@@ -329,7 +329,7 @@ const Parrainage = () => {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/liste-cours")}>
             <GraduationCap className="h-8 w-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">Savoir</span>
+            <span className="text-xl font-bold text-gray-900">AcadémiePlus</span>
           </div>
 
           <div className="flex items-center gap-4">
