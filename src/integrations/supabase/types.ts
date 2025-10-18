@@ -253,6 +253,13 @@ export type Database = {
             referencedRelation: "subjects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "exam_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       invoices: {
@@ -419,7 +426,15 @@ export type Database = {
           school_level?: Database["public"]["Enums"]["school_level"] | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       quiz_questions: {
         Row: {
@@ -504,6 +519,113 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quiz_questions_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          code_used: string
+          created_at: string
+          discount_applied_referee: boolean | null
+          discount_applied_referrer: boolean | null
+          first_subscription_id: string | null
+          id: string
+          notes: string | null
+          referee_id: string
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          code_used: string
+          created_at?: string
+          discount_applied_referee?: boolean | null
+          discount_applied_referrer?: boolean | null
+          first_subscription_id?: string | null
+          id?: string
+          notes?: string | null
+          referee_id: string
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          code_used?: string
+          created_at?: string
+          discount_applied_referee?: boolean | null
+          discount_applied_referrer?: boolean | null
+          first_subscription_id?: string | null
+          id?: string
+          notes?: string | null
+          referee_id?: string
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_first_subscription_id_fkey"
+            columns: ["first_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "active_subscriptions"
+            referencedColumns: ["subscription_id"]
+          },
+          {
+            foreignKeyName: "referrals_first_subscription_id_fkey"
+            columns: ["first_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referee_id_fkey"
+            columns: ["referee_id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -732,6 +854,13 @@ export type Database = {
             referencedRelation: "course_chapters"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       user_roles: {
@@ -872,11 +1001,31 @@ export type Database = {
           },
         ]
       }
+      referral_stats: {
+        Row: {
+          active_referrals: number | null
+          cancelled_referrals: number | null
+          code: string | null
+          code_created_at: string | null
+          current_discount_percentage: number | null
+          fraud_referrals: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      apply_referral_discount: {
+        Args: { p_base_price: number; p_user_id: string }
+        Returns: number
+      }
       calculate_period_end_date: {
         Args: { plan_id: string; start_date: string }
         Returns: string
+      }
+      calculate_referral_discount: {
+        Args: { p_user_id: string }
+        Returns: number
       }
       calculate_subscription_price: {
         Args: { parent_id: string; plan_id: string }
@@ -891,6 +1040,10 @@ export type Database = {
         Returns: string
       }
       generate_invoice_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_referral_code: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

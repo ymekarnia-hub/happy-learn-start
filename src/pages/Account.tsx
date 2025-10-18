@@ -138,7 +138,7 @@ const Account = () => {
       description: "Inviter des amis et gagner des récompenses",
       icon: Users,
       color: "text-orange-600",
-      onClick: () => toast({ title: "Parrainage", description: "Section en cours de développement" }),
+      onClick: () => navigate("/parrainage"),
     },
 
     {
