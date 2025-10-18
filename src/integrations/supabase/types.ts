@@ -530,6 +530,56 @@ export type Database = {
           },
         ]
       }
+      prepaid_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          is_family_plan: boolean
+          notes: string | null
+          plan_id: string
+          used: boolean
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          is_family_plan?: boolean
+          notes?: string | null
+          plan_id: string
+          used?: boolean
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_family_plan?: boolean
+          notes?: string | null
+          plan_id?: string
+          used?: boolean
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prepaid_codes_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_active: boolean | null
@@ -1439,6 +1489,14 @@ export type Database = {
       }
     }
     Functions: {
+      activate_prepaid_code: {
+        Args: { p_code: string; p_user_id: string }
+        Returns: {
+          message: string
+          subscription_id: string
+          success: boolean
+        }[]
+      }
       apply_referee_discount: {
         Args: { p_referee_id: string; p_subscription_payment_id: string }
         Returns: number
@@ -1476,6 +1534,10 @@ export type Database = {
         Returns: string
       }
       generate_invoice_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_prepaid_code: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserCircle, CreditCard, FileText, Gift, Users, BarChart3, ArrowLeft, GraduationCap, LogOut, User as UserIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { PrepaidCodeDialog } from "@/components/PrepaidCodeDialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -36,6 +37,7 @@ const Account = () => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [prepaidDialogOpen, setPrepaidDialogOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -131,7 +133,7 @@ const Account = () => {
       description: "Activer un code promo ou cadeau",
       icon: Gift,
       color: "text-pink-600",
-      onClick: () => toast({ title: "Activer un code", description: "Section en cours de développement" }),
+      onClick: () => setPrepaidDialogOpen(true),
     },
     {
       title: "Parrainage",
@@ -258,6 +260,11 @@ const Account = () => {
           </div>
         </div>
       </main>
+
+      <PrepaidCodeDialog 
+        open={prepaidDialogOpen} 
+        onOpenChange={setPrepaidDialogOpen} 
+      />
     </div>
   );
 };
