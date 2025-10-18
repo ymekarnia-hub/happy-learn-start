@@ -118,16 +118,25 @@ const Paiement = () => {
 
       // Si c'est un filleul et que c'est un abonnement annuel
       if (referralData && paymentInfo?.billingPeriod === 'annual') {
-        // Vérifier si c'est le premier paiement (pas de paiement précédent)
+        // Vérifier si c'est le premier paiement en vérifiant tous les paiements de l'utilisateur
+        const { data: userSubscriptions, error: subsError } = await supabase
+          .from('subscriptions')
+          .select('id')
+          .eq('user_id', userId);
+
+        if (subsError) throw subsError;
+
+        const subscriptionIds = userSubscriptions?.map(s => s.id) || [];
+        
         const { data: previousPayments, error: paymentsError } = await supabase
           .from('subscription_payments')
           .select('id')
-          .eq('subscription_id', referralData.first_subscription_id || '00000000-0000-0000-0000-000000000000')
+          .in('subscription_id', subscriptionIds.length > 0 ? subscriptionIds : ['00000000-0000-0000-0000-000000000000'])
           .eq('status', 'paid');
 
         if (paymentsError) throw paymentsError;
 
-        // Si aucun paiement précédent, appliquer la réduction de 5%
+        // Si aucun paiement précédent, appliquer automatiquement la réduction de 5%
         if (!previousPayments || previousPayments.length === 0) {
           // Calcul sur le montant total annuel (10 mois)
           const totalAnnualAmount = paymentInfo.price * 10;
