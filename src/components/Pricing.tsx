@@ -158,7 +158,7 @@ const Pricing = () => {
                   }
                 }}
                 disabled={!plan.planData}
-                className={`w-full font-bold mb-6 ${
+                className={`w-full font-bold mb-6 text-lg py-6 ${
                   plan.highlighted
                     ? "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white"
                     : "bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50"
