@@ -596,12 +596,41 @@ const Paiement = () => {
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Tarif</h2>
 
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-700">Prix de base:</span>
-                  <span className="font-semibold text-gray-900">
-                    {totalAmount.toLocaleString('fr-DZ')} DA
-                  </span>
-                </div>
+                {paymentInfo.billingPeriod === 'monthly' && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Prix mensuel:</span>
+                    <span className="font-semibold text-gray-900">
+                      {paymentInfo.price.toLocaleString('fr-DZ')} DA
+                    </span>
+                  </div>
+                )}
+                
+                {paymentInfo.billingPeriod === 'monthly' && monthsCount > 1 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Nombre de mois:</span>
+                    <span className="font-semibold text-gray-900">
+                      × {monthsCount}
+                    </span>
+                  </div>
+                )}
+                
+                {paymentInfo.billingPeriod === 'annual' && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Prix de base:</span>
+                    <span className="font-semibold text-gray-900">
+                      {totalAmount.toLocaleString('fr-DZ')} DA
+                    </span>
+                  </div>
+                )}
+                
+                {paymentInfo.billingPeriod === 'monthly' && (
+                  <div className="flex justify-between items-center border-t pt-3">
+                    <span className="text-gray-700 font-semibold">Sous-total:</span>
+                    <span className="font-semibold text-gray-900">
+                      {totalAmount.toLocaleString('fr-DZ')} DA
+                    </span>
+                  </div>
+                )}
 
                 {isReferee && referralDiscount > 0 && (
                   <div className="flex justify-between items-center">
