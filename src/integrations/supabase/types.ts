@@ -337,6 +337,66 @@ export type Database = {
           },
         ]
       }
+      fraud_detection: {
+        Row: {
+          created_at: string
+          details: Json | null
+          detected_at: string
+          fraud_type: string
+          id: string
+          referral_id: string | null
+          resolution_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          severity: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          detected_at?: string
+          fraud_type: string
+          id?: string
+          referral_id?: string | null
+          resolution_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          severity?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          detected_at?: string
+          fraud_type?: string
+          id?: string
+          referral_id?: string | null
+          resolution_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          severity?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fraud_detection_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referral_tracking"
+            referencedColumns: ["referral_id"]
+          },
+          {
+            foreignKeyName: "fraud_detection_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           amount_ht: number
@@ -814,9 +874,12 @@ export type Database = {
           first_subscription_id: string | null
           id: string
           notes: string | null
+          pending_validation: boolean | null
+          referee_discount_applied: number | null
           referee_id: string
           referrer_id: string
           status: string
+          validation_date: string | null
         }
         Insert: {
           code_used: string
@@ -828,9 +891,12 @@ export type Database = {
           first_subscription_id?: string | null
           id?: string
           notes?: string | null
+          pending_validation?: boolean | null
+          referee_discount_applied?: number | null
           referee_id: string
           referrer_id: string
           status?: string
+          validation_date?: string | null
         }
         Update: {
           code_used?: string
@@ -842,9 +908,12 @@ export type Database = {
           first_subscription_id?: string | null
           id?: string
           notes?: string | null
+          pending_validation?: boolean | null
+          referee_discount_applied?: number | null
           referee_id?: string
           referrer_id?: string
           status?: string
+          validation_date?: string | null
         }
         Relationships: [
           {
@@ -1321,6 +1390,10 @@ export type Database = {
       }
     }
     Functions: {
+      apply_referee_discount: {
+        Args: { p_referee_id: string; p_subscription_payment_id: string }
+        Returns: number
+      }
       apply_referral_discount: {
         Args: { p_base_price: number; p_user_id: string }
         Returns: number
@@ -1382,6 +1455,24 @@ export type Database = {
       }
       is_subscription_active: {
         Args: { subscription_id: string }
+        Returns: boolean
+      }
+      use_promo_code: {
+        Args: {
+          p_original_amount: number
+          p_payment_id: string
+          p_promo_code: string
+          p_user_id: string
+        }
+        Returns: {
+          discount_amount: number
+          final_amount: number
+          message: string
+          valid: boolean
+        }[]
+      }
+      validate_referral_after_delay: {
+        Args: { p_referral_id: string }
         Returns: boolean
       }
     }
