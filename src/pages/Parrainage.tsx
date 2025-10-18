@@ -492,50 +492,6 @@ const Parrainage = () => {
           </Card>
         )}
 
-        {/* Historique des Transactions */}
-        {creditDashboard?.recent_transactions && creditDashboard.recent_transactions.length > 0 && (
-          <Card className="p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Historique des Crédits</h2>
-            <div className="space-y-3">
-              {creditDashboard.recent_transactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                >
-                  <div className="flex items-center gap-3">
-                    {transaction.transaction_type === "earned" ? (
-                      <TrendingUp className="h-5 w-5 text-green-600" />
-                    ) : transaction.transaction_type === "used" ? (
-                      <TrendingDown className="h-5 w-5 text-red-600" />
-                    ) : (
-                      <Clock className="h-5 w-5 text-gray-600" />
-                    )}
-                    <div>
-                      <p className="font-medium text-gray-900">{transaction.description}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(transaction.created_at).toLocaleDateString("fr-FR", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className={`font-bold ${
-                        transaction.transaction_type === "earned" ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {transaction.transaction_type === "earned" ? "+" : "-"}
-                      {transaction.amount_euros.toFixed(2)} DA
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        )}
 
         <Card className="p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Mes Filleuls ({referrals.length})</h2>
