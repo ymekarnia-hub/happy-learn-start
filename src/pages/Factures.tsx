@@ -55,6 +55,9 @@ interface Invoice {
       name: string;
       billing_period: string;
     };
+    subscription_payments?: Array<{
+      amount_paid: number;
+    }>;
   };
 }
 
@@ -119,7 +122,8 @@ const Factures = () => {
           `
           *,
           subscription:subscriptions(
-            plan:subscription_plans(name, billing_period)
+            plan:subscription_plans(name, billing_period),
+            subscription_payments(amount_paid)
           )
         `
         )
@@ -148,15 +152,12 @@ const Factures = () => {
   const generatePDF = (invoice: Invoice) => {
     const doc = new jsPDF();
 
-    // Utiliser les valeurs déjà calculées de la base de données
-    const tva = invoice.tva_amount;
-    const total_ttc = invoice.amount_ttc;
+    // Récupérer le montant réellement payé
+    const amountPaid = invoice.subscription?.subscription_payments?.[0]?.amount_paid || invoice.amount_ttc;
     
-    // Extraire les informations de réduction depuis les notes
-    const hasDiscount = invoice.notes?.includes("Réduction") || invoice.notes?.includes("Montant payé:");
-    const discountMatch = invoice.notes?.match(/Montant payé: ([\d.]+) DA/);
-    const amountPaid = discountMatch ? parseFloat(discountMatch[1]) : total_ttc;
-    const discountAmount = hasDiscount ? total_ttc - amountPaid : 0;
+    // Calculer HT et TVA à partir du montant payé
+    const amountHT = amountPaid / 1.20;
+    const tvaAmount = amountPaid - amountHT;
 
     // En-tête de la facture
     doc.setFontSize(20);
@@ -193,10 +194,11 @@ const Factures = () => {
 
     // Détails
     const subscriptionType = invoice.subscription?.plan?.name || "Standard";
+    const billingPeriod = invoice.subscription?.plan?.billing_period === "annual" ? "Annuel" : "Mensuel";
     let currentY = 135;
     
-    doc.text(`Abonnement ${subscriptionType}`, 20, currentY);
-    doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, currentY, { align: "right" });
+    doc.text(`Abonnement ${subscriptionType} (${billingPeriod})`, 20, currentY);
+    doc.text(`${amountHT.toFixed(2)} DA`, 150, currentY, { align: "right" });
 
     // Ligne de séparation
     currentY += 5;
@@ -205,41 +207,23 @@ const Factures = () => {
     // Sous-total HT
     currentY += 10;
     doc.text("Montant HT:", 120, currentY);
-    doc.text(`${invoice.amount_ht.toFixed(2)} DA`, 150, currentY, { align: "right" });
+    doc.text(`${amountHT.toFixed(2)} DA`, 150, currentY, { align: "right" });
 
     // TVA
     currentY += 7;
     doc.text(`TVA (${invoice.tva_percentage}%):`, 120, currentY);
-    doc.text(`${tva.toFixed(2)} DA`, 150, currentY, { align: "right" });
+    doc.text(`${tvaAmount.toFixed(2)} DA`, 150, currentY, { align: "right" });
 
     // Ligne de séparation
     currentY += 5;
     doc.line(120, currentY, 190, currentY);
 
-    // Total TTC (montant original)
+    // Total TTC (montant payé)
     currentY += 8;
     doc.setFontSize(12);
     doc.setFont(undefined, "bold");
     doc.text("Total TTC:", 120, currentY);
-    doc.text(`${total_ttc.toFixed(2)} DA`, 150, currentY, { align: "right" });
-
-    // Si réduction, afficher le détail
-    if (hasDiscount && discountAmount > 0) {
-      currentY += 10;
-      doc.setFontSize(10);
-      doc.setFont(undefined, "normal");
-      doc.text("Réduction parrainage:", 120, currentY);
-      doc.text(`-${discountAmount.toFixed(2)} DA`, 150, currentY, { align: "right" });
-      
-      currentY += 5;
-      doc.line(120, currentY, 190, currentY);
-      
-      currentY += 8;
-      doc.setFontSize(12);
-      doc.setFont(undefined, "bold");
-      doc.text("Montant payé:", 120, currentY);
-      doc.text(`${amountPaid.toFixed(2)} DA`, 150, currentY, { align: "right" });
-    }
+    doc.text(`${amountPaid.toFixed(2)} DA`, 150, currentY, { align: "right" });
 
     // Pied de page
     doc.setFontSize(9);
@@ -378,7 +362,9 @@ const Factures = () => {
                         <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
                         <TableCell>{new Date(invoice.issue_date).toLocaleDateString("fr-FR")}</TableCell>
                         <TableCell className="capitalize">{subscriptionType}</TableCell>
-                        <TableCell className="text-right font-semibold">{Number(invoice.amount_ttc).toFixed(2)} DA</TableCell>
+                        <TableCell className="text-right font-semibold">
+                          {(invoice.subscription?.subscription_payments?.[0]?.amount_paid || invoice.amount_ttc).toFixed(2)} DA
+                        </TableCell>
                         <TableCell className="text-center">
                           <Button
                             variant="ghost"
