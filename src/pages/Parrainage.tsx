@@ -90,11 +90,13 @@ const Parrainage = () => {
 
       setProfile(profileData);
 
-      // Récupérer les statistiques de parrainage
+      // Récupérer les statistiques de parrainage (le code le plus récent)
       const { data: statsData } = await supabase
         .from("referral_stats")
         .select("*")
         .eq("user_id", session.user.id)
+        .order("code_created_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       setReferralStats(statsData);
