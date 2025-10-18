@@ -22,6 +22,7 @@ import MesInformations from "./pages/MesInformations";
 import UpdateSuccess from "./pages/UpdateSuccess";
 import Abonnements from "./pages/Abonnements";
 import Paiement from "./pages/Paiement";
+import Parrainage from "./pages/Parrainage";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/update-success" element={<UpdateSuccess />} />
             <Route path="/abonnements" element={<Abonnements />} />
             <Route path="/paiement" element={<Paiement />} />
+            <Route path="/parrainage" element={<Parrainage />} />
             <Route path="/liste-cours" element={<ListeCours />} />
             <Route path="/cours/:subjectId" element={<Cours />} />
             <Route path="/revision/:subjectId" element={<Revision />} />
