@@ -118,46 +118,23 @@ const Paiement = () => {
 
       // Si c'est un filleul et que c'est un abonnement annuel
       if (referralData && paymentInfo?.billingPeriod === 'annual') {
-        // Vérifier si c'est le premier paiement en cherchant tous les paiements de cet utilisateur
-        // On utilise une requête RPC ou on vérifie directement dans les subscriptions
-        const { data: userSubscriptions, error: subsError } = await supabase
-          .from('subscriptions')
+        // Vérifier si c'est le premier paiement (pas de paiement précédent)
+        const { data: previousPayments, error: paymentsError } = await supabase
+          .from('subscription_payments')
           .select('id')
-          .eq('user_id', userId);
+          .eq('subscription_id', referralData.first_subscription_id || '00000000-0000-0000-0000-000000000000')
+          .eq('status', 'paid');
 
-        if (subsError) {
-          console.error('Erreur lors de la récupération des subscriptions:', subsError);
-        }
-
-        let hasExistingPayments = false;
-        if (userSubscriptions && userSubscriptions.length > 0) {
-          // Vérifier s'il y a des paiements pour ces subscriptions
-          const { data: payments, error: paymentsError } = await supabase
-            .from('subscription_payments')
-            .select('id')
-            .in('subscription_id', userSubscriptions.map(s => s.id))
-            .eq('status', 'paid');
-
-          if (paymentsError) {
-            console.error('Erreur lors de la récupération des paiements:', paymentsError);
-          }
-
-          hasExistingPayments = payments && payments.length > 0;
-        }
+        if (paymentsError) throw paymentsError;
 
         // Si aucun paiement précédent, appliquer la réduction de 5%
-        if (!hasExistingPayments) {
+        if (!previousPayments || previousPayments.length === 0) {
           // Calcul sur le montant total annuel (10 mois)
           const totalAnnualAmount = paymentInfo.price * 10;
           const discountAmount = Math.round(totalAnnualAmount * 0.05);
           setReferralDiscount(discountAmount);
           setIsReferee(true);
-          console.log('Réduction parrainage appliquée:', discountAmount, 'DA');
-        } else {
-          console.log('Paiements existants trouvés, pas de réduction parrainage');
         }
-      } else {
-        console.log('Pas de parrainage actif ou formule non annuelle');
       }
     } catch (error) {
       console.error('Erreur lors de la vérification du parrainage:', error);
@@ -510,53 +487,29 @@ const Paiement = () => {
               <div className="space-y-4 mb-6">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Détails du paiement :
+                    Paiement :
                   </h3>
-                  
-                  {/* Prix de base */}
-                  <div className="flex justify-between text-gray-700 mb-2">
-                    <span>Prix de base</span>
-                    <span className="font-semibold">{totalAmount.toLocaleString('fr-DZ')} DA</span>
-                  </div>
-                  
-                  {/* Réduction parrainage */}
-                  {isReferee && referralDiscount > 0 && (
-                    <div className="flex justify-between text-green-600 mb-2">
-                      <span>🎉 Réduction parrainage (-5%)</span>
-                      <span className="font-semibold">-{referralDiscount.toLocaleString('fr-DZ')} DA</span>
-                    </div>
-                  )}
-                  
-                  {/* Réduction code promo */}
-                  {promoApplied && discount > 0 && (
-                    <div className="flex justify-between text-green-600 mb-2">
-                      <span>Réduction code promo</span>
-                      <span className="font-semibold">-{discount.toLocaleString('fr-DZ')} DA</span>
-                    </div>
-                  )}
-                  
-                  {/* Total à payer */}
-                  <div className="border-t pt-3 mt-3">
-                    <div className="flex justify-between text-lg font-bold text-gray-900">
-                      <span>Total à payer</span>
-                      <span>{finalAmount.toLocaleString('fr-DZ')} DA</span>
-                    </div>
-                  </div>
-                  
-                  <p className="text-sm text-gray-600 mt-2">
-                    Pour {monthsCount} mois d'abonnement
+                  <p className="text-gray-700">
+                    Paiement immédiat de{" "}
+                    <span className="font-semibold">
+                      {finalAmount.toLocaleString('fr-DZ')} DA
+                    </span>
+                    <span> pour {monthsCount} mois d'abonnement</span>
                   </p>
-                  
-                  {/* Message de confirmation parrainage */}
                   {isReferee && referralDiscount > 0 && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-3">
                       <p className="text-sm font-semibold text-green-800">
-                        ✓ Réduction parrainage de 5% appliquée
+                        🎉 Réduction parrainage appliquée
                       </p>
-                      <p className="text-xs text-green-700 mt-1">
-                        En tant que filleul, vous bénéficiez d'une réduction de {referralDiscount.toLocaleString('fr-DZ')} DA sur votre premier abonnement annuel !
+                      <p className="text-sm text-green-700 mt-1">
+                        -5% sur votre premier abonnement annuel : {referralDiscount.toLocaleString('fr-DZ')} DA
                       </p>
                     </div>
+                  )}
+                  {promoApplied && (
+                    <p className="text-sm text-green-600 mt-2">
+                      Réduction code promo : {discount.toLocaleString('fr-DZ')} DA
+                    </p>
                   )}
                 </div>
 
