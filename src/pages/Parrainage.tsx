@@ -609,10 +609,10 @@ const Parrainage = () => {
                     <TableCell className="text-right font-medium">
                       {referral.payment_info ? (
                         <span className="text-gray-900">
-                          {referral.payment_info.amount_paid.toFixed(2)} DA
+                          {referral.payment_info.original_amount.toFixed(2)} DA
                         </span>
                       ) : (
-                        <span className="text-gray-400 text-sm">En attente</span>
+                        <span className="text-gray-400 text-sm">-</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
