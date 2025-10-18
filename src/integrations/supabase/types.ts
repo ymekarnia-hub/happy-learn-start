@@ -543,6 +543,7 @@ export type Database = {
           id: string
           last_name: string | null
           parent_consent: boolean | null
+          pending_referral_code: string | null
           phone: string | null
           role: Database["public"]["Enums"]["app_role"] | null
           school_level: Database["public"]["Enums"]["school_level"] | null
@@ -560,6 +561,7 @@ export type Database = {
           id: string
           last_name?: string | null
           parent_consent?: boolean | null
+          pending_referral_code?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
           school_level?: Database["public"]["Enums"]["school_level"] | null
@@ -577,6 +579,7 @@ export type Database = {
           id?: string
           last_name?: string | null
           parent_consent?: boolean | null
+          pending_referral_code?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
           school_level?: Database["public"]["Enums"]["school_level"] | null
