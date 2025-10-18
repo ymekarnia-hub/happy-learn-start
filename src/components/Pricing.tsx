@@ -13,16 +13,9 @@ const Pricing = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   
-  // Récupérer l'état du switch depuis localStorage, par défaut false (1 enfant)
-  const [isFamily, setIsFamily] = useState(() => {
-    const saved = localStorage.getItem('pricingIsFamily');
-    return saved === 'true' ? true : false;
-  });
+  // Switch par défaut sur "1 enfant" (false)
+  const [isFamily, setIsFamily] = useState(false);
 
-  // Sauvegarder l'état dans localStorage quand il change
-  useEffect(() => {
-    localStorage.setItem('pricingIsFamily', isFamily.toString());
-  }, [isFamily]);
   
   const nextYear = new Date().getFullYear() + 1;
 
