@@ -57,6 +57,7 @@ const Paiement = () => {
   const [discount, setDiscount] = useState(0);
   const [referralDiscount, setReferralDiscount] = useState(0);
   const [isReferee, setIsReferee] = useState(false);
+  const [planTotalAmount, setPlanTotalAmount] = useState<number | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -65,6 +66,7 @@ const Paiement = () => {
         return;
       }
       fetchProfile(session.user.id);
+      fetchPlanDetails();
     });
 
     const {
@@ -75,10 +77,33 @@ const Paiement = () => {
         return;
       }
       fetchProfile(session.user.id);
+      fetchPlanDetails();
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const fetchPlanDetails = async () => {
+    if (!paymentInfo?.planId) return;
+    
+    try {
+      const { data: planData, error } = await supabase
+        .from('subscription_plans')
+        .select('total_single, total_family, billing_period')
+        .eq('id', paymentInfo.planId)
+        .single();
+
+      if (error) throw error;
+
+      // Pour les formules scolaires (annuelles), utiliser total_single ou total_family
+      if (planData.billing_period === 'annual') {
+        const total = paymentInfo.isFamily ? planData.total_family : planData.total_single;
+        setPlanTotalAmount(total);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération du plan:', error);
+    }
+  };
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -193,10 +218,13 @@ const Paiement = () => {
     });
   };
 
-  // Calculer le montant total de base en fonction du type de formule (single ou famille)
-  // Pour une formule mensuelle, paymentInfo.price est déjà le prix mensuel correct
-  const baseMonthlyPrice = paymentInfo.price; // Prix mensuel: 1500 DA (single) ou 2000 DA (famille)
-  const totalAmount = baseMonthlyPrice * monthsCount;
+  // Calculer le montant total de base
+  // Pour les formules scolaires (annuelles): utiliser total_single ou total_family de la BDD
+  // Pour les formules mensuelles: utiliser prix mensuel × nombre de mois
+  const totalAmount = paymentInfo.billingPeriod === 'annual' && planTotalAmount !== null
+    ? planTotalAmount 
+    : paymentInfo.price * monthsCount;
+  
   const finalAmount = totalAmount - discount - referralDiscount;
 
   const applyPromoCode = async () => {
