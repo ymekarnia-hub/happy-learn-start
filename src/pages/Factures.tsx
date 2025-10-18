@@ -344,6 +344,14 @@ const Factures = () => {
               </Table>
             </div>
           )}
+
+          {/* Back Link at Bottom */}
+          <div className="flex justify-center mt-8 pb-8">
+            <Button variant="ghost" onClick={() => navigate("/account")} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Retour vers mon compte
+            </Button>
+          </div>
         </div>
       </main>
     </div>
