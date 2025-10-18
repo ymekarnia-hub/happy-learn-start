@@ -60,7 +60,7 @@ const Pricing = () => {
 
   const plans = [
     {
-      name: "Formule Annuelle",
+      name: "Formule Scolaire",
       price: annualPlan ? `${getTotalPrice(annualPlan).toLocaleString('fr-FR')} DA` : '---',
       period: "",
       description: `Paiement unique pour 10 mois jusqu'au ${getEndDate()}`,
