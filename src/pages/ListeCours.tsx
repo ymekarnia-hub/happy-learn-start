@@ -4,7 +4,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { GraduationCap, Search, LogOut, User as UserIcon, BookOpen, Beaker, Globe, Calculator, Brain, Palette, Landmark, Languages, Microscope, Music, HeartPulse, Code, BookMarked, Target } from "lucide-react";
+import {
+  GraduationCap,
+  Search,
+  LogOut,
+  User as UserIcon,
+  BookOpen,
+  Beaker,
+  Globe,
+  Calculator,
+  Brain,
+  Palette,
+  Landmark,
+  Languages,
+  Microscope,
+  Music,
+  HeartPulse,
+  Code,
+  BookMarked,
+  Target,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +39,7 @@ interface Profile {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
-  role: 'student' | 'parent' | 'teacher' | 'admin';
+  role: "student" | "parent" | "teacher" | "admin";
   school_level: string | null;
   email: string | null;
 }
@@ -30,7 +49,7 @@ interface Subject {
   name: string;
   icon: any;
   color: string;
-  category: 'general' | 'speciality';
+  category: "general" | "speciality";
 }
 
 interface DbSubject {
@@ -38,7 +57,7 @@ interface DbSubject {
   name: string;
   icon_name: string;
   color: string;
-  category: 'general' | 'speciality';
+  category: "general" | "speciality";
 }
 
 const ListeCours = () => {
@@ -53,16 +72,18 @@ const ListeCours = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        navigate('/auth');
+        navigate("/auth");
         return;
       }
       setUser(session.user);
       fetchProfile(session.user.id);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
-        navigate('/auth');
+        navigate("/auth");
         return;
       }
       setUser(session.user);
@@ -74,15 +95,11 @@ const ListeCours = () => {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
 
       if (error) throw error;
       setProfile(data);
-      
+
       // Fetch subjects for the user's school level
       if (data?.school_level) {
         await fetchSubjects(data.school_level);
@@ -101,8 +118,9 @@ const ListeCours = () => {
   const fetchSubjects = async (schoolLevel: string) => {
     try {
       const { data: classSubjects, error } = await supabase
-        .from('class_subjects')
-        .select(`
+        .from("class_subjects")
+        .select(
+          `
           subject_id,
           subjects:subject_id (
             id,
@@ -111,29 +129,40 @@ const ListeCours = () => {
             color,
             category
           )
-        `)
-        .eq('school_level', schoolLevel as any);
+        `,
+        )
+        .eq("school_level", schoolLevel as any);
 
       if (error) throw error;
 
       const iconMap: Record<string, any> = {
-        Brain, Landmark, Languages, BookOpen, Calculator, Globe, 
-        Microscope, Beaker, Palette, Music, HeartPulse, Code
+        Brain,
+        Landmark,
+        Languages,
+        BookOpen,
+        Calculator,
+        Globe,
+        Microscope,
+        Beaker,
+        Palette,
+        Music,
+        HeartPulse,
+        Code,
       };
 
       const subjectsData: Subject[] = classSubjects
-        .filter(cs => cs.subjects)
+        .filter((cs) => cs.subjects)
         .map((cs: any) => ({
           id: cs.subjects.id,
           name: cs.subjects.name,
           icon: iconMap[cs.subjects.icon_name] || BookOpen,
           color: cs.subjects.color,
-          category: cs.subjects.category
+          category: cs.subjects.category,
         }));
 
       setSubjects(subjectsData);
     } catch (error: any) {
-      console.error('Error fetching subjects:', error);
+      console.error("Error fetching subjects:", error);
       toast({
         title: "Erreur",
         description: "Impossible de charger les matières",
@@ -144,25 +173,32 @@ const ListeCours = () => {
 
   const getSchoolLevelName = (level: string) => {
     const levels = {
-      cp: 'CP', ce1: 'CE1', ce2: 'CE2', cm1: 'CM1', cm2: 'CM2',
-      sixieme: '6ème', cinquieme: '5ème', quatrieme: '4ème', troisieme: '3ème',
-      seconde: 'Seconde', premiere: 'Première', terminale: 'Terminale'
+      cp: "CP",
+      ce1: "CE1",
+      ce2: "CE2",
+      cm1: "CM1",
+      cm2: "CM2",
+      sixieme: "6ème",
+      cinquieme: "5ème",
+      quatrieme: "4ème",
+      troisieme: "3ème",
+      seconde: "Seconde",
+      premiere: "Première",
+      terminale: "Terminale",
     };
-    return levels[level as keyof typeof levels] || 'Votre classe';
+    return levels[level as keyof typeof levels] || "Votre classe";
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({
       title: "Déconnexion",
-      description: "Vous avez été déconnecté avec succès",
+      description: "Vous avez été déconnecté avec succès!!!!",
     });
     navigate("/");
   };
 
-  const filteredSubjects = subjects.filter(subject =>
-    subject.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredSubjects = subjects.filter((subject) => subject.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   if (loading) {
     return (
@@ -179,8 +215,8 @@ const ListeCours = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div 
-              className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" 
+            <div
+              className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => navigate("/dashboard")}
             >
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
@@ -196,12 +232,10 @@ const ListeCours = () => {
                   <div className="flex items-center gap-2 cursor-pointer hover:bg-accent/10 rounded-lg p-2 transition-colors">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={profile?.avatar_url || undefined} />
-                      <AvatarFallback>
-                        {profile?.full_name?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
+                      <AvatarFallback>{profile?.full_name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
                     </Avatar>
                     <div className="text-left hidden md:block">
-                      <p className="text-sm font-medium">{profile?.full_name || 'Utilisateur'}</p>
+                      <p className="text-sm font-medium">{profile?.full_name || "Utilisateur"}</p>
                       <p className="text-xs text-muted-foreground">
                         {profile?.school_level && getSchoolLevelName(profile.school_level)}
                       </p>
@@ -228,13 +262,13 @@ const ListeCours = () => {
           </div>
         </div>
       </header>
-      
+
       <main className="container mx-auto px-4 py-8 mt-20">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12 animate-fade-in">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Matières de {profile?.school_level ? getSchoolLevelName(profile.school_level) : 'ta classe'}
+              Matières de {profile?.school_level ? getSchoolLevelName(profile.school_level) : "ta classe"}
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
               Découvre tous les cours de ta classe et prépare-toi à réussir ! 🚀
@@ -271,13 +305,13 @@ const ListeCours = () => {
                       className="group transition-all duration-300 hover:shadow-2xl border-2 hover:border-primary/50 animate-fade-in overflow-hidden cursor-pointer"
                       style={{
                         animationDelay: `${index * 50}ms`,
-                        backgroundColor: `${subject.color}15`
+                        backgroundColor: `${subject.color}15`,
                       }}
                       onClick={() => navigate(`/cours/${subject.id}`)}
                     >
                       <CardContent className="p-6">
                         <div className="flex flex-col items-center text-center gap-4">
-                          <div 
+                          <div
                             className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
                             style={{ backgroundColor: subject.color }}
                           >
