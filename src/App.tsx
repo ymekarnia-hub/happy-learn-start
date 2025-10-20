@@ -31,6 +31,8 @@ import HistoriqueVersions from "./pages/editorial/HistoriqueVersions";
 import PreviewCours from "./pages/editorial/PreviewCours";
 import GestionEquipe from "./pages/editorial/GestionEquipe";
 import CompareVersions from "./pages/editorial/CompareVersions";
+import Analytics from "./pages/Analytics";
+import FAQAdmin from "./pages/FAQAdmin";
 
 const queryClient = new QueryClient();
 
@@ -65,7 +67,8 @@ const App = () => (
             <Route path="/revision/:subjectId" element={<Revision />} />
             <Route path="/simulation/:subjectId" element={<Simulation />} />
             <Route path="/contact" element={<Contact />} />
-            
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/faq-admin" element={<FAQAdmin />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
