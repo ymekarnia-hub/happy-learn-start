@@ -19,6 +19,7 @@ import {
   Send,
   Plus,
   Copy,
+  EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import {  
@@ -36,10 +37,11 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { SectionEditor } from "@/components/editorial/SectionEditor";
 import SortableSectionEditor from "@/components/editorial/SortableSectionEditor";
 import { MetadataPanel } from "@/components/editorial/MetadataPanel";
+import { ReviewModal } from "@/components/editorial/ReviewModal";
+import { PreviewSidebar } from "@/components/editorial/PreviewSidebar";
 
 interface Section {
   id?: number;
@@ -89,6 +91,7 @@ export default function EditeurCours() {
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
   const saveTimerRef = useRef<NodeJS.Timeout>();
 
   const sensors = useSensors(
@@ -101,6 +104,20 @@ export default function EditeurCours() {
   useEffect(() => {
     loadInitialData();
   }, [id]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+S or Cmd+S to save
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveCourse(true, false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [course]);
 
   // Auto-save every 30 seconds
   useEffect(() => {
@@ -322,34 +339,6 @@ export default function EditeurCours() {
     }
   };
 
-  const sendToReview = async () => {
-    if (!course.titre || !course.matiere_id || !course.niveau_id) {
-      toast.error("Veuillez remplir tous les champs obligatoires");
-      return;
-    }
-
-    await saveCourse();
-    
-    try {
-      const { error } = await supabase
-        .from('cours')
-        .update({ 
-          statut: 'en_revision',
-          date_modification: new Date().toISOString()
-        })
-        .eq('id', parseInt(id!));
-
-      if (error) throw error;
-
-      setCourse(prev => ({ ...prev, statut: 'en_revision' }));
-      setShowReviewDialog(false);
-      toast.success("Cours envoyé en révision");
-    } catch (error) {
-      console.error('Error sending to review:', error);
-      toast.error("Erreur lors de l'envoi en révision");
-    }
-  };
-
   const publishCourse = async () => {
     if (!course.titre) {
       toast.error("Le titre est obligatoire");
@@ -553,9 +542,29 @@ export default function EditeurCours() {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
-        <div className="flex gap-8">
-          <div className="flex-1 space-y-6">
-            <MetadataPanel course={course} onChange={setCourse} />
+        <div className="flex gap-0">
+          <div className={`${showPreview ? 'flex-1' : 'w-full'} space-y-6 pr-6`}>
+            <div className="flex items-center justify-between">
+              <MetadataPanel course={course} onChange={setCourse} />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreview(!showPreview)}
+                className="ml-4"
+              >
+                {showPreview ? (
+                  <>
+                    <EyeOff className="w-4 h-4 mr-2" />
+                    Masquer aperçu
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-4 h-4 mr-2" />
+                    Afficher aperçu
+                  </>
+                )}
+              </Button>
+            </div>
 
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
@@ -595,6 +604,15 @@ export default function EditeurCours() {
               )}
             </Card>
           </div>
+
+          {/* Preview Sidebar */}
+          {showPreview && (
+            <PreviewSidebar 
+              course={course}
+              matieres={matieres}
+              niveaux={niveaux}
+            />
+          )}
         </div>
       </div>
 
@@ -632,21 +650,16 @@ export default function EditeurCours() {
         </div>
       </div>
 
-      {/* Review Dialog */}
-      <AlertDialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Envoyer en révision</AlertDialogTitle>
-            <AlertDialogDescription>
-              Le cours sera marqué comme "en révision" et sera visible aux réviseurs pour validation.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={sendToReview}>Envoyer en révision</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Review Modal */}
+      <ReviewModal 
+        open={showReviewDialog} 
+        onClose={() => setShowReviewDialog(false)}
+        courseId={id!}
+        onSuccess={() => {
+          setCourse(prev => ({ ...prev, statut: 'en_revision' }));
+          loadInitialData();
+        }}
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ interface Version {
 
 export default function HistoriqueVersions() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [versions, setVersions] = useState<Version[]>([]);
   const [courseTitle, setCourseTitle] = useState("");
   const [loading, setLoading] = useState(true);
@@ -183,7 +184,11 @@ export default function HistoriqueVersions() {
                                 <RotateCcw className="h-4 w-4 mr-2" />
                                 Restaurer
                               </Button>
-                              <Button variant="outline" size="sm">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => navigate(`/editorial/cours/${id}/compare?v1=${versions[index].version_numero}&v2=${versions[index - 1].version_numero}`)}
+                              >
                                 <GitCompare className="h-4 w-4 mr-2" />
                                 Comparer
                               </Button>
