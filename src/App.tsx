@@ -23,6 +23,8 @@ import UpdateSuccess from "./pages/UpdateSuccess";
 import Abonnements from "./pages/Abonnements";
 import Paiement from "./pages/Paiement";
 import Parrainage from "./pages/Parrainage";
+import DashboardEditorial from "./pages/editorial/DashboardEditorial";
+import EditeurCours from "./pages/editorial/EditeurCours";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/editorial" element={<DashboardEditorial />} />
+            <Route path="/editorial/cours/:id" element={<EditeurCours />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/account" element={<Account />} />
