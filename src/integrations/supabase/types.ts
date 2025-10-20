@@ -88,6 +88,108 @@ export type Database = {
           },
         ]
       }
+      cours: {
+        Row: {
+          auteur_id: number | null
+          commentaire_revue: string | null
+          date_creation: string | null
+          date_modification: string | null
+          date_publication: string | null
+          description: string | null
+          difficulte: number | null
+          duree_lecture: number | null
+          id: number
+          matiere_id: number | null
+          meta_description: string | null
+          meta_title: string | null
+          niveau_id: number | null
+          programme_id: number | null
+          revieur_id: number | null
+          slug: string
+          statut: string | null
+          titre: string
+          version: number | null
+        }
+        Insert: {
+          auteur_id?: number | null
+          commentaire_revue?: string | null
+          date_creation?: string | null
+          date_modification?: string | null
+          date_publication?: string | null
+          description?: string | null
+          difficulte?: number | null
+          duree_lecture?: number | null
+          id?: number
+          matiere_id?: number | null
+          meta_description?: string | null
+          meta_title?: string | null
+          niveau_id?: number | null
+          programme_id?: number | null
+          revieur_id?: number | null
+          slug: string
+          statut?: string | null
+          titre: string
+          version?: number | null
+        }
+        Update: {
+          auteur_id?: number | null
+          commentaire_revue?: string | null
+          date_creation?: string | null
+          date_modification?: string | null
+          date_publication?: string | null
+          description?: string | null
+          difficulte?: number | null
+          duree_lecture?: number | null
+          id?: number
+          matiere_id?: number | null
+          meta_description?: string | null
+          meta_title?: string | null
+          niveau_id?: number | null
+          programme_id?: number | null
+          revieur_id?: number | null
+          slug?: string
+          statut?: string | null
+          titre?: string
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cours_auteur_id_fkey"
+            columns: ["auteur_id"]
+            isOneToOne: false
+            referencedRelation: "utilisateurs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cours_matiere_id_fkey"
+            columns: ["matiere_id"]
+            isOneToOne: false
+            referencedRelation: "matieres"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cours_niveau_id_fkey"
+            columns: ["niveau_id"]
+            isOneToOne: false
+            referencedRelation: "niveaux"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cours_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "programmes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cours_revieur_id_fkey"
+            columns: ["revieur_id"]
+            isOneToOne: false
+            referencedRelation: "utilisateurs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_chapters: {
         Row: {
           content: string
@@ -337,6 +439,41 @@ export type Database = {
           },
         ]
       }
+      formules: {
+        Row: {
+          display_mode: boolean | null
+          id: number
+          latex_source: string
+          legende: string | null
+          position: number | null
+          section_id: number
+        }
+        Insert: {
+          display_mode?: boolean | null
+          id?: number
+          latex_source: string
+          legende?: string | null
+          position?: number | null
+          section_id: number
+        }
+        Update: {
+          display_mode?: boolean | null
+          id?: number
+          latex_source?: string
+          legende?: string | null
+          position?: number | null
+          section_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "formules_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fraud_detection: {
         Row: {
           created_at: string
@@ -393,6 +530,54 @@ export type Database = {
             columns: ["referral_id"]
             isOneToOne: false
             referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      historique_versions: {
+        Row: {
+          auteur_id: number | null
+          commentaire: string | null
+          contenu_snapshot: Json | null
+          cours_id: number
+          date_version: string | null
+          diff_json: Json | null
+          id: number
+          version_numero: number
+        }
+        Insert: {
+          auteur_id?: number | null
+          commentaire?: string | null
+          contenu_snapshot?: Json | null
+          cours_id: number
+          date_version?: string | null
+          diff_json?: Json | null
+          id?: number
+          version_numero: number
+        }
+        Update: {
+          auteur_id?: number | null
+          commentaire?: string | null
+          contenu_snapshot?: Json | null
+          cours_id?: number
+          date_version?: string | null
+          diff_json?: Json | null
+          id?: number
+          version_numero?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historique_versions_auteur_id_fkey"
+            columns: ["auteur_id"]
+            isOneToOne: false
+            referencedRelation: "utilisateurs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historique_versions_cours_id_fkey"
+            columns: ["cours_id"]
+            isOneToOne: false
+            referencedRelation: "cours"
             referencedColumns: ["id"]
           },
         ]
@@ -479,6 +664,114 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      matieres: {
+        Row: {
+          active: boolean | null
+          icone: string | null
+          id: number
+          nom: string
+          ordre: number | null
+          slug: string
+        }
+        Insert: {
+          active?: boolean | null
+          icone?: string | null
+          id?: number
+          nom: string
+          ordre?: number | null
+          slug: string
+        }
+        Update: {
+          active?: boolean | null
+          icone?: string | null
+          id?: number
+          nom?: string
+          ordre?: number | null
+          slug?: string
+        }
+        Relationships: []
+      }
+      medias: {
+        Row: {
+          alt_text: string | null
+          date_upload: string | null
+          hauteur: number | null
+          id: number
+          largeur: number | null
+          legende: string | null
+          nom_fichier: string | null
+          position: number | null
+          section_id: number
+          type: string
+          uploader_id: number | null
+          url: string
+        }
+        Insert: {
+          alt_text?: string | null
+          date_upload?: string | null
+          hauteur?: number | null
+          id?: number
+          largeur?: number | null
+          legende?: string | null
+          nom_fichier?: string | null
+          position?: number | null
+          section_id: number
+          type: string
+          uploader_id?: number | null
+          url: string
+        }
+        Update: {
+          alt_text?: string | null
+          date_upload?: string | null
+          hauteur?: number | null
+          id?: number
+          largeur?: number | null
+          legende?: string | null
+          nom_fichier?: string | null
+          position?: number | null
+          section_id?: number
+          type?: string
+          uploader_id?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medias_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medias_uploader_id_fkey"
+            columns: ["uploader_id"]
+            isOneToOne: false
+            referencedRelation: "utilisateurs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      niveaux: {
+        Row: {
+          cycle: string
+          id: number
+          nom: string
+          ordre: number | null
+        }
+        Insert: {
+          cycle: string
+          id?: number
+          nom: string
+          ordre?: number | null
+        }
+        Update: {
+          cycle?: string
+          id?: number
+          nom?: string
+          ordre?: number | null
+        }
+        Relationships: []
       }
       parent_children: {
         Row: {
@@ -636,6 +929,48 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      programmes: {
+        Row: {
+          annee_scolaire: string
+          date_application: string | null
+          id: number
+          matiere_id: number | null
+          niveau_id: number | null
+          referentiel_json: Json | null
+        }
+        Insert: {
+          annee_scolaire: string
+          date_application?: string | null
+          id?: number
+          matiere_id?: number | null
+          niveau_id?: number | null
+          referentiel_json?: Json | null
+        }
+        Update: {
+          annee_scolaire?: string
+          date_application?: string | null
+          id?: number
+          matiere_id?: number | null
+          niveau_id?: number | null
+          referentiel_json?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "programmes_matiere_id_fkey"
+            columns: ["matiere_id"]
+            isOneToOne: false
+            referencedRelation: "matieres"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "programmes_niveau_id_fkey"
+            columns: ["niveau_id"]
+            isOneToOne: false
+            referencedRelation: "niveaux"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       promo_codes: {
         Row: {
@@ -1026,6 +1361,51 @@ export type Database = {
           },
         ]
       }
+      sections: {
+        Row: {
+          contenu_texte: string | null
+          cours_id: number
+          id: number
+          ordre: number
+          parent_section_id: number | null
+          titre: string
+          type: string | null
+        }
+        Insert: {
+          contenu_texte?: string | null
+          cours_id: number
+          id?: number
+          ordre: number
+          parent_section_id?: number | null
+          titre: string
+          type?: string | null
+        }
+        Update: {
+          contenu_texte?: string | null
+          cours_id?: number
+          id?: number
+          ordre?: number
+          parent_section_id?: number | null
+          titre?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sections_cours_id_fkey"
+            columns: ["cours_id"]
+            isOneToOne: false
+            referencedRelation: "cours"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sections_parent_section_id_fkey"
+            columns: ["parent_section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subjects: {
         Row: {
           category: string
@@ -1301,6 +1681,36 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      utilisateurs: {
+        Row: {
+          actif: boolean | null
+          date_inscription: string | null
+          email: string
+          id: number
+          nom: string
+          prenom: string
+          role: string
+        }
+        Insert: {
+          actif?: boolean | null
+          date_inscription?: string | null
+          email: string
+          id?: number
+          nom: string
+          prenom: string
+          role: string
+        }
+        Update: {
+          actif?: boolean | null
+          date_inscription?: string | null
+          email?: string
+          id?: number
+          nom?: string
+          prenom?: string
+          role?: string
+        }
+        Relationships: []
       }
     }
     Views: {
