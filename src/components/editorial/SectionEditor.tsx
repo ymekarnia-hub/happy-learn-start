@@ -19,9 +19,21 @@ interface SectionEditorProps {
   section: any;
   onChange: (section: any) => void;
   onDelete: () => void;
+  onAddSubsection?: () => void;
+  level?: number;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-export function SectionEditor({ section, onChange, onDelete }: SectionEditorProps) {
+export function SectionEditor({ 
+  section, 
+  onChange, 
+  onDelete,
+  onAddSubsection,
+  level = 0,
+  isCollapsed = false,
+  onToggleCollapse
+}: SectionEditorProps) {
   const [showFormulaModal, setShowFormulaModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);

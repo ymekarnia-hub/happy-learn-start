@@ -42,6 +42,9 @@ import SortableSectionEditor from "@/components/editorial/SortableSectionEditor"
 import { MetadataPanel } from "@/components/editorial/MetadataPanel";
 import { ReviewModal } from "@/components/editorial/ReviewModal";
 import { PreviewSidebar } from "@/components/editorial/PreviewSidebar";
+import { CourseWithConflictDetection } from "@/components/course/CourseWithConflictDetection";
+import { useUndoRedo } from "@/hooks/useUndoRedo";
+import { Undo2, Redo2 } from "lucide-react";
 
 interface Section {
   id?: number;
@@ -92,7 +95,18 @@ export default function EditeurCours() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const saveTimerRef = useRef<NodeJS.Timeout>();
+
+  // Undo/Redo functionality
+  const {
+    state: historyCourse,
+    set: setHistoryCourse,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useUndoRedo<CourseData>(course);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -149,6 +163,17 @@ export default function EditeurCours() {
 
   const loadInitialData = async () => {
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setCurrentUser(profile);
+      }
+
       // Load matieres and niveaux
       const [matieresRes, niveauxRes] = await Promise.all([
         supabase.from("matieres").select("*").eq("active", true).order("ordre"),
@@ -440,6 +465,28 @@ export default function EditeurCours() {
               />
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  undo();
+                  setCourse(historyCourse);
+                }}
+                disabled={!canUndo}
+              >
+                <Undo2 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  redo();
+                  setCourse(historyCourse);
+                }}
+                disabled={!canRedo}
+              >
+                <Redo2 className="h-4 w-4" />
+              </Button>
               <span className="text-sm text-muted-foreground">
                 {saving ? "Enregistrement..." : lastSaved ? `Dernière sauvegarde: ${lastSaved.toLocaleTimeString('fr-FR')}` : "Enregistré"}
               </span>
@@ -542,6 +589,15 @@ export default function EditeurCours() {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
+        {currentUser && course.id && (
+          <CourseWithConflictDetection
+            courseId={course.id}
+            currentUserId={currentUser.id}
+            currentUserName={`${currentUser.prenom || ''} ${currentUser.nom || ''}`.trim() || currentUser.email}
+          >
+            <div />
+          </CourseWithConflictDetection>
+        )}
         <div className="flex gap-0">
           <div className={`${showPreview ? 'flex-1' : 'w-full'} space-y-6 pr-6`}>
             <div className="flex items-center justify-between">
