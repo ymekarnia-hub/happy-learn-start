@@ -314,7 +314,7 @@ export default function EditeurCours() {
         }
 
         // Create version history entry (only for manual saves, not auto-saves)
-        if (!isAutoSave && userId) {
+        if (!isAutoSave) {
           const contentSnapshot = {
             ...courseData,
             sections: course.sections.map(s => ({
@@ -325,25 +325,16 @@ export default function EditeurCours() {
             }))
           };
 
-          // Get profile id as bigint for auteur_id
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("id")
-            .eq("id", userId)
-            .single();
-
-          if (profile) {
-            await supabase
-              .from("historique_versions")
-              .insert({
-                cours_id: courseId,
-                version_numero: currentVersion,
-                auteur_id: parseInt(profile.id),
-                commentaire: showToast ? "Sauvegarde manuelle" : "Auto-sauvegarde",
-                contenu_snapshot: contentSnapshot,
-                date_version: new Date().toISOString(),
-              });
-          }
+          await supabase
+            .from("historique_versions")
+            .insert({
+              cours_id: courseId,
+              version_numero: currentVersion,
+              auteur_id: null,
+              commentaire: "Sauvegarde manuelle",
+              contenu_snapshot: contentSnapshot,
+              date_version: new Date().toISOString(),
+            });
         }
       }
 
