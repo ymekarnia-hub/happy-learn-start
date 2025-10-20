@@ -14,7 +14,7 @@ interface Version {
   version_numero: number;
   commentaire: string;
   date_version: string;
-  auteur_id: number;
+  auteur_id: string; // UUID from auth.users
   contenu_snapshot?: any;
 }
 

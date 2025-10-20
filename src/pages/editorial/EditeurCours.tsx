@@ -314,7 +314,7 @@ export default function EditeurCours() {
         }
 
         // Create version history entry (only for manual saves, not auto-saves)
-        if (!isAutoSave) {
+        if (!isAutoSave && userId) {
           const contentSnapshot = {
             ...courseData,
             sections: course.sections.map(s => ({
@@ -330,7 +330,7 @@ export default function EditeurCours() {
             .insert({
               cours_id: courseId,
               version_numero: currentVersion,
-              auteur_id: null,
+              auteur_id: userId, // UUID from auth.uid()
               commentaire: "Sauvegarde manuelle",
               contenu_snapshot: contentSnapshot,
               date_version: new Date().toISOString(),

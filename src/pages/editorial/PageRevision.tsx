@@ -15,7 +15,7 @@ interface CourseInReview {
   titre: string;
   description: string;
   date_modification: string;
-  auteur_id: number;
+  auteur_id: string; // UUID from auth.users
   matieres?: { nom: string };
   niveaux?: { nom: string };
   sections?: any[];
@@ -78,7 +78,7 @@ export default function PageRevision() {
         .from("cours")
         .update({
           statut: "publié",
-          revieur_id: userId ? parseInt(userId) : null,
+          revieur_id: userId || null, // UUID string
           date_publication: new Date().toISOString(),
           commentaire_revue: reviewComments,
         })
@@ -114,7 +114,7 @@ export default function PageRevision() {
         .from("cours")
         .update({
           statut: "brouillon",
-          revieur_id: userId ? parseInt(userId) : null,
+          revieur_id: userId || null, // UUID string
           commentaire_revue: reviewComments,
         })
         .eq("id", selectedCourse.id);

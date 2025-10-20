@@ -88,7 +88,7 @@ export function ReviewModal({ open, onClose, courseId, onSuccess }: ReviewModalP
         .from('cours')
         .update({ 
           statut: 'en_revision',
-          revieur_id: parseInt(selectedReviewer) || null,
+          revieur_id: selectedReviewer || null, // UUID string
           commentaire_revue: message || null,
           date_modification: new Date().toISOString()
         })

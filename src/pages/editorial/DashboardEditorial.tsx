@@ -45,7 +45,7 @@ interface Course {
   slug: string;
   statut: string;
   date_modification: string;
-  auteur_id: number;
+  auteur_id: string; // UUID from auth.users
   matieres?: { nom: string };
   niveaux?: { nom: string };
 }

@@ -120,7 +120,7 @@ export type Database = {
       }
       cours: {
         Row: {
-          auteur_id: number | null
+          auteur_id: string | null
           commentaire_revue: string | null
           date_creation: string | null
           date_modification: string | null
@@ -134,14 +134,14 @@ export type Database = {
           meta_title: string | null
           niveau_id: number | null
           programme_id: number | null
-          revieur_id: number | null
+          revieur_id: string | null
           slug: string
           statut: string | null
           titre: string
           version: number | null
         }
         Insert: {
-          auteur_id?: number | null
+          auteur_id?: string | null
           commentaire_revue?: string | null
           date_creation?: string | null
           date_modification?: string | null
@@ -155,14 +155,14 @@ export type Database = {
           meta_title?: string | null
           niveau_id?: number | null
           programme_id?: number | null
-          revieur_id?: number | null
+          revieur_id?: string | null
           slug: string
           statut?: string | null
           titre: string
           version?: number | null
         }
         Update: {
-          auteur_id?: number | null
+          auteur_id?: string | null
           commentaire_revue?: string | null
           date_creation?: string | null
           date_modification?: string | null
@@ -176,20 +176,13 @@ export type Database = {
           meta_title?: string | null
           niveau_id?: number | null
           programme_id?: number | null
-          revieur_id?: number | null
+          revieur_id?: string | null
           slug?: string
           statut?: string | null
           titre?: string
           version?: number | null
         }
         Relationships: [
-          {
-            foreignKeyName: "cours_auteur_id_fkey"
-            columns: ["auteur_id"]
-            isOneToOne: false
-            referencedRelation: "utilisateurs"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "cours_matiere_id_fkey"
             columns: ["matiere_id"]
@@ -209,13 +202,6 @@ export type Database = {
             columns: ["programme_id"]
             isOneToOne: false
             referencedRelation: "programmes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cours_revieur_id_fkey"
-            columns: ["revieur_id"]
-            isOneToOne: false
-            referencedRelation: "utilisateurs"
             referencedColumns: ["id"]
           },
         ]
@@ -599,7 +585,7 @@ export type Database = {
       }
       historique_versions: {
         Row: {
-          auteur_id: number | null
+          auteur_id: string | null
           commentaire: string | null
           contenu_snapshot: Json | null
           cours_id: number
@@ -609,7 +595,7 @@ export type Database = {
           version_numero: number
         }
         Insert: {
-          auteur_id?: number | null
+          auteur_id?: string | null
           commentaire?: string | null
           contenu_snapshot?: Json | null
           cours_id: number
@@ -619,7 +605,7 @@ export type Database = {
           version_numero: number
         }
         Update: {
-          auteur_id?: number | null
+          auteur_id?: string | null
           commentaire?: string | null
           contenu_snapshot?: Json | null
           cours_id?: number
@@ -629,13 +615,6 @@ export type Database = {
           version_numero?: number
         }
         Relationships: [
-          {
-            foreignKeyName: "historique_versions_auteur_id_fkey"
-            columns: ["auteur_id"]
-            isOneToOne: false
-            referencedRelation: "utilisateurs"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "historique_versions_cours_id_fkey"
             columns: ["cours_id"]
@@ -767,7 +746,7 @@ export type Database = {
           position: number | null
           section_id: number
           type: string
-          uploader_id: number | null
+          uploader_id: string | null
           url: string
         }
         Insert: {
@@ -781,7 +760,7 @@ export type Database = {
           position?: number | null
           section_id: number
           type: string
-          uploader_id?: number | null
+          uploader_id?: string | null
           url: string
         }
         Update: {
@@ -795,7 +774,7 @@ export type Database = {
           position?: number | null
           section_id?: number
           type?: string
-          uploader_id?: number | null
+          uploader_id?: string | null
           url?: string
         }
         Relationships: [
@@ -804,13 +783,6 @@ export type Database = {
             columns: ["section_id"]
             isOneToOne: false
             referencedRelation: "sections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "medias_uploader_id_fkey"
-            columns: ["uploader_id"]
-            isOneToOne: false
-            referencedRelation: "utilisateurs"
             referencedColumns: ["id"]
           },
         ]
