@@ -382,9 +382,11 @@ export default function DashboardEditorial() {
 
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <History className="h-4 w-4" />
-                                </Button>
+                                <Link to={`/editorial/historique/${course.id}`}>
+                                  <Button variant="ghost" size="sm">
+                                    <History className="h-4 w-4" />
+                                  </Button>
+                                </Link>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Historique des versions</p>
