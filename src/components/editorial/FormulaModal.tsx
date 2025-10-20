@@ -26,33 +26,56 @@ export function FormulaModal({ open, onClose, onInsert }: FormulaModalProps) {
   const [displayMode, setDisplayMode] = useState<"block" | "inline">("block");
   const [legende, setLegende] = useState("");
   const [error, setError] = useState("");
+  const [isValidating, setIsValidating] = useState(false);
 
   const validateLatex = (input: string) => {
-    try {
-      // Basic LaTeX validation
-      if (!input.trim()) {
-        setError("");
-        return;
-      }
-
-      // Count brackets
-      const openBrackets = (input.match(/\{/g) || []).length;
-      const closeBrackets = (input.match(/\}/g) || []).length;
-
-      if (openBrackets !== closeBrackets) {
-        setError("Accolades non équilibrées");
-        return;
-      }
-
+    if (!input.trim()) {
       setError("");
-    } catch (e) {
-      setError("Syntaxe LaTeX invalide");
+      return true;
+    }
+
+    setIsValidating(true);
+    
+    // Basic syntax validation
+    const openBraces = (input.match(/\{/g) || []).length;
+    const closeBraces = (input.match(/\}/g) || []).length;
+    
+    if (openBraces !== closeBraces) {
+      setError("Accolades non équilibrées");
+      setIsValidating(false);
+      return false;
+    }
+
+    // Check for common LaTeX commands
+    const invalidChars = /[<>]/g;
+    if (invalidChars.test(input)) {
+      setError("Caractères invalides détectés");
+      setIsValidating(false);
+      return false;
+    }
+
+    // Try to render with KaTeX
+    try {
+      const katex = require('katex');
+      katex.renderToString(input, { throwOnError: true, displayMode: displayMode === "block" });
+      setError("");
+      setIsValidating(false);
+      return true;
+    } catch (e: any) {
+      setError(`Erreur LaTeX: ${e.message || 'Syntaxe invalide'}`);
+      setIsValidating(false);
+      return false;
     }
   };
 
   const handleLatexChange = (value: string) => {
     setLatex(value);
-    validateLatex(value);
+    // Validate after a short delay to avoid too many validations
+    const timeoutId = setTimeout(() => {
+      validateLatex(value);
+    }, 500);
+    
+    return () => clearTimeout(timeoutId);
   };
 
   const handleInsert = () => {
@@ -116,6 +139,9 @@ export function FormulaModal({ open, onClose, onInsert }: FormulaModalProps) {
               rows={4}
               className="font-mono"
             />
+            {isValidating && (
+              <p className="text-xs text-muted-foreground mt-1">Validation en cours...</p>
+            )}
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}

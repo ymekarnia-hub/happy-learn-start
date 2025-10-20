@@ -29,6 +29,8 @@ import PageRevision from "./pages/editorial/PageRevision";
 import Mediatheque from "./pages/editorial/Mediatheque";
 import HistoriqueVersions from "./pages/editorial/HistoriqueVersions";
 import PreviewCours from "./pages/editorial/PreviewCours";
+import GestionEquipe from "./pages/editorial/GestionEquipe";
+import CompareVersions from "./pages/editorial/CompareVersions";
 
 const queryClient = new QueryClient();
 
@@ -44,8 +46,10 @@ const App = () => (
             <Route path="/editorial" element={<DashboardEditorial />} />
             <Route path="/editorial/cours/:id" element={<EditeurCours />} />
             <Route path="/editorial/cours/:id/preview" element={<PreviewCours />} />
+            <Route path="/editorial/cours/:id/compare" element={<CompareVersions />} />
             <Route path="/editorial/revision" element={<PageRevision />} />
             <Route path="/editorial/mediatheque" element={<Mediatheque />} />
+            <Route path="/editorial/equipe" element={<GestionEquipe />} />
             <Route path="/editorial/historique/:id" element={<HistoriqueVersions />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
