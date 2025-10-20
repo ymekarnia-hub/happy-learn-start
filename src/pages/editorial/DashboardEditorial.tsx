@@ -154,6 +154,43 @@ export default function DashboardEditorial() {
     );
   };
 
+  const copyCourse = async (course: Course) => {
+    try {
+      // Récupérer le cours complet avec ses sections
+      const { data: fullCourse, error: fetchError } = await supabase
+        .from("cours")
+        .select("*")
+        .eq("id", course.id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Créer une copie du cours
+      const { data: newCourse, error: insertError } = await supabase
+        .from("cours")
+        .insert({
+          ...fullCourse,
+          id: undefined,
+          titre: `${fullCourse.titre} (copie)`,
+          slug: `${fullCourse.slug}-copie-${Date.now()}`,
+          statut: "brouillon",
+          date_creation: new Date().toISOString(),
+          date_modification: new Date().toISOString(),
+          date_publication: null,
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      toast.success("Cours dupliqué avec succès");
+      loadData();
+    } catch (error: any) {
+      toast.error("Erreur lors de la duplication");
+      console.error(error);
+    }
+  };
+
   const deleteCourse = async (id: number) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer ce cours ?")) return;
 
@@ -330,7 +367,11 @@ export default function DashboardEditorial() {
 
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button variant="ghost" size="sm">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => copyCourse(course)}
+                                >
                                   <Copy className="h-4 w-4" />
                                 </Button>
                               </TooltipTrigger>
