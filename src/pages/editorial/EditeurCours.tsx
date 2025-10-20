@@ -69,6 +69,7 @@ interface CourseData {
   meta_title: string;
   meta_description: string;
   programme_id?: number | null;
+  version?: number;
   sections: Section[];
 }
 
@@ -224,6 +225,10 @@ export default function EditeurCours() {
     
     setSaving(true);
     try {
+      // Get current user for version history
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+
       const courseData = {
         titre: course.titre,
         slug: course.slug,
@@ -240,12 +245,14 @@ export default function EditeurCours() {
       };
 
       let courseId = course.id;
+      let currentVersion = course.version || 1;
 
       if (courseId) {
-        // Update existing course
+        // Update existing course and increment version
+        currentVersion = currentVersion + 1;
         const { error } = await supabase
           .from("cours")
-          .update(courseData)
+          .update({ ...courseData, version: currentVersion })
           .eq("id", courseId);
 
         if (error) throw error;
@@ -253,13 +260,14 @@ export default function EditeurCours() {
         // Create new course
         const { data, error } = await supabase
           .from("cours")
-          .insert([courseData])
+          .insert([{ ...courseData, version: 1 }])
           .select()
           .single();
 
         if (error) throw error;
         courseId = data.id;
-        setCourse((prev) => ({ ...prev, id: courseId }));
+        currentVersion = 1;
+        setCourse((prev) => ({ ...prev, id: courseId, version: currentVersion }));
         navigate(`/editorial/cours/${courseId}`, { replace: true });
       }
 
@@ -304,11 +312,44 @@ export default function EditeurCours() {
             section.id = data.id;
           }
         }
+
+        // Create version history entry (only for manual saves, not auto-saves)
+        if (!isAutoSave && userId) {
+          const contentSnapshot = {
+            ...courseData,
+            sections: course.sections.map(s => ({
+              titre: s.titre,
+              type: s.type,
+              ordre: s.ordre,
+              contenu_texte: s.contenu_texte,
+            }))
+          };
+
+          // Get profile id as bigint for auteur_id
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("id", userId)
+            .single();
+
+          if (profile) {
+            await supabase
+              .from("historique_versions")
+              .insert({
+                cours_id: courseId,
+                version_numero: currentVersion,
+                auteur_id: parseInt(profile.id),
+                commentaire: showToast ? "Sauvegarde manuelle" : "Auto-sauvegarde",
+                contenu_snapshot: contentSnapshot,
+                date_version: new Date().toISOString(),
+              });
+          }
+        }
       }
 
       setLastSaved(new Date());
       if (showToast && !isAutoSave) {
-        toast.success("Cours sauvegardé");
+        toast.success("Cours sauvegardé (Version " + currentVersion + ")");
       }
     } catch (error: any) {
       if (!isAutoSave) {
