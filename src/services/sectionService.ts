@@ -3,12 +3,18 @@ import { supabase } from '@/integrations/supabase/client';
 export const sectionService = {
   // Créer une section
   async create(coursId: number, sectionData: any) {
+    const sectionToInsert = {
+      cours_id: coursId,
+      titre: sectionData.titre,
+      type: sectionData.type,
+      contenu_texte: sectionData.contenu_texte,
+      ordre: sectionData.ordre,
+      parent_section_id: sectionData.parent_section_id
+    };
+
     const { data, error } = await supabase
       .from('sections')
-      .insert([{
-        cours_id: coursId,
-        ...sectionData
-      }])
+      .insert([sectionToInsert])
       .select()
       .single();
 

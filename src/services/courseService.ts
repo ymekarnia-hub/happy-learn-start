@@ -110,15 +110,19 @@ export const courseService = {
     const original = await this.getById(id);
 
     const duplicate = {
-      ...original,
       titre: `${original.titre} (copie)`,
       slug: `${original.slug}-copie-${Date.now()}`,
+      description: original.description,
+      matiere_id: original.matiere_id,
+      niveau_id: original.niveau_id,
+      programme_id: original.programme_id,
+      difficulte: original.difficulte,
+      duree_lecture: original.duree_lecture,
+      meta_title: original.meta_title,
+      meta_description: original.meta_description,
       statut: 'brouillon',
       date_publication: null
     };
-
-    delete duplicate.id;
-    delete duplicate.sections;
 
     const newCourse = await this.create(duplicate);
 
