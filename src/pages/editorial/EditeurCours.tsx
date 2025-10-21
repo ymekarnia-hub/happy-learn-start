@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { courseService } from "@/services/courseService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -444,40 +445,9 @@ export default function EditeurCours() {
     if (!id) return;
     
     try {
-      const newCourse: any = {
-        ...course,
-        titre: `${course.titre} (Copie)`,
-        slug: `${course.slug}-copie-${Date.now()}`,
-        statut: 'brouillon',
-        date_publication: null,
-      };
-      delete newCourse.id;
-
-      const { data: savedCourse, error: courseError } = await supabase
-        .from('cours')
-        .insert([newCourse])
-        .select()
-        .single();
-
-      if (courseError) throw courseError;
-
-      // Duplicate sections
-      if (course.sections && course.sections.length > 0) {
-        const newSections = course.sections.map(section => ({
-          ...section,
-          cours_id: savedCourse.id,
-          id: undefined
-        }));
-
-        const { error: sectionsError } = await supabase
-          .from('sections')
-          .insert(newSections);
-
-        if (sectionsError) throw sectionsError;
-      }
-
+      const newCourse = await courseService.duplicate(parseInt(id));
       toast.success("Cours dupliqué avec succès");
-      navigate(`/editorial/cours/${savedCourse.id}`);
+      navigate(`/editorial/cours/${newCourse.id}`);
     } catch (error) {
       console.error('Error duplicating course:', error);
       toast.error("Erreur lors de la duplication");
