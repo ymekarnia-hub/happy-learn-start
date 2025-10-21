@@ -195,13 +195,47 @@ export default function DashboardEditorial() {
     if (!confirm("Êtes-vous sûr de vouloir supprimer ce cours ?")) return;
 
     try {
+      // Supprimer d'abord les médias des sections
+      const { data: sectionsData } = await supabase
+        .from("sections")
+        .select("id")
+        .eq("cours_id", id);
+
+      if (sectionsData) {
+        for (const section of sectionsData) {
+          // Supprimer les formules
+          await supabase
+            .from("formules")
+            .delete()
+            .eq("section_id", section.id);
+          
+          // Supprimer les médias
+          await supabase
+            .from("medias")
+            .delete()
+            .eq("section_id", section.id);
+        }
+
+        // Supprimer les sections
+        await supabase
+          .from("sections")
+          .delete()
+          .eq("cours_id", id);
+      }
+
+      // Supprimer le cours
       const { error } = await supabase.from("cours").delete().eq("id", id);
 
       if (error) throw error;
 
-      toast.success("Cours supprimé");
+      // Mettre à jour l'état local immédiatement
+      setCourses(courses.filter(c => c.id !== id));
+      setFilteredCourses(filteredCourses.filter(c => c.id !== id));
+      
+      toast.success("Cours supprimé avec succès");
       loadData();
     } catch (error: any) {
+      console.error("Error deleting course:", error);
       toast.error("Erreur lors de la suppression");
     }
   };
