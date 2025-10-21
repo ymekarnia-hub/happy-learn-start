@@ -168,8 +168,14 @@ export default function PreviewCours() {
               </div>
 
               {/* Section content */}
-              <div className="prose prose-slate max-w-none mb-4">
-                <ReactMarkdown>{section.contenu_texte}</ReactMarkdown>
+              <div className="prose prose-slate max-w-none mb-4" style={{ whiteSpace: 'pre-wrap' }}>
+                <ReactMarkdown
+                  components={{
+                    p: ({node, ...props}) => <p style={{ whiteSpace: 'pre-wrap' }} {...props} />
+                  }}
+                >
+                  {section.contenu_texte}
+                </ReactMarkdown>
               </div>
 
               {/* Formulas */}

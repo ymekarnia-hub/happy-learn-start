@@ -77,8 +77,14 @@ export function PreviewSidebar({ course, matieres, niveaux }: PreviewSidebarProp
                 <h3 className="font-semibold text-sm mb-2">{section.titre || 'Sans titre'}</h3>
                 
                 {section.contenu_texte && (
-                  <div className="prose prose-sm max-w-none text-xs">
-                    <ReactMarkdown>{section.contenu_texte}</ReactMarkdown>
+                  <div className="prose prose-sm max-w-none text-xs" style={{ whiteSpace: 'pre-wrap' }}>
+                    <ReactMarkdown
+                      components={{
+                        p: ({node, ...props}) => <p style={{ whiteSpace: 'pre-wrap' }} {...props} />
+                      }}
+                    >
+                      {section.contenu_texte}
+                    </ReactMarkdown>
                   </div>
                 )}
 
