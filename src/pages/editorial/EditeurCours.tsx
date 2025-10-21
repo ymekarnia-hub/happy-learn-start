@@ -289,6 +289,15 @@ export default function EditeurCours() {
         // Upsert sections
         for (let i = 0; i < course.sections.length; i++) {
           const section = course.sections[i];
+          
+          // Debug: Log section data before saving
+          console.log(`Section ${i} (${section.titre}):`, {
+            id: section.id,
+            formules: section.formules?.length || 0,
+            medias: section.medias?.length || 0,
+            mediasData: section.medias
+          });
+          
           const sectionData = {
             cours_id: courseId,
             titre: section.titre,
