@@ -21,6 +21,7 @@ export default function PreviewCours() {
 
   const loadCourse = async () => {
     try {
+      console.log('Loading course with ID:', id);
       const { data, error } = await supabase
         .from('cours')
         .select(`
@@ -32,17 +33,27 @@ export default function PreviewCours() {
         .eq('id', parseInt(id!))
         .single();
 
-      if (error) throw error;
+      console.log('Course data:', data);
+      console.log('Course error:', error);
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       // Sort sections by ordre
       if (data.sections) {
+        console.log('Number of sections:', data.sections.length);
         data.sections.sort((a: any, b: any) => a.ordre - b.ordre);
+      } else {
+        console.log('No sections found for this course');
       }
 
       setCourse(data);
     } catch (error) {
       console.error('Error loading course:', error);
     } finally {
+      console.log('Loading complete, setting isLoading to false');
       setIsLoading(false);
     }
   };
