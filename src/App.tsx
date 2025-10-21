@@ -48,6 +48,7 @@ const App = () => (
             <Route path="/editorial" element={<DashboardEditorial />} />
             <Route path="/editorial/cours/:id" element={<EditeurCours />} />
             <Route path="/editorial/cours/:id/preview" element={<PreviewCours />} />
+            <Route path="/editorial/cours/:id/historique" element={<HistoriqueVersions />} />
             <Route path="/editorial/cours/:id/compare" element={<CompareVersions />} />
             <Route path="/editorial/revision" element={<PageRevision />} />
             <Route path="/editorial/mediatheque" element={<Mediatheque />} />
