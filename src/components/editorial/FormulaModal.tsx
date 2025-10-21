@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
+import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 import { toast } from "sonner";
@@ -56,7 +57,6 @@ export function FormulaModal({ open, onClose, onInsert }: FormulaModalProps) {
 
     // Try to render with KaTeX
     try {
-      const katex = require('katex');
       katex.renderToString(input, { throwOnError: true, displayMode: displayMode === "block" });
       setError("");
       setIsValidating(false);
