@@ -109,6 +109,7 @@ export const courseService = {
   async duplicate(id: number) {
     const original = await this.getById(id);
 
+    // Copier uniquement les vraies colonnes de la table cours
     const duplicate = {
       titre: `${original.titre} (copie)`,
       slug: `${original.slug}-copie-${Date.now()}`,
@@ -120,8 +121,8 @@ export const courseService = {
       duree_lecture: original.duree_lecture,
       meta_title: original.meta_title,
       meta_description: original.meta_description,
-      statut: 'brouillon',
-      date_publication: null
+      commentaire_revue: null,
+      revieur_id: null
     };
 
     const newCourse = await this.create(duplicate);
