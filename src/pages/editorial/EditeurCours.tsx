@@ -371,12 +371,19 @@ export default function EditeurCours() {
             // Insert new medias
             for (const media of section.medias) {
               if (media.url) {
-                await supabase
+                // Extract actual URL value if it's an object
+                const actualUrl = typeof media.url === 'object' && media.url.value 
+                  ? media.url.value 
+                  : media.url;
+                
+                console.log('Saving media with URL:', actualUrl.substring(0, 100));
+                
+                const { error: mediaError } = await supabase
                   .from("medias")
                   .insert([{
                     section_id: sectionId,
                     type: media.type || "image",
-                    url: media.url,
+                    url: actualUrl,
                     nom_fichier: media.nom_fichier || "image",
                     alt_text: media.alt_text || "",
                     legende: media.legende || null,
@@ -384,6 +391,11 @@ export default function EditeurCours() {
                     uploader_id: userId,
                     date_upload: new Date().toISOString()
                   }]);
+                
+                if (mediaError) {
+                  console.error('Error saving media:', mediaError);
+                  throw mediaError;
+                }
               }
             }
           }
