@@ -287,7 +287,8 @@ export default function EditeurCours() {
         }
 
         // Upsert sections
-        for (const section of course.sections) {
+        for (let i = 0; i < course.sections.length; i++) {
+          const section = course.sections[i];
           const sectionData = {
             cours_id: courseId,
             titre: section.titre,
@@ -296,11 +297,17 @@ export default function EditeurCours() {
             contenu_texte: section.contenu_texte,
           };
 
-          if (section.id) {
-            await supabase
+          // Check if it's a real database ID (not undefined or temporary)
+          if (section.id && typeof section.id === 'number') {
+            const { error } = await supabase
               .from("sections")
               .update(sectionData)
               .eq("id", section.id);
+
+            if (error) {
+              console.error('Error updating section:', error);
+              throw error;
+            }
           } else {
             const { data, error } = await supabase
               .from("sections")
@@ -308,8 +315,13 @@ export default function EditeurCours() {
               .select()
               .single();
 
-            if (error) throw error;
-            section.id = data.id;
+            if (error) {
+              console.error('Error inserting section:', error);
+              throw error;
+            }
+            
+            // Update the section with the new ID
+            course.sections[i].id = data.id;
           }
         }
 
@@ -414,7 +426,7 @@ export default function EditeurCours() {
 
   const addSection = () => {
     const newSection: Section = {
-      id: Date.now(), // temporary ID for drag and drop
+      id: undefined, // No ID for new sections - will be assigned on save
       titre: "Nouvelle section",
       type: "definition",
       ordre: course.sections.length,
@@ -447,8 +459,9 @@ export default function EditeurCours() {
 
     if (over && active.id !== over.id) {
       setCourse(prev => {
-        const oldIndex = prev.sections.findIndex(s => s.id === active.id);
-        const newIndex = prev.sections.findIndex(s => s.id === over.id);
+        // Use index for finding sections since new sections don't have IDs yet
+        const oldIndex = prev.sections.findIndex((s, idx) => (s.id || `temp-${idx}`) === active.id);
+        const newIndex = prev.sections.findIndex((s, idx) => (s.id || `temp-${idx}`) === over.id);
         
         const newSections = arrayMove(prev.sections, oldIndex, newIndex);
         
@@ -669,15 +682,15 @@ export default function EditeurCours() {
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={course.sections.map(s => s.id || 0)}
+                  items={course.sections.map((s, idx) => s.id || `temp-${idx}`)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-4">
                     {course.sections.map((section, index) => (
                       <SortableSectionEditor
-                        key={section.id}
-                        section={section}
-                        onChange={(updated) => updateSection(index, updated)}
+                        key={section.id || `temp-${index}`}
+                        section={{ ...section, id: section.id || `temp-${index}` }}
+                        onChange={(updated) => updateSection(index, { ...updated, id: section.id })}
                         onDelete={() => deleteSection(index)}
                       />
                     ))}
