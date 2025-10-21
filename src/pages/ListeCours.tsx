@@ -39,7 +39,7 @@ interface Profile {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
-  role: "student" | "parent" | "teacher" | "admin";
+  role: "student" | "parent" | "teacher" | "admin" | "editeur" | "reviseur";
   school_level: string | null;
   email: string | null;
 }

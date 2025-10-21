@@ -29,6 +29,7 @@ import {
   Copy,
   Trash2,
   History,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -261,12 +262,20 @@ export default function DashboardEditorial() {
             Gérez vos cours et contenus pédagogiques
           </p>
         </div>
-        <Link to="/editorial/cours/nouveau">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Nouveau cours
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link to="/editorial/equipe">
+            <Button variant="outline">
+              <Users className="h-4 w-4 mr-2" />
+              Gestion équipe
+            </Button>
+          </Link>
+          <Link to="/editorial/cours/nouveau">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Nouveau cours
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Statistics Cards */}
