@@ -297,6 +297,8 @@ export default function EditeurCours() {
             contenu_texte: section.contenu_texte,
           };
 
+          let sectionId = section.id;
+
           // Check if it's a real database ID (not undefined or temporary)
           if (section.id && typeof section.id === 'number') {
             const { error } = await supabase
@@ -321,7 +323,60 @@ export default function EditeurCours() {
             }
             
             // Update the section with the new ID
+            sectionId = data.id;
             course.sections[i].id = data.id;
+          }
+
+          // Save formulas for this section
+          if (section.formules && section.formules.length > 0) {
+            // Delete old formulas first
+            await supabase
+              .from("formules")
+              .delete()
+              .eq("section_id", sectionId);
+
+            // Insert new formulas
+            for (const formule of section.formules) {
+              if (formule.latex_source) {
+                await supabase
+                  .from("formules")
+                  .insert([{
+                    section_id: sectionId,
+                    latex_source: formule.latex_source,
+                    display_mode: formule.display_mode || false,
+                    legende: formule.legende || null,
+                    position: formule.position || 0
+                  }]);
+              }
+            }
+          }
+
+          // Save medias for this section
+          if (section.medias && section.medias.length > 0) {
+            // Delete old medias first
+            await supabase
+              .from("medias")
+              .delete()
+              .eq("section_id", sectionId);
+
+            // Insert new medias
+            for (const media of section.medias) {
+              if (media.url) {
+                await supabase
+                  .from("medias")
+                  .insert([{
+                    section_id: sectionId,
+                    type: media.type || "image",
+                    url: media.url,
+                    nom_fichier: media.nom_fichier || "image",
+                    alt_text: media.alt_text || "",
+                    legende: media.legende || null,
+                    position: media.position || 0,
+                    uploader_id: userId,
+                    date_upload: new Date().toISOString()
+                  }]);
+              }
+            }
           }
         }
 
