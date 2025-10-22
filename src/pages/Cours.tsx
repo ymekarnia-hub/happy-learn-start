@@ -92,6 +92,17 @@ const Cours = () => {
         .maybeSingle();
 
       if (courseError) throw courseError;
+      
+      if (!courseData) {
+        toast({
+          title: "Cours non disponible",
+          description: "Aucun cours trouvé pour votre niveau scolaire",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+      
       setCourse(courseData);
 
       const { data: chaptersData, error: chaptersError } = await supabase
