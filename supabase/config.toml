@@ -1,1 +1,13 @@
 project_id = "jrgjvjnhdliymljelhgd"
+
+[functions.delete-user-account]
+verify_jwt = true
+
+[functions.send-notification-email]
+verify_jwt = true
+
+[functions.validate-quiz-answer]
+verify_jwt = true
+
+[functions.gemini-chat]
+verify_jwt = false

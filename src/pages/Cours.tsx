@@ -7,7 +7,8 @@ import { ChapterGrid } from "@/components/course/ChapterGrid";
 import { ActivityCards } from "@/components/course/ActivityCards";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, GraduationCap, LogOut, User as UserIcon } from "lucide-react";
+import { ArrowLeft, GraduationCap, LogOut, User as UserIcon, MessageCircle, X } from "lucide-react";
+import ChatBot from "@/components/ChatBot";
 import { useToast } from "@/hooks/use-toast";
 import {
   Breadcrumb,
@@ -41,6 +42,7 @@ const Cours = () => {
   const [progress, setProgress] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "content">("grid");
   const [profile, setProfile] = useState<any>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     if (subjectId) {
@@ -593,6 +595,37 @@ const Cours = () => {
           )}
          </div>
       </main>
+
+      {/* Floating Chat Button */}
+      {!isChatOpen && (
+        <Button
+          onClick={() => setIsChatOpen(true)}
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
+          size="icon"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </Button>
+      )}
+
+      {/* Chat Window */}
+      {isChatOpen && (
+        <div className="fixed bottom-6 right-6 w-[400px] h-[600px] bg-card border rounded-lg shadow-xl z-50 flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between p-3 border-b bg-primary text-primary-foreground">
+            <h3 className="font-semibold">Assistant Mathématiques</h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsChatOpen(false)}
+              className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <ChatBot />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
