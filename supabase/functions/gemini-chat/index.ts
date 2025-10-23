@@ -74,7 +74,10 @@ serve(async (req) => {
       const normalized = subjectName.toLowerCase().trim()
         .replace(/\s+/g, "-")
         .replace(/é/g, "e")
-        .replace(/è/g, "e");
+        .replace(/è/g, "e")
+        .replace(/ê/g, "e")
+        .replace(/à/g, "a")
+        .replace(/ç/g, "c");
       console.log("Subject normalization:", { original: subjectName, normalized });
       return normalized;
     };
