@@ -120,7 +120,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lovable-chat`, {
+      const response = await fetch("https://jrgjvjnhdliymljelhgd.supabase.co/functions/v1/lovable-chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
