@@ -77,6 +77,8 @@ const Cours = () => {
 
       setSubject(subjectData);
 
+      console.log('User school_level:', profileData?.school_level, 'Subject:', subjectId);
+
       const { data: courseData, error: courseError } = await supabase
         .from("courses")
         .select("*")
@@ -85,6 +87,8 @@ const Cours = () => {
         .order("order_index")
         .limit(1)
         .maybeSingle();
+
+      console.log('Found course:', courseData);
 
       if (courseError) throw courseError;
 
@@ -107,6 +111,7 @@ const Cours = () => {
         .order("order_index");
 
       if (chaptersError) throw chaptersError;
+      console.log('Found chapters:', chaptersData?.length, 'chapters');
       setChapters(chaptersData || []);
 
       if (chaptersData && chaptersData.length > 0) {
