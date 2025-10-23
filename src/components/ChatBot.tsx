@@ -20,9 +20,10 @@ type Message = {
 type ChatBotProps = {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  subject?: string;
 };
 
-export default function ChatBot({ messages, setMessages }: ChatBotProps) {
+export default function ChatBot({ messages, setMessages, subject = "mathématiques" }: ChatBotProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; base64: string; type: string }>>([]);
@@ -126,6 +127,7 @@ export default function ChatBot({ messages, setMessages }: ChatBotProps) {
         },
         body: JSON.stringify({
           messages: updatedMessages,
+          subject: subject,
         }),
       });
 
@@ -253,10 +255,10 @@ export default function ChatBot({ messages, setMessages }: ChatBotProps) {
     <div className="flex flex-col h-full bg-background">
       {/* Header avec bouton de fermeture */}
       <div className="border-b bg-gradient-to-r from-primary/10 to-secondary/10 p-4">
-        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-semibold text-foreground truncate">Professeur de Mathématiques AI</h2>
-            <p className="text-sm text-muted-foreground truncate">Posez vos questions mathématiques</p>
+            <h2 className="text-xl font-semibold text-foreground truncate">Professeur de {subject} AI</h2>
+            <p className="text-sm text-muted-foreground truncate">Posez vos questions de {subject}</p>
           </div>
         </div>
       </div>
@@ -270,7 +272,7 @@ export default function ChatBot({ messages, setMessages }: ChatBotProps) {
               </div>
               <h3 className="text-lg font-semibold mb-2">Bienvenue dans votre classe virtuelle !</h3>
               <p className="text-muted-foreground">
-                Je suis votre professeur de mathématiques personnel. Posez-moi n'importe quelle question mathématique en
+                Je suis votre professeur de {subject} personnel. Posez-moi n'importe quelle question de {subject} en
                 français, arabe ou toute autre langue !
               </p>
             </div>
@@ -334,7 +336,7 @@ export default function ChatBot({ messages, setMessages }: ChatBotProps) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Posez votre question mathématique..."
+              placeholder={`Posez votre question de ${subject}...`}
               disabled={isLoading}
               className="flex-1"
             />
