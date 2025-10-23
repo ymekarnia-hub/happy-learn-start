@@ -17,7 +17,7 @@ type Message = {
   content: string | MessageContent[];
 };
 
-export default function ChatBot() {
+export default function ChatBot({ onClose }: { onClose?: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -208,12 +208,26 @@ export default function ChatBot() {
   return (
     <div className="flex flex-col h-full bg-background">
       <div className="border-b bg-gradient-to-r from-primary/10 to-secondary/10 p-4">
-        <h2 className="text-xl font-semibold text-foreground">
-          Professeur de Mathématiques AI
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Posez vos questions mathématiques
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground">
+              Professeur de Mathématiques AI
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Posez vos questions mathématiques
+            </p>
+          </div>
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-8 w-8 -mt-1 -mr-1"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       <ScrollArea className="flex-1 p-4">

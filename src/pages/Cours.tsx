@@ -621,19 +621,8 @@ const Cours = () => {
       {/* Chat Window */}
       {isChatOpen && (
         <div className="fixed bottom-6 right-6 w-[400px] h-[600px] bg-card border rounded-lg shadow-xl z-50 flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between p-3 border-b bg-primary text-primary-foreground">
-            <h3 className="font-semibold">Assistant Mathématiques</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsChatOpen(false)}
-              className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
           <div className="flex-1 overflow-hidden">
-            <ChatBot />
+            <ChatBot onClose={() => setIsChatOpen(false)} />
           </div>
         </div>
       )}
