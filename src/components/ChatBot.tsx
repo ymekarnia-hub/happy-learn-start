@@ -17,8 +17,12 @@ type Message = {
   content: string | MessageContent[];
 };
 
-export default function ChatBot() {
-  const [messages, setMessages] = useState<Message[]>([]);
+type ChatBotProps = {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+};
+
+export default function ChatBot({ messages, setMessages }: ChatBotProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; base64: string; type: string }>>([]);

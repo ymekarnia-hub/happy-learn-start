@@ -43,6 +43,7 @@ const Cours = () => {
   const [viewMode, setViewMode] = useState<"grid" | "content">("grid");
   const [profile, setProfile] = useState<any>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
 
   useEffect(() => {
     if (subjectId) {
@@ -634,7 +635,7 @@ const Cours = () => {
             onClick={() => setIsChatOpen(false)}
           />
           <div className="fixed bottom-6 right-6 w-[400px] h-[600px] bg-card border rounded-lg shadow-xl z-50 flex flex-col overflow-hidden">
-            <ChatBot />
+            <ChatBot messages={chatMessages} setMessages={setChatMessages} />
           </div>
         </>
       )}
