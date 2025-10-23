@@ -14,23 +14,23 @@ serve(async (req) => {
       body = await req.json();
     } catch (e) {
       console.error("Failed to parse request body:", e);
-      return new Response(
-        JSON.stringify({ error: "Invalid JSON in request body" }), 
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Invalid JSON in request body" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const { messages } = body;
     if (!messages || !Array.isArray(messages)) {
       console.error("Missing or invalid messages array:", body);
-      return new Response(
-        JSON.stringify({ error: "Messages array is required" }), 
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Messages array is required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const GOOGLE_GEMINI_API_KEY = Deno.env.get("GOOGLE_GEMINI_API_KEY");
-    
+
     if (!GOOGLE_GEMINI_API_KEY) {
       throw new Error("GOOGLE_GEMINI_API_KEY is not configured");
     }
@@ -39,31 +39,31 @@ serve(async (req) => {
 
     // Préparer le contenu pour Gemini
     const contents = messages.map((msg: any) => {
-      if (typeof msg.content === 'string') {
+      if (typeof msg.content === "string") {
         return {
-          role: msg.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: msg.content }]
+          role: msg.role === "assistant" ? "model" : "user",
+          parts: [{ text: msg.content }],
         };
       } else {
         // Gérer les messages avec images
         const parts = msg.content.map((c: any) => {
-          if (c.type === 'text') {
+          if (c.type === "text") {
             return { text: c.text };
-          } else if (c.type === 'image_url') {
+          } else if (c.type === "image_url") {
             // Extraire les données base64
-            const base64Data = c.image_url.url.split(',')[1];
-            const mimeType = c.image_url.url.split(';')[0].split(':')[1];
+            const base64Data = c.image_url.url.split(",")[1];
+            const mimeType = c.image_url.url.split(";")[0].split(":")[1];
             return {
               inline_data: {
                 mime_type: mimeType,
-                data: base64Data
-              }
+                data: base64Data,
+              },
             };
           }
         });
         return {
-          role: msg.role === 'assistant' ? 'model' : 'user',
-          parts
+          role: msg.role === "assistant" ? "model" : "user",
+          parts,
         };
       }
     });
@@ -97,12 +97,12 @@ EXEMPLES DE REFUS (adapte selon la langue détectée) :
 
 Sois encourageant et patient dans tes explications.`;
 
-    if (contents.length > 0 && contents[0].role === 'user') {
+    if (contents.length > 0 && contents[0].role === "user") {
       contents[0].parts.unshift({ text: systemPrompt });
     }
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:streamGenerateContent?key=${GOOGLE_GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GOOGLE_GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: {
@@ -115,91 +115,68 @@ Sois encourageant et patient dans tes explications.`;
             maxOutputTokens: 2048,
           },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini API error:", response.status, errorText);
-      
+
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Limite de requêtes dépassée, veuillez réessayer plus tard." }), 
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Limite de requêtes dépassée, veuillez réessayer plus tard." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
-      
-      return new Response(
-        JSON.stringify({ error: "Erreur de l'API Gemini" }), 
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+
+      return new Response(JSON.stringify({ error: "Erreur de l'API Gemini" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Transformer le streaming Gemini en format SSE compatible avec le client
-    const reader = response.body?.getReader();
+    const responseData = await response.json();
+
+    // Extraire le texte de la réponse Gemini
+    const geminiText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!geminiText) {
+      console.error("No text in Gemini response:", responseData);
+      return new Response(JSON.stringify({ error: "Réponse vide de l'API Gemini" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    console.log("Gemini response text:", geminiText);
+
+    // Simuler le streaming pour le client
     const encoder = new TextEncoder();
-    
+    let accumulatedText = "";
+
     const stream = new ReadableStream({
       async start(controller) {
-        if (!reader) {
-          controller.close();
-          return;
-        }
-
-        const decoder = new TextDecoder();
-        let buffer = "";
-        let jsonBuffer = "";
-        let bracketCount = 0;
-        let inObject = false;
-
         try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+          // Simuler un streaming en envoyant par chunks
+          const chunkSize = 20;
+          for (let i = 0; i < geminiText.length; i += chunkSize) {
+            const chunk = geminiText.slice(i, i + chunkSize);
+            accumulatedText += chunk;
 
-            buffer += decoder.decode(value, { stream: true });
+            const sseData = {
+              choices: [
+                {
+                  delta: {
+                    content: chunk,
+                  },
+                },
+              ],
+            };
 
-            // Process character by character to detect complete JSON objects
-            for (let i = 0; i < buffer.length; i++) {
-              const char = buffer[i];
-              jsonBuffer += char;
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseData)}\n\n`));
 
-              if (char === '{') {
-                bracketCount++;
-                inObject = true;
-              } else if (char === '}') {
-                bracketCount--;
-                
-                // When we have a complete JSON object
-                if (inObject && bracketCount === 0) {
-                  try {
-                    const data = JSON.parse(jsonBuffer.trim());
-                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    
-                    if (text) {
-                      console.log("Streaming text chunk:", text);
-                      const sseData = {
-                        choices: [{
-                          delta: {
-                            content: text
-                          }
-                        }]
-                      };
-                      controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseData)}\n\n`));
-                    }
-                  } catch (e) {
-                    console.error("Error parsing complete JSON object:", e);
-                  }
-                  
-                  // Reset for next object
-                  jsonBuffer = "";
-                  inObject = false;
-                }
-              }
-            }
-            
-            // Clear processed buffer
-            buffer = "";
+            // Petit délai pour simuler le streaming
+            await new Promise((resolve) => setTimeout(resolve, 10));
           }
 
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
@@ -212,19 +189,18 @@ Sois encourageant et patient dans tes explications.`;
     });
 
     return new Response(stream, {
-      headers: { 
-        ...corsHeaders, 
+      headers: {
+        ...corsHeaders,
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
-        "Connection": "keep-alive"
+        Connection: "keep-alive",
       },
     });
-
   } catch (e) {
     console.error("Chat error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Erreur inconnue" }), 
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erreur inconnue" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
