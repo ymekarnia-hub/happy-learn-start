@@ -255,8 +255,13 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
             <p className="text-sm text-muted-foreground truncate">Posez vos questions mathématiques</p>
           </div>
           {onClose && (
-            <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 flex-shrink-0 ml-2">
-              <X className="h-4 w-4" />
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={onClose} 
+              className="h-9 w-9 flex-shrink-0 ml-2 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+            >
+              <X className="h-5 w-5" />
             </Button>
           )}
         </div>
