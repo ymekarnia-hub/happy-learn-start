@@ -1978,26 +1978,11 @@ export type Database = {
         }
         Returns: string
       }
-      generate_invoice_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_prepaid_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_promo_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_referral_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_family_member_count: {
-        Args: { parent_id: string }
-        Returns: number
-      }
+      generate_invoice_number: { Args: never; Returns: string }
+      generate_prepaid_code: { Args: never; Returns: string }
+      generate_promo_code: { Args: never; Returns: string }
+      generate_referral_code: { Args: never; Returns: string }
+      get_family_member_count: { Args: { parent_id: string }; Returns: number }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
@@ -2009,10 +1994,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_admin: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_subscription_active: {
         Args: { subscription_id: string }
         Returns: boolean
