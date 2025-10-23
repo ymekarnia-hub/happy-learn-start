@@ -148,6 +148,9 @@ Sois encourageant et patient dans tes explications.`;
 
         const decoder = new TextDecoder();
         let buffer = "";
+        let jsonBuffer = "";
+        let bracketCount = 0;
+        let inObject = false;
 
         try {
           while (true) {
@@ -155,36 +158,48 @@ Sois encourageant et patient dans tes explications.`;
             if (done) break;
 
             buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || "";
 
-            for (const line of lines) {
-              const trimmedLine = line.trim();
-              if (!trimmedLine || trimmedLine === ',') continue;
-              
-              try {
-                const data = JSON.parse(trimmedLine);
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            // Process character by character to detect complete JSON objects
+            for (let i = 0; i < buffer.length; i++) {
+              const char = buffer[i];
+              jsonBuffer += char;
+
+              if (char === '{') {
+                bracketCount++;
+                inObject = true;
+              } else if (char === '}') {
+                bracketCount--;
                 
-                if (text) {
-                  console.log("Streaming text chunk:", text);
-                  // Format compatible avec OpenAI pour le client
-                  const sseData = {
-                    choices: [{
-                      delta: {
-                        content: text
-                      }
-                    }]
-                  };
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseData)}\n\n`));
-                }
-              } catch (e) {
-                // Ignorer les lignes non-JSON (virgules, etc.)
-                if (trimmedLine && trimmedLine !== ',') {
-                  console.error("Error parsing Gemini response line:", trimmedLine, e);
+                // When we have a complete JSON object
+                if (inObject && bracketCount === 0) {
+                  try {
+                    const data = JSON.parse(jsonBuffer.trim());
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (text) {
+                      console.log("Streaming text chunk:", text);
+                      const sseData = {
+                        choices: [{
+                          delta: {
+                            content: text
+                          }
+                        }]
+                      };
+                      controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseData)}\n\n`));
+                    }
+                  } catch (e) {
+                    console.error("Error parsing complete JSON object:", e);
+                  }
+                  
+                  // Reset for next object
+                  jsonBuffer = "";
+                  inObject = false;
                 }
               }
             }
+            
+            // Clear processed buffer
+            buffer = "";
           }
 
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
