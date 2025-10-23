@@ -159,25 +159,29 @@ Sois encourageant et patient dans tes explications.`;
             buffer = lines.pop() || "";
 
             for (const line of lines) {
-              if (line.trim().startsWith('data: ')) {
-                const jsonStr = line.trim().substring(6);
-                try {
-                  const data = JSON.parse(jsonStr);
-                  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                  
-                  if (text) {
-                    // Format compatible avec OpenAI pour le client
-                    const sseData = {
-                      choices: [{
-                        delta: {
-                          content: text
-                        }
-                      }]
-                    };
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseData)}\n\n`));
-                  }
-                } catch (e) {
-                  console.error("Error parsing Gemini response:", e);
+              const trimmedLine = line.trim();
+              if (!trimmedLine || trimmedLine === ',') continue;
+              
+              try {
+                const data = JSON.parse(trimmedLine);
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (text) {
+                  console.log("Streaming text chunk:", text);
+                  // Format compatible avec OpenAI pour le client
+                  const sseData = {
+                    choices: [{
+                      delta: {
+                        content: text
+                      }
+                    }]
+                  };
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseData)}\n\n`));
+                }
+              } catch (e) {
+                // Ignorer les lignes non-JSON (virgules, etc.)
+                if (trimmedLine && trimmedLine !== ',') {
+                  console.error("Error parsing Gemini response line:", trimmedLine, e);
                 }
               }
             }
