@@ -627,9 +627,16 @@ const Cours = () => {
 
       {/* Chat Window */}
       {isChatOpen && (
-        <div className="fixed bottom-6 right-6 w-[400px] h-[600px] bg-card border rounded-lg shadow-xl z-50 flex flex-col overflow-hidden">
-          <ChatBot onClose={() => setIsChatOpen(false)} />
-        </div>
+        <>
+          {/* Overlay pour fermer le chat en cliquant à l'extérieur */}
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setIsChatOpen(false)}
+          />
+          <div className="fixed bottom-6 right-6 w-[400px] h-[600px] bg-card border rounded-lg shadow-xl z-50 flex flex-col overflow-hidden">
+            <ChatBot />
+          </div>
+        </>
       )}
     </div>
   );
