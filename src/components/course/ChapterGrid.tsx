@@ -13,12 +13,42 @@ interface Chapter {
 interface ChapterGridProps {
   chapters: Chapter[];
   onChapterSelect: (id: string) => void;
+  subjectId?: string;
 }
 
-export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => {
-  // Séparer Histoire et Géographie
-  const historyChapters = chapters.filter(c => c.order_index < 8);
-  const geographyChapters = chapters.filter(c => c.order_index >= 8);
+export const ChapterGrid = ({ chapters, onChapterSelect, subjectId }: ChapterGridProps) => {
+  // Séparer Histoire et Géographie uniquement pour le cours d'histoire-géographie
+  const isHistGeo = subjectId === "histoire";
+  const historyChapters = isHistGeo ? chapters.filter(c => c.order_index < 8) : [];
+  const geographyChapters = isHistGeo ? chapters.filter(c => c.order_index >= 8) : [];
+  
+  // Si ce n'est pas hist-géo, afficher tous les chapitres sans séparation
+  if (!isHistGeo) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {chapters.map((chapter) => (
+          <Card
+            key={chapter.id}
+            className="cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+            onClick={() => onChapterSelect(chapter.id)}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="font-semibold text-lg">
+                  Chapitre {chapter.order_index + 1}
+                </h3>
+                {chapter.completed && (
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                )}
+              </div>
+              <p className="text-muted-foreground mb-4">{chapter.title}</p>
+              <Progress value={chapter.completed ? 100 : 0} className="h-2" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12">

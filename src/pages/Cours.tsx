@@ -599,6 +599,7 @@ const Cours = () => {
                   setViewMode("content");
                 }
               }}
+              subjectId={subjectId}
             />
           ) : (
             <div ref={contentRef} className="space-y-4">
