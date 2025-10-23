@@ -31,6 +31,7 @@ import HistoriqueVersions from "./pages/editorial/HistoriqueVersions";
 import PreviewCours from "./pages/editorial/PreviewCours";
 import GestionEquipe from "./pages/editorial/GestionEquipe";
 import CompareVersions from "./pages/editorial/CompareVersions";
+import ImportCourseContent from "./pages/editorial/ImportCourseContent";
 import Analytics from "./pages/Analytics";
 import FAQAdmin from "./pages/FAQAdmin";
 
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/editorial/revision" element={<PageRevision />} />
             <Route path="/editorial/mediatheque" element={<Mediatheque />} />
             <Route path="/editorial/equipe" element={<GestionEquipe />} />
+            <Route path="/editorial/import-content" element={<ImportCourseContent />} />
             <Route path="/editorial/historique/:id" element={<HistoriqueVersions />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />

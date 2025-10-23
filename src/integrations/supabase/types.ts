@@ -247,6 +247,36 @@ export type Database = {
           },
         ]
       }
+      course_content_chunks: {
+        Row: {
+          chapter_number: number
+          chapter_title: string
+          content: string
+          created_at: string | null
+          id: string
+          subject: string
+          updated_at: string | null
+        }
+        Insert: {
+          chapter_number: number
+          chapter_title: string
+          content: string
+          created_at?: string | null
+          id?: string
+          subject: string
+          updated_at?: string | null
+        }
+        Update: {
+          chapter_number?: number
+          chapter_title?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          subject?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       course_materials: {
         Row: {
           chapter_id: string

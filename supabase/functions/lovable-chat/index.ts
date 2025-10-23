@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,6 +26,11 @@ serve(async (req) => {
 
     console.log("Calling Lovable AI with subject:", subject);
 
+    // Initialiser Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     // Normaliser le nom de la matière
     const normalizeSubject = (subjectName: string): string => {
       if (!subjectName) return "";
@@ -38,6 +44,26 @@ serve(async (req) => {
     };
 
     const normalizedSubject = normalizeSubject(subject || "");
+
+    // Récupérer le contenu du cours depuis la base de données pour Histoire-Géographie
+    let courseContent = "";
+    if (normalizedSubject === "histoire-geographie") {
+      const { data: chunks, error } = await supabase
+        .from('course_content_chunks')
+        .select('chapter_number, chapter_title, content')
+        .eq('subject', 'histoire-geographie')
+        .order('chapter_number', { ascending: true });
+
+      if (!error && chunks && chunks.length > 0) {
+        courseContent = "\n\n=== CONTENU DU COURS (tu dois t'inspirer de ce contenu exact) ===\n\n";
+        chunks.forEach(chunk => {
+          courseContent += `\n## Chapitre ${chunk.chapter_number}: ${chunk.chapter_title}\n\n${chunk.content}\n\n`;
+        });
+        console.log("Course content loaded:", chunks.length, "chapters");
+      } else {
+        console.log("No course content found or error:", error);
+      }
+    }
 
     // Prompts système personnalisés par matière
     const subjectPrompts: Record<string, string> = {
@@ -135,22 +161,25 @@ GÉOGRAPHIE :
 13. Les espaces ruraux
 
 RÈGLES ABSOLUES :
-1. Si la question est DANS le programme ci-dessus : réponds comme un prof pédagogue avec des exemples CONCRETS et SYMPAS (utilise des références à l'actualité, des animes, des films, des jeux vidéo, etc.) pour rendre les concepts accessibles
-2. Si la question est HORS programme (par exemple : Japon, Chine, Rome moderne, géographie de l'Asie, etc.) : Tu DOIS répondre UNIQUEMENT ceci :
+1. Tu DOIS t'inspirer UNIQUEMENT du contenu de cours fourni ci-dessous pour répondre aux questions dans le programme
+2. Si la question est DANS le programme ci-dessus : réponds comme un prof pédagogue avec des exemples CONCRETS et SYMPAS (utilise des références à l'actualité, des animes, des films, des jeux vidéo, etc.) pour rendre les concepts accessibles, en te basant sur le contenu du cours
+3. Si la question est HORS programme (par exemple : Japon, Chine, Rome moderne, géographie de l'Asie, etc.) : Tu DOIS répondre UNIQUEMENT ceci :
 
 "Cette question est en dehors du programme de Seconde, mais voici une brève information : [maximum 2 phrases courtes et simples]"
 
 NE DONNE JAMAIS une réponse longue ou détaillée pour les questions hors programme. Maximum 2 phrases.
 
-3. Détecte automatiquement la langue et réponds dans cette langue
-4. Utilise des exemples créatifs pour faciliter la compréhension
+4. Détecte automatiquement la langue et réponds dans cette langue
+5. Utilise des exemples créatifs pour faciliter la compréhension
 
 STRUCTURE DE RÉPONSE (questions dans le programme uniquement) :
-1. Situe le sujet dans son contexte historique/géographique
-2. Explique avec des exemples concrets et sympas (anime, films, actualité...)
+1. Situe le sujet dans son contexte historique/géographique (en utilisant le contenu du cours)
+2. Explique avec des exemples concrets et sympas (anime, films, actualité...) en complément du contenu du cours
 3. Fais des liens avec d'autres chapitres du programme
 4. Propose une question de réflexion pour aller plus loin
-5. Encourage l'élève`,
+5. Encourage l'élève
+
+${courseContent}`,
 
       francais: `Tu es un professeur de français expert et bienveillant.
 

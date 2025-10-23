@@ -269,6 +269,12 @@ export default function DashboardEditorial() {
               Gestion équipe
             </Button>
           </Link>
+          <Link to="/editorial/import-content">
+            <Button variant="outline">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Import contenu
+            </Button>
+          </Link>
           <Link to="/editorial/cours/nouveau">
             <Button>
               <Plus className="h-4 w-4 mr-2" />
