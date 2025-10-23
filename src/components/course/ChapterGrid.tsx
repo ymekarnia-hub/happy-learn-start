@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { CheckCircle2 } from "lucide-react";
 
 interface Chapter {
   id: string;
@@ -15,72 +16,73 @@ interface ChapterGridProps {
 }
 
 export const ChapterGrid = ({ chapters, onChapterSelect }: ChapterGridProps) => {
-  // Grouper les chapitres par thème
-  const themes = chapters.reduce((acc, chapter) => {
-    const theme = chapter.theme || "Thème général";
-    if (!acc[theme]) {
-      acc[theme] = [];
-    }
-    acc[theme].push(chapter);
-    return acc;
-  }, {} as Record<string, Chapter[]>);
-
-  // Descriptions des thèmes
-  const themeDescriptions: Record<string, string> = {
-    "Thème 1": "La poésie du Moyen Âge au XVIIIe siècle",
-    "Thème 2": "Les outils d'analyse d'un texte littéraire",
-    "Thème 3": "Étude de la langue"
-  };
+  // Séparer Histoire et Géographie
+  const historyChapters = chapters.filter(c => c.order_index < 8);
+  const geographyChapters = chapters.filter(c => c.order_index >= 8);
 
   return (
     <div className="space-y-12">
-      {Object.entries(themes).map(([themeName, themeChapters]) => (
-        <div key={themeName} className="space-y-6">
-          <div>
-            <p className="text-lg font-semibold text-muted-foreground mb-2">
-              {themeName}
-            </p>
-            <h2 className="text-2xl font-bold">
-              {themeDescriptions[themeName] || themeName}
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {themeChapters.map((chapter, index) => (
+      {/* Histoire Section */}
+      {historyChapters.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-3xl font-bold text-primary border-b-4 border-primary pb-3">
+            Histoire
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {historyChapters.map((chapter) => (
               <Card
                 key={chapter.id}
-                className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden"
+                className="cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
                 onClick={() => onChapterSelect(chapter.id)}
               >
-                <CardContent className="p-0">
-                  <div className="relative bg-gradient-to-br from-pink-100 to-pink-200 dark:from-pink-900/50 dark:to-pink-800/50 p-3 min-h-[80px] flex items-center justify-center">
-                    {/* Fond décoratif avec formules mathématiques */}
-                    <div className="absolute inset-0 opacity-10 overflow-hidden">
-                      <div className="absolute top-1 left-2 text-sm font-serif">∫</div>
-                      <div className="absolute top-4 right-2 text-xs">π</div>
-                      <div className="absolute bottom-1 left-4 text-xs">∑</div>
-                    </div>
-                    
-                    <h3 className="text-sm font-bold text-center relative z-10 px-2 leading-tight">
-                      {chapter.title}
-                    </h3>
-                  </div>
-
-                  <div className="bg-card p-2 space-y-1">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="font-semibold text-lg">
                       Chapitre {chapter.order_index + 1}
-                    </p>
-                    <Progress 
-                      value={chapter.completed ? 100 : 0} 
-                      className="h-1"
-                    />
+                    </h3>
+                    {chapter.completed && (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    )}
                   </div>
+                  <p className="text-muted-foreground mb-4">{chapter.title}</p>
+                  <Progress value={chapter.completed ? 100 : 0} className="h-2" />
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
-      ))}
+      )}
+
+      {/* Géographie Section */}
+      {geographyChapters.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-3xl font-bold text-primary border-b-4 border-primary pb-3">
+            Géographie
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {geographyChapters.map((chapter) => (
+              <Card
+                key={chapter.id}
+                className="cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+                onClick={() => onChapterSelect(chapter.id)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="font-semibold text-lg">
+                      Chapitre {chapter.order_index - 7}
+                    </h3>
+                    {chapter.completed && (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    )}
+                  </div>
+                  <p className="text-muted-foreground mb-4">{chapter.title}</p>
+                  <Progress value={chapter.completed ? 100 : 0} className="h-2" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
