@@ -40,7 +40,7 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
 
     const file = files[0];
     const maxSize = 20 * 1024 * 1024; // 20MB
-    
+
     if (file.size > maxSize) {
       toast({
         title: "Erreur",
@@ -50,16 +50,43 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
       return;
     }
 
+    // Vérifier le type de fichier
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Erreur",
+        description: "Type de fichier non supporté. Utilisez des images ou PDF.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = async (event) => {
       const base64 = event.target?.result as string;
-      setUploadedFiles([{ name: file.name, base64, type: file.type }]);
+      setUploadedFiles((prev) => [...prev, { name: file.name, base64, type: file.type }]);
       toast({
         title: "Fichier ajouté",
         description: `${file.name} est prêt à être envoyé`,
       });
     };
+    reader.onerror = () => {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la lecture du fichier",
+        variant: "destructive",
+      });
+    };
     reader.readAsDataURL(file);
+
+    // Reset l'input file pour permettre de sélectionner le même fichier à nouveau
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const sendMessage = async (content: string) => {
@@ -67,41 +94,39 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
 
     // Construire le contenu du message
     let messageContent: string | MessageContent[];
-    
+
     if (uploadedFiles.length > 0) {
       messageContent = [
         { type: "text", text: content.trim() || "Analysez ce fichier et répondez aux questions qu'il contient." },
-        ...uploadedFiles.map(file => ({
+        ...uploadedFiles.map((file) => ({
           type: "image_url" as const,
-          image_url: { url: file.base64 }
-        }))
+          image_url: { url: file.base64 },
+        })),
       ];
     } else {
       messageContent = content.trim();
     }
 
     const userMessage: Message = { role: "user", content: messageContent };
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInputValue("");
     setUploadedFiles([]);
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-chat`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            messages: [...messages, userMessage],
-          }),
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: updatedMessages,
+        }),
+      });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({ error: "Erreur inconnue" }));
         throw new Error(errorData.error || "Failed to get response");
       }
 
@@ -110,77 +135,41 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
 
       const decoder = new TextDecoder();
       let assistantMessage = "";
-      let textBuffer = "";
-      let streamDone = false;
+      let buffer = "";
 
+      // Ajouter le message assistant vide initial
       setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
-      while (!streamDone) {
+      while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
-        
-        textBuffer += decoder.decode(value, { stream: true });
 
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") {
-            streamDone = true;
-            break;
-          }
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) {
-              assistantMessage += content;
-              setMessages((prev) => {
-                const newMessages = [...prev];
-                newMessages[newMessages.length - 1] = {
-                  role: "assistant",
-                  content: assistantMessage,
-                };
-                return newMessages;
+        if (done) {
+          // Traiter les données restantes dans le buffer
+          if (buffer.trim()) {
+            const lines = buffer.split("\n");
+            for (const line of lines) {
+              await processLine(line, assistantMessage, (newContent) => {
+                assistantMessage = newContent;
               });
             }
-          } catch {
-            textBuffer = line + "\n" + textBuffer;
-            break;
           }
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || ""; // Garder la dernière ligne incomplète
+
+        for (const line of lines) {
+          await processLine(line, assistantMessage, (newContent) => {
+            assistantMessage = newContent;
+          });
         }
       }
 
-      if (textBuffer.trim()) {
-        for (let raw of textBuffer.split("\n")) {
-          if (!raw) continue;
-          if (raw.endsWith("\r")) raw = raw.slice(0, -1);
-          if (raw.startsWith(":") || raw.trim() === "") continue;
-          if (!raw.startsWith("data: ")) continue;
-          const jsonStr = raw.slice(6).trim();
-          if (jsonStr === "[DONE]") continue;
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) {
-              assistantMessage += content;
-              setMessages((prev) => {
-                const newMessages = [...prev];
-                newMessages[newMessages.length - 1] = {
-                  role: "assistant",
-                  content: assistantMessage,
-                };
-                return newMessages;
-              });
-            }
-          } catch { /* ignore partial leftovers */ }
-        }
+      // Vérifier si on a reçu le signal [DONE]
+      if (buffer.includes("[DONE]")) {
+        console.log("Stream completed");
       }
     } catch (error: any) {
       console.error("Error sending message:", error);
@@ -190,13 +179,57 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
           error.message === "Insufficient credits"
             ? "Crédits insuffisants pour utiliser l'IA"
             : error.message === "Rate limit exceeded"
-            ? "Limite de taux dépassée, veuillez réessayer plus tard"
-            : "Impossible d'envoyer le message. Veuillez réessayer.",
+              ? "Limite de taux dépassée, veuillez réessayer plus tard"
+              : "Impossible d'envoyer le message. Veuillez réessayer.",
         variant: "destructive",
       });
+      // Retirer le message assistant qui n'a pas été complété
       setMessages((prev) => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const processLine = async (line: string, currentMessage: string, onUpdate: (newMessage: string) => void) => {
+    const trimmedLine = line.trim();
+
+    if (!trimmedLine || trimmedLine === ":" || trimmedLine.startsWith(":")) {
+      return;
+    }
+
+    if (trimmedLine === "data: [DONE]") {
+      return;
+    }
+
+    if (trimmedLine.startsWith("data: ")) {
+      const jsonStr = trimmedLine.slice(6).trim();
+
+      if (!jsonStr || jsonStr === "[DONE]") {
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+
+        if (content) {
+          const newMessage = currentMessage + content;
+          onUpdate(newMessage);
+
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            if (newMessages.length > 0) {
+              newMessages[newMessages.length - 1] = {
+                role: "assistant",
+                content: newMessage,
+              };
+            }
+            return newMessages;
+          });
+        }
+      } catch (error) {
+        console.warn("Failed to parse SSE data:", jsonStr, error);
+      }
     }
   };
 
@@ -205,25 +238,24 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
     sendMessage(inputValue);
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
+      {/* Header avec bouton de fermeture */}
       <div className="border-b bg-gradient-to-r from-primary/10 to-secondary/10 p-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-foreground">
-              Professeur de Mathématiques AI
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Posez vos questions mathématiques
-            </p>
+        <div className="flex items-center justify-between">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl font-semibold text-foreground truncate">Professeur de Mathématiques AI</h2>
+            <p className="text-sm text-muted-foreground truncate">Posez vos questions mathématiques</p>
           </div>
           {onClose && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-8 w-8 -mt-1 -mr-1"
-            >
+            <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 flex-shrink-0 ml-2">
               <X className="h-4 w-4" />
             </Button>
           )}
@@ -237,27 +269,24 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
                 <span className="text-3xl">🧮</span>
               </div>
-              <h3 className="text-lg font-semibold mb-2">
-                Bienvenue dans votre classe virtuelle !
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">Bienvenue dans votre classe virtuelle !</h3>
               <p className="text-muted-foreground">
-                Je suis votre professeur de mathématiques personnel. Posez-moi
-                n'importe quelle question mathématique en français, arabe ou
-                toute autre langue !
+                Je suis votre professeur de mathématiques personnel. Posez-moi n'importe quelle question mathématique en
+                français, arabe ou toute autre langue !
               </p>
             </div>
           ) : (
             <>
               {messages.map((message, index) => (
-                <ChatMessage 
-                  key={index} 
+                <ChatMessage
+                  key={index}
                   role={message.role}
-                  content={typeof message.content === "string" ? message.content : message.content.find(c => c.type === "text")?.text || ""}
-                  isStreaming={
-                    isLoading && 
-                    index === messages.length - 1 && 
-                    message.role === "assistant"
+                  content={
+                    typeof message.content === "string"
+                      ? message.content
+                      : message.content.find((c) => c.type === "text")?.text || ""
                   }
+                  isStreaming={isLoading && index === messages.length - 1 && message.role === "assistant"}
                 />
               ))}
             </>
@@ -274,8 +303,9 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
                 <div key={index} className="flex items-center gap-2 bg-primary/10 px-3 py-1 rounded-full text-sm">
                   <span className="truncate max-w-[200px]">{file.name}</span>
                   <button
-                    onClick={() => setUploadedFiles([])}
-                    className="hover:text-destructive"
+                    onClick={() => removeFile(index)}
+                    className="hover:text-destructive transition-colors"
+                    disabled={isLoading}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -287,9 +317,10 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*,.pdf,.doc,.docx"
+              accept="image/*,.pdf"
               onChange={handleFileUpload}
               className="hidden"
+              disabled={isLoading}
             />
             <Button
               type="button"
@@ -303,11 +334,16 @@ export default function ChatBot({ onClose }: { onClose?: () => void }) {
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Posez votre question mathématique..."
               disabled={isLoading}
               className="flex-1"
             />
-            <Button type="submit" disabled={isLoading || (!inputValue.trim() && uploadedFiles.length === 0)}>
+            <Button
+              type="submit"
+              disabled={isLoading || (!inputValue.trim() && uploadedFiles.length === 0)}
+              className="flex-shrink-0"
+            >
               <Send className="h-4 w-4" />
             </Button>
           </form>
