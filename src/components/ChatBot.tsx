@@ -30,8 +30,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
   const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+  const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
   const scrollToBottom = () => {
@@ -254,90 +253,68 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
     }
   };
 
-  const startRecording = async () => {
+  const startRecording = () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      
+      if (!SpeechRecognition) {
+        toast({
+          title: "Non supporté",
+          description: "Votre navigateur ne supporte pas la reconnaissance vocale",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'fr-FR';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        setIsRecording(true);
+        setInputValue("");
+      };
+
+      recognition.onresult = (event: any) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
         }
+        setInputValue(transcript);
       };
 
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        await transcribeAudio(audioBlob);
-        stream.getTracks().forEach(track => track.stop());
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        toast({
+          title: "Erreur",
+          description: "Erreur lors de la reconnaissance vocale",
+          variant: "destructive",
+        });
+        setIsRecording(false);
       };
 
-      mediaRecorder.start();
-      setIsRecording(true);
-      setInputValue("🎤 Enregistrement en cours... Parlez maintenant !");
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognition.start();
+      recognitionRef.current = recognition;
+
     } catch (error) {
-      console.error('Error accessing microphone:', error);
+      console.error('Error starting speech recognition:', error);
       toast({
         title: "Erreur",
-        description: "Impossible d'accéder au microphone",
+        description: "Impossible de démarrer la reconnaissance vocale",
         variant: "destructive",
       });
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
+    if (recognitionRef.current && isRecording) {
+      recognitionRef.current.stop();
       setIsRecording(false);
-      setInputValue("");
-    }
-  };
-
-  const transcribeAudio = async (audioBlob: Blob) => {
-    try {
-      setIsLoading(true);
-      
-      // Convertir le blob en base64
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      
-      reader.onloadend = async () => {
-        const base64Audio = reader.result as string;
-        const base64Data = base64Audio.split(',')[1];
-
-        const response = await fetch('https://jrgjvjnhdliymljelhgd.supabase.co/functions/v1/transcribe-audio', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyZ2p2am5oZGxpeW1samVsaGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTA2NjYsImV4cCI6MjA3NTU4NjY2Nn0.gqxAPzrF4mMuGGMS0xSxq69GeNQ8FbWQBxKVE6ARg7Q',
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyZ2p2am5oZGxpeW1samVsaGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTA2NjYsImV4cCI6MjA3NTU4NjY2Nn0.gqxAPzrF4mMuGGMS0xSxq69GeNQ8FbWQBxKVE6ARg7Q',
-          },
-          body: JSON.stringify({ audio: base64Data }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Transcription failed');
-        }
-
-        const { text } = await response.json();
-        
-        // Envoyer automatiquement le message transcrit
-        await sendMessage(text);
-      };
-
-      reader.onerror = () => {
-        throw new Error('Error reading audio file');
-      };
-    } catch (error) {
-      console.error('Transcription error:', error);
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la transcription",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
     }
   };
 
