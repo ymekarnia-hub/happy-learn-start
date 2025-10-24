@@ -424,15 +424,33 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
             >
               <Paperclip className="h-4 w-4" />
             </Button>
-            <Button
-              type="button"
-              variant={isRecording ? "destructive" : "outline"}
-              size="icon"
-              onClick={isRecording ? stopRecording : startRecording}
-              disabled={isLoading}
-            >
-              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-            </Button>
+            <div className="relative">
+              <Button
+                type="button"
+                variant={isRecording ? "destructive" : "outline"}
+                size="icon"
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isLoading}
+                className="relative"
+              >
+                {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </Button>
+              {isRecording && (
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-destructive/10 px-4 py-2 rounded-full">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-1 bg-destructive rounded-full animate-pulse"
+                      style={{
+                        height: `${12 + Math.random() * 16}px`,
+                        animationDelay: `${i * 0.1}s`,
+                        animationDuration: `${0.5 + Math.random() * 0.3}s`
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
