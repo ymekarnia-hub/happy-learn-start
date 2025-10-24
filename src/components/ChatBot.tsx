@@ -312,6 +312,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyZ2p2am5oZGxpeW1samVsaGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTA2NjYsImV4cCI6MjA3NTU4NjY2Nn0.gqxAPzrF4mMuGGMS0xSxq69GeNQ8FbWQBxKVE6ARg7Q',
           },
           body: JSON.stringify({ audio: base64Data }),
         });
