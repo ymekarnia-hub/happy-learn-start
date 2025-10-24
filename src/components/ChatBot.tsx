@@ -321,11 +321,13 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
         }
 
         const { text } = await response.json();
-        setInputValue(text);
         toast({
-          title: "Transcription réussie",
-          description: "Votre question a été transcrite",
+          title: "Question envoyée",
+          description: "Votre question vocale a été transcrite et envoyée",
         });
+        
+        // Envoyer automatiquement le message transcrit
+        await sendMessage(text);
       };
 
       reader.onerror = () => {
