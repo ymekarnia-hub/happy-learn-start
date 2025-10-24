@@ -28,6 +28,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
   const [inputValue, setInputValue] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; base64: string; type: string }>>([]);
   const [isRecording, setIsRecording] = useState(false);
+  const [voiceLang, setVoiceLang] = useState<'fr-FR' | 'ar-SA'>('fr-FR');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -267,7 +268,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
       }
 
       const recognition = new SpeechRecognition();
-      recognition.lang = 'fr-FR';
+      recognition.lang = voiceLang;
       recognition.continuous = true;
       recognition.interimResults = true;
 
@@ -399,7 +400,18 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
             >
               <Paperclip className="h-4 w-4" />
             </Button>
-            <div className="relative">
+            <div className="relative flex items-center gap-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setVoiceLang(voiceLang === 'fr-FR' ? 'ar-SA' : 'fr-FR')}
+                disabled={isLoading || isRecording}
+                className="h-10 w-10 text-xs font-semibold"
+                title={voiceLang === 'fr-FR' ? 'Français' : 'العربية'}
+              >
+                {voiceLang === 'fr-FR' ? 'FR' : 'AR'}
+              </Button>
               <Button
                 type="button"
                 variant={isRecording ? "destructive" : "outline"}
