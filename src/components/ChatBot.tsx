@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Paperclip, X } from "lucide-react";
+import { Send, Paperclip, X, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -27,8 +27,11 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; base64: string; type: string }>>([]);
+  const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const { toast } = useToast();
 
   const scrollToBottom = () => {
@@ -251,6 +254,95 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
     }
   };
 
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        await transcribeAudio(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      toast({
+        title: "Enregistrement en cours",
+        description: "Parlez maintenant...",
+      });
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'accéder au microphone",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const transcribeAudio = async (audioBlob: Blob) => {
+    try {
+      setIsLoading(true);
+      
+      // Convertir le blob en base64
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
+      
+      reader.onloadend = async () => {
+        const base64Audio = reader.result as string;
+        const base64Data = base64Audio.split(',')[1];
+
+        const response = await fetch('https://jrgjvjnhdliymljelhgd.supabase.co/functions/v1/transcribe-audio', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ audio: base64Data }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Transcription failed');
+        }
+
+        const { text } = await response.json();
+        setInputValue(text);
+        toast({
+          title: "Transcription réussie",
+          description: "Votre question a été transcrite",
+        });
+      };
+
+      reader.onerror = () => {
+        throw new Error('Error reading audio file');
+      };
+    } catch (error) {
+      console.error('Transcription error:', error);
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la transcription",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header avec bouton de fermeture */}
@@ -328,21 +420,30 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
               variant="outline"
               size="icon"
               onClick={() => fileInputRef.current?.click()}
-              disabled={isLoading}
+              disabled={isLoading || isRecording}
             >
               <Paperclip className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant={isRecording ? "destructive" : "outline"}
+              size="icon"
+              onClick={isRecording ? stopRecording : startRecording}
+              disabled={isLoading}
+            >
+              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </Button>
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={`Posez votre question de ${subject}...`}
-              disabled={isLoading}
+              disabled={isLoading || isRecording}
               className="flex-1"
             />
             <Button
               type="submit"
-              disabled={isLoading || (!inputValue.trim() && uploadedFiles.length === 0)}
+              disabled={isLoading || isRecording || (!inputValue.trim() && uploadedFiles.length === 0)}
               className="flex-shrink-0"
             >
               <Send className="h-4 w-4" />
