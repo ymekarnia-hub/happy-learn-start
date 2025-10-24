@@ -275,10 +275,6 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
 
       mediaRecorder.start();
       setIsRecording(true);
-      toast({
-        title: "Enregistrement en cours",
-        description: "Parlez maintenant...",
-      });
     } catch (error) {
       console.error('Error accessing microphone:', error);
       toast({
