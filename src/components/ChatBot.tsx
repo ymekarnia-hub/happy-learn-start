@@ -275,7 +275,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
 
       mediaRecorder.start();
       setIsRecording(true);
-      setInputValue(`Posez votre question de ${subject}...`);
+      setInputValue("🎤 Enregistrement en cours... Parlez maintenant !");
     } catch (error) {
       console.error('Error accessing microphone:', error);
       toast({
@@ -455,7 +455,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
               onKeyPress={handleKeyPress}
               placeholder={`Posez votre question de ${subject}...`}
               disabled={isLoading || isRecording}
-              className="flex-1"
+              className={`flex-1 ${isRecording ? 'bg-destructive/10 border-destructive' : ''}`}
             />
             <Button
               type="submit"
