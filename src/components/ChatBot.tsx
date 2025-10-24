@@ -275,6 +275,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
 
       mediaRecorder.start();
       setIsRecording(true);
+      setInputValue(`Posez votre question de ${subject}...`);
     } catch (error) {
       console.error('Error accessing microphone:', error);
       toast({
@@ -289,6 +290,7 @@ export default function ChatBot({ messages, setMessages, subject = "mathématiqu
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      setInputValue("");
     }
   };
 
