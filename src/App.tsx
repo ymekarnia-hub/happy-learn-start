@@ -24,6 +24,7 @@ import UpdateSuccess from "./pages/UpdateSuccess";
 import Abonnements from "./pages/Abonnements";
 import Paiement from "./pages/Paiement";
 import Parrainage from "./pages/Parrainage";
+import MesDonneesPersonnelles from "./pages/MesDonneesPersonnelles";
 import DashboardEditorial from "./pages/editorial/DashboardEditorial";
 import EditeurCours from "./pages/editorial/EditeurCours";
 import PageRevision from "./pages/editorial/PageRevision";
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="/abonnements" element={<Abonnements />} />
             <Route path="/paiement" element={<Paiement />} />
             <Route path="/parrainage" element={<Parrainage />} />
+            <Route path="/mes-donnees-personnelles" element={<MesDonneesPersonnelles />} />
             <Route path="/liste-cours" element={<ListeCours />} />
             <Route path="/cours/:subjectId" element={<Cours />} />
             <Route path="/revision/:subjectId" element={<Revision />} />

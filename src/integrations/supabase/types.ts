@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_deletion_requests: {
+        Row: {
+          cancelled: boolean | null
+          cancelled_at: string | null
+          executed: boolean | null
+          executed_at: string | null
+          id: string
+          reason: string | null
+          requested_at: string
+          scheduled_deletion_at: string
+          user_id: string
+        }
+        Insert: {
+          cancelled?: boolean | null
+          cancelled_at?: string | null
+          executed?: boolean | null
+          executed_at?: string | null
+          id?: string
+          reason?: string | null
+          requested_at?: string
+          scheduled_deletion_at?: string
+          user_id: string
+        }
+        Update: {
+          cancelled?: boolean | null
+          cancelled_at?: string | null
+          executed?: boolean | null
+          executed_at?: string | null
+          id?: string
+          reason?: string | null
+          requested_at?: string
+          scheduled_deletion_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_deletion_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_deletion_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       activity_logs: {
         Row: {
           action: string
@@ -437,6 +488,68 @@ export type Database = {
           },
           {
             foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      data_access_logs: {
+        Row: {
+          access_type: string
+          accessed_by: string
+          created_at: string
+          data_type: string
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          access_type: string
+          accessed_by: string
+          created_at?: string
+          data_type: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          access_type?: string
+          accessed_by?: string
+          created_at?: string
+          data_type?: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_access_logs_accessed_by_fkey"
+            columns: ["accessed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_access_logs_accessed_by_fkey"
+            columns: ["accessed_by"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "data_access_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_access_logs_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "referral_stats"
@@ -888,6 +1001,54 @@ export type Database = {
           },
         ]
       }
+      parental_consents: {
+        Row: {
+          child_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          parent_email: string
+          verification_token: string
+          verified: boolean | null
+          verified_at: string | null
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_email: string
+          verification_token: string
+          verified?: boolean | null
+          verified_at?: string | null
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_email?: string
+          verification_token?: string
+          verified?: boolean | null
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parental_consents_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parental_consents_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       prepaid_codes: {
         Row: {
           code: string
@@ -951,6 +1112,9 @@ export type Database = {
           id: string
           last_name: string | null
           parent_consent: boolean | null
+          parent_consent_date: string | null
+          parent_email: string | null
+          parent_verified: boolean | null
           pending_referral_code: string | null
           phone: string | null
           role: Database["public"]["Enums"]["app_role"] | null
@@ -969,6 +1133,9 @@ export type Database = {
           id: string
           last_name?: string | null
           parent_consent?: boolean | null
+          parent_consent_date?: string | null
+          parent_email?: string | null
+          parent_verified?: boolean | null
           pending_referral_code?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
@@ -987,6 +1154,9 @@ export type Database = {
           id?: string
           last_name?: string | null
           parent_consent?: boolean | null
+          parent_consent_date?: string | null
+          parent_email?: string | null
+          parent_verified?: boolean | null
           pending_referral_code?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
@@ -2035,6 +2205,7 @@ export type Database = {
         }
         Returns: string
       }
+      delete_old_archives: { Args: never; Returns: undefined }
       generate_invoice_number: { Args: never; Returns: string }
       generate_prepaid_code: { Args: never; Returns: string }
       generate_promo_code: { Args: never; Returns: string }
@@ -2055,6 +2226,16 @@ export type Database = {
       is_subscription_active: {
         Args: { subscription_id: string }
         Returns: boolean
+      }
+      log_data_access: {
+        Args: {
+          p_access_type: string
+          p_data_type: string
+          p_ip_address?: unknown
+          p_user_agent?: string
+          p_user_id: string
+        }
+        Returns: string
       }
       use_promo_code: {
         Args: {
