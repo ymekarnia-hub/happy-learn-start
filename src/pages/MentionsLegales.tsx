@@ -66,7 +66,13 @@ const MentionsLegales = () => {
                   vous disposez d'un droit d'accès, de rectification et de suppression des données vous concernant.
                 </p>
                 <p className="text-muted-foreground mt-2">
-                  Pour exercer ces droits, vous pouvez nous contacter à l'adresse : contact@edusuccess.fr
+                  Pour en savoir plus sur la protection de vos données personnelles, consultez notre{" "}
+                  <a href="/politique-confidentialite" className="text-primary hover:underline font-medium">
+                    Politique de Confidentialité
+                  </a>.
+                </p>
+                <p className="text-muted-foreground mt-2">
+                  Pour exercer vos droits, vous pouvez nous contacter à l'adresse : <a href="mailto:contact@edusuccess.fr" className="text-primary hover:underline">contact@edusuccess.fr</a>
                 </p>
               </div>
 

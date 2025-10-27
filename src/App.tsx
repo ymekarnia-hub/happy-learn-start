@@ -8,6 +8,7 @@ import i18n from "./i18n/config";
 import Index from "./pages/Index";
 import Contact from "./pages/Contact";
 import MentionsLegales from "./pages/MentionsLegales";
+import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 
@@ -71,6 +72,7 @@ const App = () => (
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/faq-admin" element={<FAQAdmin />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

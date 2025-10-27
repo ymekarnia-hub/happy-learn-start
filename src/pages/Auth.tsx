@@ -42,6 +42,11 @@ const Auth = () => {
     dateOfBirth: false
   });
   const [submitted, setSubmitted] = useState(false);
+  
+  // RGPD Consent states
+  const [consentDataProcessing, setConsentDataProcessing] = useState(false);
+  const [consentTermsPrivacy, setConsentTermsPrivacy] = useState(false);
+  const [consentParental, setConsentParental] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,6 +106,21 @@ const Auth = () => {
         toast.error("Veuillez sélectionner votre classe.");
         return;
       }
+
+      // Validation des consentements RGPD
+      if (!consentDataProcessing || !consentTermsPrivacy) {
+        toast.error("Vous devez accepter le traitement des données et la politique de confidentialité pour vous inscrire.");
+        return;
+      }
+
+      // Vérification du consentement parental pour les mineurs
+      if (dateOfBirth) {
+        const age = new Date().getFullYear() - dateOfBirth.getFullYear();
+        if (age < 15 && !consentParental) {
+          toast.error("Le consentement parental est requis pour les utilisateurs de moins de 15 ans.");
+          return;
+        }
+      }
     }
     
     setLoading(true);
@@ -143,6 +163,31 @@ const Auth = () => {
         });
 
         if (error) throw error;
+
+        // Enregistrer les consentements RGPD
+        setTimeout(async () => {
+          try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+
+            const consents = [
+              { user_id: session.user.id, consent_type: 'data_processing' },
+              { user_id: session.user.id, consent_type: 'terms_and_privacy' }
+            ];
+
+            // Ajouter le consentement parental si nécessaire
+            if (dateOfBirth) {
+              const age = new Date().getFullYear() - dateOfBirth.getFullYear();
+              if (age < 15 && consentParental) {
+                consents.push({ user_id: session.user.id, consent_type: 'parental_consent' });
+              }
+            }
+
+            await supabase.from('user_consents').insert(consents);
+          } catch (error) {
+            console.error('Erreur lors de l\'enregistrement des consentements:', error);
+          }
+        }, 1500);
 
         // Si un code de parrainage existe, le stocker dans le profil
         // La relation de parrainage sera créée lors du premier paiement
@@ -601,6 +646,83 @@ const Auth = () => {
                       </RadioGroup>
                     </div>
                   )}
+
+                  {/* RGPD Consents */}
+                  <div className="space-y-4 pt-4 border-t border-border">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="consentDataProcessing"
+                        checked={consentDataProcessing}
+                        onCheckedChange={(checked) => setConsentDataProcessing(checked as boolean)}
+                        className="mt-1"
+                      />
+                      <label
+                        htmlFor="consentDataProcessing"
+                        className="text-sm text-foreground cursor-pointer leading-relaxed"
+                      >
+                        <span className="text-red-500">*</span> J'accepte le traitement de mes données personnelles conformément au RGPD
+                      </label>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="consentTermsPrivacy"
+                        checked={consentTermsPrivacy}
+                        onCheckedChange={(checked) => setConsentTermsPrivacy(checked as boolean)}
+                        className="mt-1"
+                      />
+                      <label
+                        htmlFor="consentTermsPrivacy"
+                        className="text-sm text-foreground cursor-pointer leading-relaxed"
+                      >
+                        <span className="text-red-500">*</span> J'accepte les{" "}
+                        <a 
+                          href="/mentions-legales" 
+                          target="_blank" 
+                          className="text-primary hover:underline font-medium"
+                        >
+                          Conditions Générales d'Utilisation
+                        </a>
+                        {" "}et la{" "}
+                        <a 
+                          href="/politique-confidentialite" 
+                          target="_blank" 
+                          className="text-primary hover:underline font-medium"
+                        >
+                          Politique de Confidentialité
+                        </a>
+                      </label>
+                    </div>
+
+                    {dateOfBirth && new Date().getFullYear() - dateOfBirth.getFullYear() < 15 && (
+                      <div className="flex items-start space-x-3 bg-accent/10 p-3 rounded-lg">
+                        <Checkbox
+                          id="consentParental"
+                          checked={consentParental}
+                          onCheckedChange={(checked) => setConsentParental(checked as boolean)}
+                          className="mt-1"
+                        />
+                        <label
+                          htmlFor="consentParental"
+                          className="text-sm text-foreground cursor-pointer leading-relaxed"
+                        >
+                          <span className="text-red-500">*</span> Je certifie que mes parents/tuteurs légaux consentent à mon inscription et au traitement de mes données personnelles (requis pour les mineurs de moins de 15 ans)
+                        </label>
+                      </div>
+                    )}
+
+                    <p className="text-xs text-muted-foreground">
+                      <span className="text-red-500">*</span> Champs obligatoires. 
+                      Pour en savoir plus sur la protection de vos données, consultez notre{" "}
+                      <a 
+                        href="/politique-confidentialite" 
+                        target="_blank" 
+                        className="text-primary hover:underline"
+                      >
+                        Politique de Confidentialité
+                      </a>.
+                    </p>
+                  </div>
 
                   <Button type="submit" className="w-full bg-primary" disabled={loading}>
                     {loading ? "Chargement..." : "S'inscrire"}
