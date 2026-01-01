@@ -93,29 +93,56 @@ const Cours = () => {
       if (courseError) throw courseError;
 
       if (!courseData) {
-        toast({
-          title: "Cours non disponible",
-          description: "Aucun cours trouvé pour votre niveau scolaire",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
+        // Si aucun cours pour ce niveau, afficher tous les cours de la matière
+        const { data: allCoursesData } = await supabase
+          .from("courses")
+          .select("*")
+          .eq("subject_id", subjectId)
+          .order("order_index")
+          .limit(1)
+          .maybeSingle();
 
-      setCourse(courseData);
+        if (!allCoursesData) {
+          toast({
+            title: "Cours non disponible",
+            description: "Aucun cours trouvé pour cette matière",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
 
-      const { data: chaptersData, error: chaptersError } = await supabase
-        .from("course_chapters")
-        .select("*")
-        .eq("course_id", courseData.id)
-        .order("order_index");
+        // Utiliser le premier cours disponible
+        setCourse(allCoursesData);
+        
+        const { data: chaptersData } = await supabase
+          .from("course_chapters")
+          .select("*")
+          .eq("course_id", allCoursesData.id)
+          .order("order_index");
 
-      if (chaptersError) throw chaptersError;
-      console.log('Found chapters:', chaptersData?.length, 'chapters');
-      setChapters(chaptersData || []);
+        console.log('Fallback - Found chapters:', chaptersData?.length, 'chapters');
+        setChapters(chaptersData || []);
 
-      if (chaptersData && chaptersData.length > 0) {
-        setActiveChapter(chaptersData[0]);
+        if (chaptersData && chaptersData.length > 0) {
+          setActiveChapter(chaptersData[0]);
+        }
+      } else {
+        setCourse(courseData);
+
+        const { data: chaptersData, error: chaptersError } = await supabase
+          .from("course_chapters")
+          .select("*")
+          .eq("course_id", courseData.id)
+          .order("order_index");
+
+        if (chaptersError) throw chaptersError;
+        console.log('Found chapters:', chaptersData?.length, 'chapters');
+        setChapters(chaptersData || []);
+
+        if (chaptersData && chaptersData.length > 0) {
+          setActiveChapter(chaptersData[0]);
+        }
       }
 
       const { data: progressData } = await supabase.from("user_progress").select("*").eq("user_id", user.id);
