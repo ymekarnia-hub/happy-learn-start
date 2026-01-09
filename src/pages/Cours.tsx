@@ -5,8 +5,9 @@ import { CourseContent } from "@/components/course/CourseContent";
 import { PDFContent } from "@/components/course/PDFContent";
 import { ChapterGrid } from "@/components/course/ChapterGrid";
 import { ActivityCards } from "@/components/course/ActivityCards";
-import { MathQuiz } from "@/components/course/MathQuiz";
-import { MathExercises } from "@/components/course/MathExercises";
+import { ChapterMathQuiz } from "@/components/course/ChapterMathQuiz";
+import { ChapterMathExercises } from "@/components/course/ChapterMathExercises";
+import { getChapterContent, mathSecondeChapters } from "@/data/mathSecondeChapters";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, GraduationCap, LogOut, User as UserIcon, MessageCircle, X } from "lucide-react";
@@ -621,13 +622,29 @@ const Cours = () => {
             />
           )}
 
-          {activeActivity === "quiz" && (
-            <MathQuiz onClose={() => setActiveActivity(null)} />
-          )}
+          {activeActivity === "quiz" && (() => {
+            const currentIndex = chapters.findIndex(c => c.id === activeChapter?.id);
+            const chapterContent = getChapterContent(currentIndex) || mathSecondeChapters[0];
+            return (
+              <ChapterMathQuiz 
+                questions={chapterContent.quizzes} 
+                chapterTitle={chapterContent.chapterTitle}
+                onClose={() => setActiveActivity(null)} 
+              />
+            );
+          })()}
           
-          {activeActivity === "exercices" && (
-            <MathExercises onClose={() => setActiveActivity(null)} />
-          )}
+          {activeActivity === "exercices" && (() => {
+            const currentIndex = chapters.findIndex(c => c.id === activeChapter?.id);
+            const chapterContent = getChapterContent(currentIndex) || mathSecondeChapters[0];
+            return (
+              <ChapterMathExercises 
+                exercises={chapterContent.exercises} 
+                chapterTitle={chapterContent.chapterTitle}
+                onClose={() => setActiveActivity(null)} 
+              />
+            );
+          })()}
 
           {!activeActivity && viewMode === "grid" ? (
             <ChapterGrid
