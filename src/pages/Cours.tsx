@@ -5,6 +5,8 @@ import { CourseContent } from "@/components/course/CourseContent";
 import { PDFContent } from "@/components/course/PDFContent";
 import { ChapterGrid } from "@/components/course/ChapterGrid";
 import { ActivityCards } from "@/components/course/ActivityCards";
+import { MathQuiz } from "@/components/course/MathQuiz";
+import { MathExercises } from "@/components/course/MathExercises";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, GraduationCap, LogOut, User as UserIcon, MessageCircle, X } from "lucide-react";
@@ -44,6 +46,7 @@ const Cours = () => {
   const [profile, setProfile] = useState<any>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [activeActivity, setActiveActivity] = useState<string | null>(null);
 
   useEffect(() => {
     if (subjectId) {
@@ -611,9 +614,22 @@ const Cours = () => {
             </h1>
           </div>
 
-          {viewMode === "content" && <ActivityCards />}
+          {viewMode === "content" && (
+            <ActivityCards 
+              onCardClick={(id) => setActiveActivity(activeActivity === id ? null : id)} 
+              activeCard={activeActivity}
+            />
+          )}
 
-          {viewMode === "grid" ? (
+          {activeActivity === "quiz" && (
+            <MathQuiz onClose={() => setActiveActivity(null)} />
+          )}
+          
+          {activeActivity === "exercices" && (
+            <MathExercises onClose={() => setActiveActivity(null)} />
+          )}
+
+          {!activeActivity && viewMode === "grid" ? (
             <ChapterGrid
               chapters={chapters.map((c) => ({
                 ...c,
@@ -628,7 +644,7 @@ const Cours = () => {
               }}
               subjectId={subjectId}
             />
-          ) : (
+          ) : !activeActivity && (
             <div ref={contentRef} className="space-y-4">
               {activeChapter && (
                 <CourseContent
