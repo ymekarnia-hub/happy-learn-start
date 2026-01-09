@@ -1840,6 +1840,42 @@ export type Database = {
           },
         ]
       }
+      time_tracking: {
+        Row: {
+          chapter_id: string | null
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          last_activity_at: string | null
+          time_spent_seconds: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chapter_id?: string | null
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          last_activity_at?: string | null
+          time_spent_seconds?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string | null
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          last_activity_at?: string | null
+          time_spent_seconds?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_consents: {
         Row: {
           accepted_at: string
@@ -2236,6 +2272,32 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      upsert_time_tracking: {
+        Args: {
+          p_additional_seconds?: number
+          p_chapter_id?: string
+          p_content_id: string
+          p_content_type: string
+          p_user_id: string
+        }
+        Returns: {
+          chapter_id: string | null
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          last_activity_at: string | null
+          time_spent_seconds: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "time_tracking"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       use_promo_code: {
         Args: {

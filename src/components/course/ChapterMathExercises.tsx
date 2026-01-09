@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ArrowLeft, BookOpen, CheckCircle2, XCircle, PenTool, Send, Eye } from "lucide-react";
+import { ArrowLeft, BookOpen, CheckCircle2, XCircle, PenTool, Send, Eye, Clock } from "lucide-react";
 import { ChapterExercise } from "@/data/mathSecondeChapters";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
+import { useTimeTracking, useExercisesTimes, formatTime } from "@/hooks/useTimeTracking";
 
 interface ChapterMathExercisesProps {
   exercises: ChapterExercise[];
@@ -26,6 +27,21 @@ export const ChapterMathExercises = ({ exercises, chapterTitle, onClose }: Chapt
   const [showCorrection, setShowCorrection] = useState<Record<string, boolean>>({});
 
   const exercise = currentExercise !== null ? exercises[currentExercise] : null;
+
+  // Time tracking pour l'exercice en cours
+  const { formattedTime: currentExerciseTime } = useTimeTracking({
+    contentType: "exercise",
+    contentId: currentExercise !== null ? `exercise-${chapterTitle}-${currentExercise}` : "none",
+    chapterId: chapterTitle,
+    autoStart: currentExercise !== null,
+  });
+
+  // Temps pour tous les exercices
+  const exerciseIds = useMemo(
+    () => exercises.map((_, idx) => `exercise-${chapterTitle}-${idx}`),
+    [exercises, chapterTitle]
+  );
+  const { times: exerciseTimes } = useExercisesTimes(chapterTitle, exerciseIds);
 
   const handleAnswerChange = (id: string, value: string) => {
     setUserAnswers(prev => ({ ...prev, [id]: value }));
@@ -69,11 +85,17 @@ export const ChapterMathExercises = ({ exercises, chapterTitle, onClose }: Chapt
               Exercice {currentExercise + 1}/10
             </span>
           </div>
-          <CardTitle className="text-xl mt-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
-              <PenTool className="h-5 w-5 text-orange-500" />
+          <CardTitle className="text-xl mt-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
+                <PenTool className="h-5 w-5 text-orange-500" />
+              </div>
+              {exercise.title}
             </div>
-            {exercise.title}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4 text-primary" />
+              <span className="font-mono">{currentExerciseTime}</span>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -283,7 +305,15 @@ export const ChapterMathExercises = ({ exercises, chapterTitle, onClose }: Chapt
                     </span>
                   </div>
                 </div>
-                <span className="text-primary">→</span>
+                <div className="flex items-center gap-3">
+                  {exerciseTimes[`exercise-${chapterTitle}-${index}`] > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      {formatTime(exerciseTimes[`exercise-${chapterTitle}-${index}`])}
+                    </div>
+                  )}
+                  <span className="text-primary">→</span>
+                </div>
               </button>
             );
           })}
