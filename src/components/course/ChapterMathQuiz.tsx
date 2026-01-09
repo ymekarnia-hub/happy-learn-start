@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy, BookOpen } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy, BookOpen, Clock, Pause, Play } from "lucide-react";
 import { ChapterQuizQuestion } from "@/data/mathSecondeChapters";
 import { cn } from "@/lib/utils";
+import { useTimeTracking } from "@/hooks/useTimeTracking";
 
 interface ChapterMathQuizProps {
   questions: ChapterQuizQuestion[];
@@ -21,6 +22,14 @@ export const ChapterMathQuiz = ({ questions, chapterTitle, onClose }: ChapterMat
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [answers, setAnswers] = useState<{ question: string; userAnswer: string; correct: boolean }[]>([]);
+
+  // Time tracking pour le quiz
+  const { formattedTime, isPaused, pause, resume } = useTimeTracking({
+    contentType: "quiz",
+    contentId: `quiz-${chapterTitle.replace(/\s+/g, "-").toLowerCase()}`,
+    chapterId: chapterTitle,
+    autoStart: true,
+  });
 
   const currentQuestion = questions[currentIndex];
   const isCorrect = selectedAnswer === currentQuestion?.correctAnswer;
@@ -80,6 +89,10 @@ export const ChapterMathQuiz = ({ questions, chapterTitle, onClose }: ChapterMat
                percentage >= 60 ? "Bien joué ! Continue comme ça 👍" : 
                "Continue à t'entraîner ! 💪"}
             </p>
+            <div className="flex items-center justify-center gap-2 mt-3 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>Temps total : {formattedTime}</span>
+            </div>
           </div>
 
           <Progress value={percentage} className="h-3" />
@@ -127,17 +140,46 @@ export const ChapterMathQuiz = ({ questions, chapterTitle, onClose }: ChapterMat
   }
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            Question {currentIndex + 1}/{questions.length}
-          </span>
-          <span className="text-sm px-2 py-1 rounded-full bg-primary/10 text-primary">
-            {chapterTitle}
-          </span>
+    <div className="max-w-2xl mx-auto space-y-4">
+      {/* Timer sticky en haut */}
+      <div className="sticky top-20 z-40 bg-background/95 backdrop-blur-sm border rounded-lg p-3 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-lg font-semibold">
+              <Clock className="h-5 w-5 text-primary" />
+              <span className="font-mono">{formattedTime}</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={isPaused ? resume : pause}
+              className="gap-1"
+            >
+              {isPaused ? (
+                <>
+                  <Play className="h-4 w-4" />
+                  Reprendre
+                </>
+              ) : (
+                <>
+                  <Pause className="h-4 w-4" />
+                  Pause
+                </>
+              )}
+            </Button>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Question {currentIndex + 1} / {questions.length}
+          </div>
         </div>
-        <Progress value={progress} className="h-2" />
+        <Progress value={progress} className="h-2 mt-2" />
+      </div>
+
+    <Card>
+      <CardHeader className="pb-3">
+        <span className="text-sm px-2 py-1 rounded-full bg-primary/10 text-primary w-fit">
+          {chapterTitle}
+        </span>
       </CardHeader>
       <CardContent className="space-y-6">
         <h3 className="text-lg font-semibold">{currentQuestion.question}</h3>
@@ -222,5 +264,6 @@ export const ChapterMathQuiz = ({ questions, chapterTitle, onClose }: ChapterMat
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 };
