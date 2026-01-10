@@ -7,6 +7,7 @@ interface TimeTrackingOptions {
   chapterId?: string;
   autoStart?: boolean;
   saveIntervalMs?: number;
+  enabled?: boolean;
 }
 
 interface TimeTrackingResult {
@@ -21,9 +22,11 @@ interface TimeTrackingResult {
 }
 
 export const formatTime = (seconds: number): string => {
+  if (!seconds || seconds < 0) return "0s";
+  
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+  const secs = Math.floor(seconds % 60);
 
   if (hours > 0) {
     return `${hours}h ${minutes.toString().padStart(2, "0")}min`;
@@ -39,42 +42,73 @@ export const useTimeTracking = ({
   contentId,
   chapterId,
   autoStart = true,
-  saveIntervalMs = 30000, // Sauvegarder toutes les 30 secondes
+  saveIntervalMs = 30000,
+  enabled = true,
 }: TimeTrackingOptions): TimeTrackingResult => {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  
+  const [isInitialized, setIsInitialized] = useState(false);
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const saveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const elapsedRef = useRef<number>(0);
   const lastSavedRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(0);
+
+  // Sync elapsedRef with elapsedSeconds
+  useEffect(() => {
+    elapsedRef.current = elapsedSeconds;
+  }, [elapsedSeconds]);
 
   // Récupérer le temps déjà passé depuis la BDD
   const fetchInitialTime = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    
-    setUserId(user.id);
-
-    const { data } = await supabase
-      .from("time_tracking")
-      .select("time_spent_seconds")
-      .eq("user_id", user.id)
-      .eq("content_type", contentType)
-      .eq("content_id", contentId)
-      .maybeSingle();
-
-    if (data) {
-      setElapsedSeconds(data.time_spent_seconds);
-      lastSavedRef.current = data.time_spent_seconds;
+    if (!enabled || !contentId || contentId === "none") {
+      setIsInitialized(true);
+      return;
     }
-  }, [contentType, contentId]);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsInitialized(true);
+        return;
+      }
+
+      setUserId(user.id);
+
+      const { data } = await supabase
+        .from("time_tracking")
+        .select("time_spent_seconds")
+        .eq("user_id", user.id)
+        .eq("content_type", contentType)
+        .eq("content_id", contentId)
+        .maybeSingle();
+
+      if (data) {
+        setElapsedSeconds(data.time_spent_seconds);
+        elapsedRef.current = data.time_spent_seconds;
+        lastSavedRef.current = data.time_spent_seconds;
+      } else {
+        setElapsedSeconds(0);
+        elapsedRef.current = 0;
+        lastSavedRef.current = 0;
+      }
+      setIsInitialized(true);
+    } catch (error) {
+      console.error("Error fetching initial time:", error);
+      setIsInitialized(true);
+    }
+  }, [contentType, contentId, enabled]);
 
   // Sauvegarder le temps en BDD
-  const saveTime = useCallback(async (additionalSeconds: number) => {
-    if (!userId || additionalSeconds <= 0) return;
+  const saveTime = useCallback(async () => {
+    if (!userId || !enabled || !contentId || contentId === "none") return;
+
+    const currentElapsed = elapsedRef.current;
+    const additionalSeconds = currentElapsed - lastSavedRef.current;
+
+    if (additionalSeconds <= 0) return;
 
     try {
       await supabase.rpc("upsert_time_tracking", {
@@ -84,61 +118,61 @@ export const useTimeTracking = ({
         p_chapter_id: chapterId || null,
         p_additional_seconds: additionalSeconds,
       });
-      lastSavedRef.current = elapsedSeconds;
+      lastSavedRef.current = currentElapsed;
     } catch (error) {
       console.error("Error saving time tracking:", error);
     }
-  }, [userId, contentType, contentId, chapterId, elapsedSeconds]);
+  }, [userId, contentType, contentId, chapterId, enabled]);
 
   // Démarrer le compteur
   const start = useCallback(() => {
-    if (isRunning) return;
-    
+    if (isRunning || !enabled) return;
+
     setIsRunning(true);
     setIsPaused(false);
-    startTimeRef.current = Date.now();
-    
+
+    // Increment every second
     intervalRef.current = setInterval(() => {
-      setElapsedSeconds((prev) => prev + 1);
+      setElapsedSeconds((prev) => {
+        const newVal = prev + 1;
+        elapsedRef.current = newVal;
+        return newVal;
+      });
     }, 1000);
 
-    // Sauvegarder périodiquement
+    // Save periodically
     saveIntervalRef.current = setInterval(() => {
-      const currentElapsed = elapsedSeconds;
-      const toSave = currentElapsed - lastSavedRef.current;
-      if (toSave > 0) {
-        saveTime(toSave);
-      }
+      saveTime();
     }, saveIntervalMs);
-  }, [isRunning, saveIntervalMs, elapsedSeconds, saveTime]);
+  }, [isRunning, saveIntervalMs, saveTime, enabled]);
 
   // Mettre en pause
   const pause = useCallback(() => {
     if (!isRunning || isPaused) return;
-    
+
     setIsPaused(true);
-    
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-    
+
     // Sauvegarder immédiatement lors de la pause
-    const toSave = elapsedSeconds - lastSavedRef.current;
-    if (toSave > 0) {
-      saveTime(toSave);
-    }
-  }, [isRunning, isPaused, elapsedSeconds, saveTime]);
+    saveTime();
+  }, [isRunning, isPaused, saveTime]);
 
   // Reprendre
   const resume = useCallback(() => {
     if (!isPaused) return;
-    
+
     setIsPaused(false);
-    startTimeRef.current = Date.now();
-    
+
     intervalRef.current = setInterval(() => {
-      setElapsedSeconds((prev) => prev + 1);
+      setElapsedSeconds((prev) => {
+        const newVal = prev + 1;
+        elapsedRef.current = newVal;
+        return newVal;
+      });
     }, 1000);
   }, [isPaused]);
 
@@ -147,7 +181,8 @@ export const useTimeTracking = ({
     setElapsedSeconds(0);
     setIsRunning(false);
     setIsPaused(false);
-    
+    elapsedRef.current = 0;
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -161,9 +196,9 @@ export const useTimeTracking = ({
   // Gestion de la visibilité de l'onglet (pause auto)
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden) {
+      if (document.hidden && isRunning && !isPaused) {
         pause();
-      } else if (isPaused && isRunning) {
+      } else if (!document.hidden && isPaused && isRunning) {
         resume();
       }
     };
@@ -174,24 +209,36 @@ export const useTimeTracking = ({
     };
   }, [pause, resume, isPaused, isRunning]);
 
-  // Initialisation
+  // Initialisation - reset quand le contentId change
   useEffect(() => {
-    fetchInitialTime();
-  }, [fetchInitialTime]);
+    setIsInitialized(false);
+    setIsRunning(false);
+    setIsPaused(false);
+    elapsedRef.current = 0;
+    lastSavedRef.current = 0;
+    setElapsedSeconds(0);
 
-  // Auto-start
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (saveIntervalRef.current) {
+      clearInterval(saveIntervalRef.current);
+      saveIntervalRef.current = null;
+    }
+
+    fetchInitialTime();
+  }, [contentId, fetchInitialTime]);
+
+  // Auto-start après initialisation
   useEffect(() => {
-    if (autoStart && userId && !isRunning) {
+    if (autoStart && isInitialized && userId && !isRunning && enabled && contentId && contentId !== "none") {
       start();
     }
-  }, [autoStart, userId, isRunning, start]);
+  }, [autoStart, isInitialized, userId, isRunning, start, enabled, contentId]);
 
   // Cleanup et sauvegarde finale
   useEffect(() => {
-    const currentUserId = userId;
-    const currentElapsedSeconds = elapsedSeconds;
-    const currentLastSaved = lastSavedRef.current;
-    
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -199,13 +246,14 @@ export const useTimeTracking = ({
       if (saveIntervalRef.current) {
         clearInterval(saveIntervalRef.current);
       }
-      
+
       // Sauvegarder le temps restant non sauvegardé
-      const toSave = currentElapsedSeconds - currentLastSaved;
-      if (toSave > 0 && currentUserId) {
-        // Appel asynchrone sans attendre le résultat
+      const currentElapsed = elapsedRef.current;
+      const toSave = currentElapsed - lastSavedRef.current;
+      
+      if (toSave > 0 && userId && enabled && contentId && contentId !== "none") {
         supabase.rpc("upsert_time_tracking", {
-          p_user_id: currentUserId,
+          p_user_id: userId,
           p_content_type: contentType,
           p_content_id: contentId,
           p_chapter_id: chapterId || null,
@@ -213,7 +261,7 @@ export const useTimeTracking = ({
         });
       }
     };
-  }, [userId, elapsedSeconds, contentType, contentId, chapterId]);
+  }, [userId, contentType, contentId, chapterId, enabled]);
 
   return {
     elapsedSeconds,
@@ -239,31 +287,35 @@ export const useChaptersTimes = (chapterIds: string[]) => {
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setLoading(false);
+          return;
+        }
 
-      const { data } = await supabase
-        .from("time_tracking")
-        .select("content_id, time_spent_seconds")
-        .eq("user_id", user.id)
-        .eq("content_type", "chapter")
-        .in("content_id", chapterIds);
+        const { data } = await supabase
+          .from("time_tracking")
+          .select("content_id, time_spent_seconds")
+          .eq("user_id", user.id)
+          .eq("content_type", "chapter")
+          .in("content_id", chapterIds);
 
-      if (data) {
-        const timesMap: Record<string, number> = {};
-        data.forEach((item) => {
-          timesMap[item.content_id] = item.time_spent_seconds;
-        });
-        setTimes(timesMap);
+        if (data) {
+          const timesMap: Record<string, number> = {};
+          data.forEach((item) => {
+            timesMap[item.content_id] = item.time_spent_seconds;
+          });
+          setTimes(timesMap);
+        }
+      } catch (error) {
+        console.error("Error fetching chapters times:", error);
       }
       setLoading(false);
     };
 
     fetchTimes();
-  }, [chapterIds.join(",")]);
+  }, [JSON.stringify(chapterIds)]);
 
   return { times, loading, formatTime };
 };
@@ -280,31 +332,35 @@ export const useExercisesTimes = (chapterId: string, exerciseIds: string[]) => {
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setLoading(false);
+          return;
+        }
 
-      const { data } = await supabase
-        .from("time_tracking")
-        .select("content_id, time_spent_seconds")
-        .eq("user_id", user.id)
-        .eq("content_type", "exercise")
-        .in("content_id", exerciseIds);
+        const { data } = await supabase
+          .from("time_tracking")
+          .select("content_id, time_spent_seconds")
+          .eq("user_id", user.id)
+          .eq("content_type", "exercise")
+          .in("content_id", exerciseIds);
 
-      if (data) {
-        const timesMap: Record<string, number> = {};
-        data.forEach((item) => {
-          timesMap[item.content_id] = item.time_spent_seconds;
-        });
-        setTimes(timesMap);
+        if (data) {
+          const timesMap: Record<string, number> = {};
+          data.forEach((item) => {
+            timesMap[item.content_id] = item.time_spent_seconds;
+          });
+          setTimes(timesMap);
+        }
+      } catch (error) {
+        console.error("Error fetching exercises times:", error);
       }
       setLoading(false);
     };
 
     fetchTimes();
-  }, [chapterId, exerciseIds.join(",")]);
+  }, [chapterId, JSON.stringify(exerciseIds)]);
 
   return { times, loading, formatTime };
 };

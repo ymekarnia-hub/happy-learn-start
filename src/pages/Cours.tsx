@@ -629,6 +629,7 @@ const Cours = () => {
               <ChapterMathQuiz 
                 questions={chapterContent.quizzes} 
                 chapterTitle={chapterContent.chapterTitle}
+                chapterId={activeChapter?.id || `chapter-${currentIndex}`}
                 onClose={() => setActiveActivity(null)} 
               />
             );
@@ -641,6 +642,7 @@ const Cours = () => {
               <ChapterMathExercises 
                 exercises={chapterContent.exercises} 
                 chapterTitle={chapterContent.chapterTitle}
+                chapterId={activeChapter?.id || `chapter-${currentIndex}`}
                 onClose={() => setActiveActivity(null)} 
               />
             );

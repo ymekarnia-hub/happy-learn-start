@@ -1,13 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { ArrowLeft, BookOpen, CheckCircle2, XCircle, PenTool, Send, Eye, Clock } from "lucide-react";
 import { ChapterExercise } from "@/data/mathSecondeChapters";
 import { cn } from "@/lib/utils";
@@ -17,10 +11,11 @@ import { useTimeTracking, useExercisesTimes, formatTime } from "@/hooks/useTimeT
 interface ChapterMathExercisesProps {
   exercises: ChapterExercise[];
   chapterTitle: string;
+  chapterId: string;
   onClose: () => void;
 }
 
-export const ChapterMathExercises = ({ exercises, chapterTitle, onClose }: ChapterMathExercisesProps) => {
+export const ChapterMathExercises = ({ exercises, chapterTitle, chapterId, onClose }: ChapterMathExercisesProps) => {
   const [currentExercise, setCurrentExercise] = useState<number | null>(null);
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
   const [submittedAnswers, setSubmittedAnswers] = useState<Record<string, { submitted: boolean; correct: boolean }>>({});
@@ -28,20 +23,29 @@ export const ChapterMathExercises = ({ exercises, chapterTitle, onClose }: Chapt
 
   const exercise = currentExercise !== null ? exercises[currentExercise] : null;
 
+  // Generate stable exercise content ID
+  const currentExerciseContentId = useMemo(() => {
+    if (currentExercise === null) return "";
+    return `exercise-${chapterId}-${currentExercise}`;
+  }, [chapterId, currentExercise]);
+
   // Time tracking pour l'exercice en cours
   const { formattedTime: currentExerciseTime } = useTimeTracking({
     contentType: "exercise",
-    contentId: currentExercise !== null ? `exercise-${chapterTitle}-${currentExercise}` : "none",
-    chapterId: chapterTitle,
-    autoStart: currentExercise !== null,
+    contentId: currentExerciseContentId,
+    chapterId: chapterId,
+    autoStart: true,
+    enabled: currentExercise !== null,
   });
 
-  // Temps pour tous les exercices
+  // IDs pour tous les exercices
   const exerciseIds = useMemo(
-    () => exercises.map((_, idx) => `exercise-${chapterTitle}-${idx}`),
-    [exercises, chapterTitle]
+    () => exercises.map((_, idx) => `exercise-${chapterId}-${idx}`),
+    [exercises, chapterId]
   );
-  const { times: exerciseTimes } = useExercisesTimes(chapterTitle, exerciseIds);
+  
+  // Temps pour tous les exercices
+  const { times: exerciseTimes } = useExercisesTimes(chapterId, exerciseIds);
 
   const handleAnswerChange = (id: string, value: string) => {
     setUserAnswers(prev => ({ ...prev, [id]: value }));
@@ -92,9 +96,9 @@ export const ChapterMathExercises = ({ exercises, chapterTitle, onClose }: Chapt
               </div>
               {exercise.title}
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-lg">
               <Clock className="h-4 w-4 text-primary" />
-              <span className="font-mono">{currentExerciseTime}</span>
+              <span className="font-mono font-medium">{currentExerciseTime}</span>
             </div>
           </CardTitle>
         </CardHeader>
@@ -274,6 +278,7 @@ export const ChapterMathExercises = ({ exercises, chapterTitle, onClose }: Chapt
           {exercises.map((ex, index) => {
             const submitted = isSubmitted(ex.id);
             const correct = isCorrect(ex.id);
+            const timeForExercise = exerciseTimes[`exercise-${chapterId}-${index}`] || 0;
             
             return (
               <button
@@ -306,10 +311,10 @@ export const ChapterMathExercises = ({ exercises, chapterTitle, onClose }: Chapt
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  {exerciseTimes[`exercise-${chapterTitle}-${index}`] > 0 && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  {timeForExercise > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                       <Clock className="h-3 w-3" />
-                      {formatTime(exerciseTimes[`exercise-${chapterTitle}-${index}`])}
+                      {formatTime(timeForExercise)}
                     </div>
                   )}
                   <span className="text-primary">→</span>
