@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -12,10 +12,11 @@ import { useTimeTracking } from "@/hooks/useTimeTracking";
 interface ChapterMathQuizProps {
   questions: ChapterQuizQuestion[];
   chapterTitle: string;
+  chapterId: string;
   onClose: () => void;
 }
 
-export const ChapterMathQuiz = ({ questions, chapterTitle, onClose }: ChapterMathQuizProps) => {
+export const ChapterMathQuiz = ({ questions, chapterTitle, chapterId, onClose }: ChapterMathQuizProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const [hasAnswered, setHasAnswered] = useState(false);
@@ -23,12 +24,16 @@ export const ChapterMathQuiz = ({ questions, chapterTitle, onClose }: ChapterMat
   const [showResults, setShowResults] = useState(false);
   const [answers, setAnswers] = useState<{ question: string; userAnswer: string; correct: boolean }[]>([]);
 
+  // Generate stable quiz content ID
+  const quizContentId = useMemo(() => `quiz-${chapterId}`, [chapterId]);
+
   // Time tracking pour le quiz
-  const { formattedTime, isPaused, pause, resume } = useTimeTracking({
+  const { formattedTime, elapsedSeconds, isPaused, pause, resume } = useTimeTracking({
     contentType: "quiz",
-    contentId: `quiz-${chapterTitle.replace(/\s+/g, "-").toLowerCase()}`,
-    chapterId: chapterTitle,
+    contentId: quizContentId,
+    chapterId: chapterId,
     autoStart: true,
+    enabled: true,
   });
 
   const currentQuestion = questions[currentIndex];
@@ -89,9 +94,9 @@ export const ChapterMathQuiz = ({ questions, chapterTitle, onClose }: ChapterMat
                percentage >= 60 ? "Bien joué ! Continue comme ça 👍" : 
                "Continue à t'entraîner ! 💪"}
             </p>
-            <div className="flex items-center justify-center gap-2 mt-3 text-sm text-muted-foreground">
+            <div className="flex items-center justify-center gap-2 mt-3 text-sm text-muted-foreground bg-muted px-4 py-2 rounded-lg inline-flex">
               <Clock className="h-4 w-4" />
-              <span>Temps total : {formattedTime}</span>
+              <span>Temps total : <span className="font-mono font-medium">{formattedTime}</span></span>
             </div>
           </div>
 
@@ -145,9 +150,10 @@ export const ChapterMathQuiz = ({ questions, chapterTitle, onClose }: ChapterMat
       <div className="sticky top-20 z-40 bg-background/95 backdrop-blur-sm border rounded-lg p-3 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-lg font-semibold">
+            <div className="flex items-center gap-2 text-lg font-semibold bg-muted px-3 py-1.5 rounded-lg">
               <Clock className="h-5 w-5 text-primary" />
               <span className="font-mono">{formattedTime}</span>
+              {isPaused && <span className="text-xs text-muted-foreground">(en pause)</span>}
             </div>
             <Button
               variant="ghost"
