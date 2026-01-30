@@ -850,6 +850,68 @@ export type Database = {
           },
         ]
       }
+      linking_codes: {
+        Row: {
+          child_id: string
+          code: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          used: boolean | null
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          child_id: string
+          code: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          used?: boolean | null
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          child_id?: string
+          code?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          used?: boolean | null
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "linking_codes_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "linking_codes_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "linking_codes_used_by_fkey"
+            columns: ["used_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "linking_codes_used_by_fkey"
+            columns: ["used_by"]
+            isOneToOne: false
+            referencedRelation: "referral_stats"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       matieres: {
         Row: {
           active: boolean | null
@@ -957,18 +1019,21 @@ export type Database = {
           created_at: string | null
           id: string
           parent_id: string
+          status: string | null
         }
         Insert: {
           child_id: string
           created_at?: string | null
           id?: string
           parent_id: string
+          status?: string | null
         }
         Update: {
           child_id?: string
           created_at?: string | null
           id?: string
           parent_id?: string
+          status?: string | null
         }
         Relationships: [
           {
@@ -2233,6 +2298,14 @@ export type Database = {
         Args: { parent_id: string; plan_id: string }
         Returns: number
       }
+      create_parent_child_request: {
+        Args: {
+          p_child_email?: string
+          p_linking_code?: string
+          p_parent_id: string
+        }
+        Returns: Json
+      }
       create_subscription_payment: {
         Args: {
           p_payment_date?: string
@@ -2243,6 +2316,7 @@ export type Database = {
       }
       delete_old_archives: { Args: never; Returns: undefined }
       generate_invoice_number: { Args: never; Returns: string }
+      generate_linking_code: { Args: never; Returns: string }
       generate_prepaid_code: { Args: never; Returns: string }
       generate_promo_code: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
@@ -2272,6 +2346,20 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      log_user_activity: {
+        Args: {
+          p_action: string
+          p_details?: Json
+          p_entity_id?: string
+          p_entity_type?: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      respond_to_link_request: {
+        Args: { p_accept: boolean; p_request_id: string }
+        Returns: Json
       }
       upsert_time_tracking: {
         Args: {
