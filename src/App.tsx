@@ -18,6 +18,8 @@ import Cours from "./pages/Cours";
 import Revision from "./pages/Revision";
 import Simulation from "./pages/Simulation";
 import Account from "./pages/Account";
+import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 import Factures from "./pages/Factures";
 import MesInformations from "./pages/MesInformations";
 import UpdateSuccess from "./pages/UpdateSuccess";
